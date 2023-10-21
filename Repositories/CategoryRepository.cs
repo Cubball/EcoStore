@@ -53,6 +53,7 @@ public class CategoryRepository : ICategoryRepository
     public async Task<Category> GetCategoryByIdAsync(int id)
     {
         return await _context.Categories
+            .Include(c => c.Products)
             .FirstOrDefaultAsync(c => c.Id == id)
             ?? throw new EntityNotFoundException($"Категорію з Id {id} не знайдено");
     }

@@ -53,6 +53,7 @@ public class BrandRepository : IBrandRepository
     public async Task<Brand> GetBrandByIdAsync(int id)
     {
         return await _context.Brands
+            .Include(b => b.Products)
             .FirstOrDefaultAsync(c => c.Id == id)
             ?? throw new EntityNotFoundException($"Бренд з Id {id} не знайдено");
     }
