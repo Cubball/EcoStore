@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 using Project.Data;
 using Project.Models;
+using Project.Repositories.Exceptions;
 using Project.Repositories.Interfaces;
 
 namespace Project.Repositories;
@@ -14,39 +17,74 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public Task<int> AddProductAsync(Product product)
+    public async Task<int> AddProductAsync(Product product)
     {
-        throw new NotImplementedException();
+        try
+        {
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            return product.Id;
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException("Не вдалося додати товар", e);
+        }
     }
 
-    public Task DeleteProductAsync(int id)
+    public async Task DeleteProductAsync(int id)
     {
-        throw new NotImplementedException();
+        var product = await GetProductByIdAsync(id);
+        try
+        {
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException("Не вдалося видалити товар", e);
+        }
     }
 
-    public Task<Product> GetProductByIdAsync(int id)
+    public async Task<Product> GetProductByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Products
+            .Include(p => p.Brand)
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(p => p.Id == id)
+            ?? throw new EntityNotFoundException($"Товар з Id {id} не знайдено");
     }
 
-    public Task<IEnumerable<Product>> GetProductsAsync()
+    public async Task<IEnumerable<Product>> GetProductsAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Products.ToListAsync();
     }
 
-    public Task<IEnumerable<Product>> GetProductsByBrandIdAsync(int brandId)
+    public async Task<IEnumerable<Product>> GetProductsByBrandIdAsync(int brandId)
     {
-        throw new NotImplementedException();
+        return await _context.Products
+            .Where(p => p.BrandId == brandId)
+            .ToListAsync();
     }
 
-    public Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId)
+    public async Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId)
     {
-        throw new NotImplementedException();
+        return await _context.Products
+            .Where(p => p.CategoryId == categoryId)
+            .ToListAsync();
     }
 
-    public Task UpdateProductAsync(Product product)
+    public async Task UpdateProductAsync(Product product)
     {
-        throw new NotImplementedException();
+        var retrievedProduct = await GetProductByIdAsync(product.Id);
+        try
+        {
+            UpdateProductProperties(retrievedProduct, product);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException("Не вдалося оновити товар", e);
+        }
     }
 
     public void Dispose()
@@ -66,5 +104,16 @@ public class ProductRepository : IProductRepository
 
             _disposed = true;
         }
+    }
+
+    private static void UpdateProductProperties(Product productFromDb, Product newProduct)
+    {
+        productFromDb.Name = newProduct.Name;
+        productFromDb.Description = newProduct.Description;
+        productFromDb.Price = newProduct.Price;
+        productFromDb.ImageUrl = newProduct.ImageUrl;
+        productFromDb.Stock = newProduct.Stock;
+        productFromDb.CategoryId = newProduct.CategoryId;
+        productFromDb.BrandId = newProduct.BrandId;
     }
 }
