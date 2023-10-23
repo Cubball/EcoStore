@@ -2,7 +2,7 @@ using Project.Models;
 
 namespace Project.Repositories.Interfaces;
 
-public interface ICategoryRepository : IDisposable
+public interface ICategoryRepository
 {
     Task<IEnumerable<Category>> GetCategoriesAsync();
 

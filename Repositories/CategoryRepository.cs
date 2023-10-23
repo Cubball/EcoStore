@@ -9,7 +9,6 @@ namespace Project.Repositories;
 
 public class CategoryRepository : ICategoryRepository
 {
-    private bool _disposed;
     private readonly AppDbContext _context;
 
     public CategoryRepository(AppDbContext context)
@@ -69,25 +68,6 @@ public class CategoryRepository : ICategoryRepository
         catch (Exception e)
         {
             throw new RepositoryException("Не вдалося оновити категорію", e);
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                _context.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 

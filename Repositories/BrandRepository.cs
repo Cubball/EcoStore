@@ -9,7 +9,6 @@ namespace Project.Repositories;
 
 public class BrandRepository : IBrandRepository
 {
-    private bool _disposed;
     private readonly AppDbContext _context;
 
     public BrandRepository(AppDbContext context)
@@ -69,25 +68,6 @@ public class BrandRepository : IBrandRepository
         catch (Exception e)
         {
             throw new RepositoryException("Не вдалося оновити бренд", e);
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                _context.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 

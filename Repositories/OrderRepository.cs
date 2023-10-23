@@ -9,7 +9,6 @@ namespace Project.Repositories;
 
 public class OrderRepository : IOrderRepository
 {
-    private bool _disposed;
     private readonly AppDbContext _context;
 
     public OrderRepository(AppDbContext context)
@@ -85,25 +84,6 @@ public class OrderRepository : IOrderRepository
         catch (Exception e)
         {
             throw new RepositoryException("Не вдалося оновити замовлення", e);
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                _context.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 

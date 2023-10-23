@@ -9,7 +9,6 @@ namespace Project.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-    private bool _disposed;
     private readonly AppDbContext _context;
 
     public ProductRepository(AppDbContext context)
@@ -84,25 +83,6 @@ public class ProductRepository : IProductRepository
         catch (Exception e)
         {
             throw new RepositoryException("Не вдалося оновити товар", e);
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                _context.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 

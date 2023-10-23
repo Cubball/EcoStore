@@ -2,7 +2,7 @@ using Project.Models;
 
 namespace Project.Repositories.Interfaces;
 
-public interface IBrandRepository : IDisposable
+public interface IBrandRepository
 {
     Task<IEnumerable<Brand>> GetBrandsAsync();
 

@@ -2,7 +2,7 @@ using Project.Models;
 
 namespace Project.Repositories.Interfaces;
 
-public interface IProductRepository : IDisposable
+public interface IProductRepository
 {
     Task<IEnumerable<Product>> GetProductsAsync();
 

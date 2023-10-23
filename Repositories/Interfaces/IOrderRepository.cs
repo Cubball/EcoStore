@@ -2,7 +2,7 @@ using Project.Models;
 
 namespace Project.Repositories.Interfaces;
 
-public interface IOrderRepository : IDisposable
+public interface IOrderRepository
 {
     Task<IEnumerable<Order>> GetOrdersAsync();
 
