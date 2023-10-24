@@ -13,4 +13,8 @@ public interface IBrandRepository
     Task UpdateBrandAsync(Brand brand);
 
     Task DeleteBrandAsync(int id);
+
+    Task<bool> BrandExistsAsync(int id);
+
+    Task<bool> BrandExistsAsync(string name);
 }

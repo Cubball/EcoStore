@@ -71,6 +71,16 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
+    public async Task<bool> CategoryExistsAsync(int id)
+    {
+        return (await _context.Categories.FindAsync(id)) is not null;
+    }
+
+    public async Task<bool> CategoryExistsAsync(string name)
+    {
+        return await _context.Categories.AnyAsync(c => c.Name == name);
+    }
+
     private static void UpdateCategoryProperties(Category categoryFromDb, Category newCategory)
     {
         categoryFromDb.Name = newCategory.Name;

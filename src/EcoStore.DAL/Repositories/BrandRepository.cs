@@ -71,6 +71,16 @@ public class BrandRepository : IBrandRepository
         }
     }
 
+    public async Task<bool> BrandExistsAsync(int id)
+    {
+        return (await _context.Brands.FindAsync(id)) is not null;
+    }
+
+    public async Task<bool> BrandExistsAsync(string name)
+    {
+        return await _context.Brands.AnyAsync(b => b.Name == name);
+    }
+
     private static void UpdateBrandProperties(Brand brandFromDb, Brand newBrand)
     {
         brandFromDb.Name = newBrand.Name;

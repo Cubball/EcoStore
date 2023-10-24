@@ -72,6 +72,16 @@ public class ProductRepository : IProductRepository
         }
     }
 
+    public async Task<bool> ProductExistsAsync(int id)
+    {
+        return (await _context.Products.FindAsync(id)) is not null;
+    }
+
+    public async Task<bool> ProductExistsAsync(string name)
+    {
+        return await _context.Products.AnyAsync(p => p.Name == name);
+    }
+
     private static void UpdateProductProperties(Product productFromDb, Product newProduct)
     {
         productFromDb.Name = newProduct.Name;
