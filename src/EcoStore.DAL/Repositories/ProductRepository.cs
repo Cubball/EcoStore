@@ -58,20 +58,6 @@ public class ProductRepository : IProductRepository
         return await _context.Products.ToListAsync();
     }
 
-    public async Task<IEnumerable<Product>> GetProductsByBrandIdAsync(int brandId)
-    {
-        return await _context.Products
-            .Where(p => p.BrandId == brandId)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Product>> GetProductsByCategoryIdAsync(int categoryId)
-    {
-        return await _context.Products
-            .Where(p => p.CategoryId == categoryId)
-            .ToListAsync();
-    }
-
     public async Task UpdateProductAsync(Product product)
     {
         var retrievedProduct = await GetProductByIdAsync(product.Id);

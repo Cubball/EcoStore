@@ -1,6 +1,6 @@
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Validation.Exceptions;
-using EcoStore.BLL.Validators.Interfaces;
+using EcoStore.BLL.Validation.Interfaces;
 
 namespace EcoStore.BLL.Validation;
 

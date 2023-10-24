@@ -65,6 +65,12 @@ public class BrandService : IBrandService
         return (await _brandRepository.GetBrandsAsync()).Select(b => b.ToDTO());
     }
 
+    public async Task<IEnumerable<ProductDTO>> GetProductsByBrandAsync(int brandId)
+    {
+        var brand = await _brandRepository.GetBrandByIdAsync(brandId);
+        return brand.Products.Select(p => p.ToDTO());
+    }
+
     public async Task UpdateBrandAsync(BrandDTO brandDto)
     {
         await _brandValidator.ValidateAsync(brandDto);

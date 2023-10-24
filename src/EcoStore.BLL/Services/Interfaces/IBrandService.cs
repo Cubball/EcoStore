@@ -14,5 +14,5 @@ public interface IBrandService
 
     Task DeleteBrandAsync(int id);
 
-    // TODO: Add GetProductsByBrandAsync
+    Task<IEnumerable<ProductDTO>> GetProductsByBrandAsync(int brandId);
 }
