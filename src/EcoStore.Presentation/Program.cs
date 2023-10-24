@@ -1,8 +1,9 @@
+using EcoStore.DAL.EF;
+using EcoStore.DAL.Entities;
+using EcoStore.DAL.Infrastructure;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-using Project.Data;
-using Project.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services
 
 builder.Services.AddDbContext<AppDbContext>(
         opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddRepositories();
 
 var app = builder.Build();
 

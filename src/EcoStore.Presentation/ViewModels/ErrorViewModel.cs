@@ -1,4 +1,4 @@
-namespace Project.ViewModels;
+namespace EcoStore.Presentation.ViewModels;
 
 public class ErrorViewModel
 {

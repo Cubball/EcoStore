@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 
+using EcoStore.Presentation.ViewModels;
+
 using Microsoft.AspNetCore.Mvc;
 
-using Project.ViewModels;
-
-namespace Project.Controllers;
+namespace EcoStore.Presentation.Controllers;
 
 public class HomeController : Controller
 {
