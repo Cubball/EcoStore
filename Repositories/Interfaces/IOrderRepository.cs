@@ -8,7 +8,7 @@ public interface IOrderRepository
 
     Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
 
-    Task<Order> GetOrderByIdAsync(int id, bool includeUser = false);
+    Task<Order> GetOrderByIdAsync(int id);
 
     Task<int> AddOrderAsync(Order order);
 

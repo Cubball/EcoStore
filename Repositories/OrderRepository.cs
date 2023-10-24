@@ -46,10 +46,10 @@ public class OrderRepository : IOrderRepository
         }
     }
 
-    public async Task<Order> GetOrderByIdAsync(int id, bool includeUser = false)
+    public async Task<Order> GetOrderByIdAsync(int id)
     {
         return await _context.Orders
-            .Include(o => includeUser ? o.User : null)
+            .Include(o => o.User)
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
             .FirstOrDefaultAsync(o => o.Id == id)
