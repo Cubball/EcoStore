@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Project.Models;
 
-namespace Project.Data.Configuration;
+using EcoStore.DAL.Entities;
+
+namespace EcoStore.DAL.EF.Configuration;
 
 public class AppUserEntityTypeConfiguration : IEntityTypeConfiguration<AppUser>
 {

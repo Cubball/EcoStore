@@ -1,9 +1,11 @@
+using EcoStore.DAL.Entities;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-using Project.Models;
-
-namespace Project.Data;
+namespace EcoStore.DAL.EF;
 
 public static class DbInitializer
 {
@@ -26,7 +28,7 @@ public static class DbInitializer
             await AddBrands(context);
             await AddCategories(context);
             await AddProducts(context);
-            await AddUsers(context, serviceProvider.GetRequiredService<UserManager<AppUser>>());
+            await AddUsers(serviceProvider.GetRequiredService<UserManager<AppUser>>());
             await AddOrders(context);
             await AddOrderedProducts(context);
         }
@@ -226,7 +228,7 @@ public static class DbInitializer
         await context.SaveChangesAsync();
     }
 
-    private static async Task AddUsers(AppDbContext context, UserManager<AppUser> userManager)
+    private static async Task AddUsers(UserManager<AppUser> userManager)
     {
         s_users = new List<AppUser>
         {

@@ -1,9 +1,9 @@
+using EcoStore.DAL.Entities;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-using Project.Models;
-
-namespace Project.Data;
+namespace EcoStore.DAL.EF;
 
 public class AppDbContext : IdentityDbContext<AppUser>
 {

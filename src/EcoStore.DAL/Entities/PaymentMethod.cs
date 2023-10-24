@@ -1,4 +1,4 @@
-namespace Project.Models;
+namespace EcoStore.DAL.Entities;
 
 public enum PaymentMethod
 {

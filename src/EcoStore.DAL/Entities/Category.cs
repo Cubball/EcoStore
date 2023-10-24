@@ -1,6 +1,6 @@
-namespace Project.Models;
+namespace EcoStore.DAL.Entities;
 
-public class Brand
+public class Category
 {
     public int Id { get; set; }
 

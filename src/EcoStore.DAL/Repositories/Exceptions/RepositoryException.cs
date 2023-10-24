@@ -1,4 +1,4 @@
-namespace Project.Repositories.Exceptions;
+namespace EcoStore.DAL.Repositories.Exceptions;
 
 public class RepositoryException : Exception
 {

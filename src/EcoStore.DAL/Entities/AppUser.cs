@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Project.Models;
+namespace EcoStore.DAL.Entities;
 
 public class AppUser : IdentityUser
 {

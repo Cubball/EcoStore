@@ -1,9 +1,9 @@
+using EcoStore.DAL.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Project.Models;
-
-namespace Project.Data.Configuration;
+namespace EcoStore.DAL.EF.Configuration;
 
 public class OrderedProductEntityTypeConfiguration : IEntityTypeConfiguration<OrderedProduct>
 {

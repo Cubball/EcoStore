@@ -1,6 +1,6 @@
-using Project.Models;
+using EcoStore.DAL.Entities;
 
-namespace Project.Repositories.Interfaces;
+namespace EcoStore.DAL.Repositories.Interfaces;
 
 public interface IProductRepository
 {
