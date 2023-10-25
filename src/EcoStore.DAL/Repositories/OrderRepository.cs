@@ -101,7 +101,7 @@ public class OrderRepository : IOrderRepository
         orderFromDb.OrderStatus = newOrder.OrderStatus;
         orderFromDb.StatusChangedDate = newOrder.StatusChangedDate;
         orderFromDb.PaymentMethod = newOrder.PaymentMethod;
-        orderFromDb.IsPaid = newOrder.IsPaid;
+        orderFromDb.PaymentId = newOrder.PaymentId;
         orderFromDb.ShippingAddress = newOrder.ShippingAddress;
         orderFromDb.ShippingMethod = newOrder.ShippingMethod;
         orderFromDb.TrackingNumber = newOrder.TrackingNumber;
