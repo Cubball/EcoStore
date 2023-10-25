@@ -21,7 +21,6 @@ public class OrderRepository : IOrderRepository
         try
         {
             _context.Orders.Add(order);
-            _context.OrderedProducts.AddRange(order.OrderedProducts);
             await _context.SaveChangesAsync();
             return order.Id;
         }
@@ -37,7 +36,6 @@ public class OrderRepository : IOrderRepository
         try
         {
             _context.Orders.Remove(order);
-            _context.OrderedProducts.RemoveRange(order.OrderedProducts);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -88,14 +86,13 @@ public class OrderRepository : IOrderRepository
         }
     }
 
-    private void UpdateOrderProperties(Order orderFromDb, Order newOrder)
+    private static void UpdateOrderProperties(Order orderFromDb, Order newOrder)
     {
-        // TODO check if this accually works
-        var orderedProductsToDelete = orderFromDb.OrderedProducts
-            .ExceptBy(newOrder.OrderedProducts
-                    .Select(op => op.ProductId), op => op.ProductId);
-        _context.OrderedProducts.RemoveRange(orderedProductsToDelete);
-        _context.OrderedProducts.UpdateRange(newOrder.OrderedProducts);
+        orderFromDb.OrderedProducts.Clear();
+        foreach (var orderedProduct in newOrder.OrderedProducts)
+        {
+            orderFromDb.OrderedProducts.Add(orderedProduct);
+        }
 
         orderFromDb.UserId = newOrder.UserId;
         orderFromDb.OrderDate = newOrder.OrderDate;
