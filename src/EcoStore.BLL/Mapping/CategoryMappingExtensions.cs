@@ -15,11 +15,20 @@ public static class CategoryMappingExtensions
         };
     }
 
-    public static Category ToEntity(this CategoryDTO categoryDto)
+    public static Category ToEntity(this UpdateCategoryDTO categoryDto)
     {
         return new Category
         {
             Id = categoryDto.Id,
+            Name = categoryDto.Name,
+            Description = categoryDto.Description
+        };
+    }
+
+    public static Category ToEntity(this CreateCategoryDTO categoryDto)
+    {
+        return new Category
+        {
             Name = categoryDto.Name,
             Description = categoryDto.Description
         };

@@ -11,17 +11,21 @@ namespace EcoStore.BLL.Services;
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
-    private readonly IValidator<CategoryDTO> _categoryValidator;
+    private readonly IValidator<CreateCategoryDTO> _createCategoryValidator;
+    private readonly IValidator<UpdateCategoryDTO> _updateCategoryValidator;
 
-    public CategoryService(ICategoryRepository categoryRepository, IValidator<CategoryDTO> categoryValidator)
+    public CategoryService(ICategoryRepository categoryRepository,
+            IValidator<CreateCategoryDTO> createCategoryValidator,
+            IValidator<UpdateCategoryDTO> updateCategoryValidator)
     {
         _categoryRepository = categoryRepository;
-        _categoryValidator = categoryValidator;
+        _createCategoryValidator = createCategoryValidator;
+        _updateCategoryValidator = updateCategoryValidator;
     }
 
-    public async Task<int> CreateCategoryAsync(CategoryDTO categoryDto)
+    public async Task<int> CreateCategoryAsync(CreateCategoryDTO categoryDto)
     {
-        await _categoryValidator.ValidateAsync(categoryDto);
+        await _createCategoryValidator.ValidateAsync(categoryDto);
         try
         {
             return await _categoryRepository.AddCategoryAsync(categoryDto.ToEntity());
@@ -71,9 +75,9 @@ public class CategoryService : ICategoryService
         return category.Products.Select(p => p.ToDTO());
     }
 
-    public async Task UpdateCategoryAsync(CategoryDTO categoryDto)
+    public async Task UpdateCategoryAsync(UpdateCategoryDTO categoryDto)
     {
-        await _categoryValidator.ValidateAsync(categoryDto);
+        await _updateCategoryValidator.ValidateAsync(categoryDto);
         try
         {
             await _categoryRepository.UpdateCategoryAsync(categoryDto.ToEntity());
