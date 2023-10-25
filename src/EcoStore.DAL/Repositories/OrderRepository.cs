@@ -50,6 +50,7 @@ public class OrderRepository : IOrderRepository
     {
         return await _context.Orders
             .Include(o => o.User)
+            .Include(o => o.Payment)
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
             .FirstOrDefaultAsync(o => o.Id == id)
