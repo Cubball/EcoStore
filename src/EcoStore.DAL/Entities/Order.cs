@@ -20,7 +20,9 @@ public class Order
 
     public PaymentMethod PaymentMethod { get; set; }
 
-    public bool IsPaid { get; set; }
+    public int? PaymentId { get; set; }
+
+    public Payment? Payment { get; set; }
 
     public string ShippingAddress { get; set; } = default!;
 
