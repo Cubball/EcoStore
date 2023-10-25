@@ -20,7 +20,7 @@ public class Order
 
     public PaymentMethod PaymentMethod { get; set; }
 
-    public int? PaymentId { get; set; }
+    public string? PaymentId { get; set; }
 
     public Payment? Payment { get; set; }
 
