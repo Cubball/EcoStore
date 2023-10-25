@@ -22,6 +22,8 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
     public DbSet<Category> Categories { get; set; } = default!;
 
+    public DbSet<Payment> Payments { get; set; } = default!;
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
