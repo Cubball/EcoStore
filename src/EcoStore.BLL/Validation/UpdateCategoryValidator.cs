@@ -1,22 +1,19 @@
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.BLL.Validation.Interfaces;
-using EcoStore.DAL.Repositories.Interfaces;
 
 namespace EcoStore.BLL.Validation;
 
-public class CategoryValidator : IValidator<CategoryDTO>
+public class UpdateCategoryValidator : IValidator<UpdateCategoryDTO>
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public CategoryValidator(ICategoryRepository categoryRepository)
-    {
-        _categoryRepository = categoryRepository;
-    }
-
-    public async Task ValidateAsync(CategoryDTO obj)
+    public Task ValidateAsync(UpdateCategoryDTO obj)
     {
         var errors = new List<ValidationError>();
+        if (obj.Id <= 0)
+        {
+            errors.Add(new ValidationError(nameof(obj.Id), "Id категорії не може бути меншим або рівним 0"));
+        }
+
         if (string.IsNullOrWhiteSpace(obj.Name))
         {
             errors.Add(new ValidationError(nameof(obj.Name), "Назва категорії не може бути порожньою"));
@@ -24,11 +21,6 @@ public class CategoryValidator : IValidator<CategoryDTO>
         else if (obj.Name.Length is < 2 or > 100)
         {
             errors.Add(new ValidationError(nameof(obj.Name), "Назва категорії має містити від 2 до 100 символів"));
-        }
-
-        if (await _categoryRepository.CategoryExistsAsync(obj.Name))
-        {
-            errors.Add(new ValidationError(nameof(obj.Name), $"Категорія з назвою {obj.Name} вже існує"));
         }
 
         if (string.IsNullOrWhiteSpace(obj.Description))
@@ -44,5 +36,7 @@ public class CategoryValidator : IValidator<CategoryDTO>
         {
             throw new ValidationException(errors);
         }
+
+        return Task.CompletedTask;
     }
 }

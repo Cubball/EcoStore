@@ -1,22 +1,19 @@
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.BLL.Validation.Interfaces;
-using EcoStore.DAL.Repositories.Interfaces;
 
 namespace EcoStore.BLL.Validation;
 
 public class UpdateBrandValidator : IValidator<UpdateBrandDTO>
 {
-    private readonly IBrandRepository _brandRepository;
-
-    public UpdateBrandValidator(IBrandRepository brandRepository)
-    {
-        _brandRepository = brandRepository;
-    }
-
     public Task ValidateAsync(UpdateBrandDTO obj)
     {
         var errors = new List<ValidationError>();
+        if (obj.Id <= 0)
+        {
+            errors.Add(new ValidationError(nameof(obj.Id), "Id бренду не може бути меншим або рівним 0"));
+        }
+
         if (string.IsNullOrWhiteSpace(obj.Name))
         {
             errors.Add(new ValidationError(nameof(obj.Name), "Назва бренду не може бути порожньою"));

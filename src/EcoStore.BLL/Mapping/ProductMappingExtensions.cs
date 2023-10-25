@@ -20,10 +20,25 @@ public static class ProductMappingExtensions
         };
     }
 
-    public static Product ToEntity(this CreateUpdateProductDTO productDTO)
+    public static Product ToEntity(this CreateProductDTO productDTO)
     {
         return new Product
         {
+            Name = productDTO.Name,
+            Description = productDTO.Description,
+            Price = productDTO.Price,
+            ImageUrl = productDTO.ImageUrl,
+            Stock = productDTO.Stock,
+            BrandId = productDTO.BrandId,
+            CategoryId = productDTO.CategoryId,
+        };
+    }
+
+    public static Product ToEntity(this UpdateProductDTO productDTO)
+    {
+        return new Product
+        {
+            Id = productDTO.Id,
             Name = productDTO.Name,
             Description = productDTO.Description,
             Price = productDTO.Price,

@@ -11,17 +11,21 @@ namespace EcoStore.BLL.Services;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
-    private readonly IValidator<CreateUpdateProductDTO> _productValidator;
+    private readonly IValidator<CreateProductDTO> _createProductValidator;
+    private readonly IValidator<UpdateProductDTO> _updateProductValidator;
 
-    public ProductService(IProductRepository productRepository, IValidator<CreateUpdateProductDTO> productValidator)
+    public ProductService(IProductRepository productRepository,
+            IValidator<CreateProductDTO> createProductValidator,
+            IValidator<UpdateProductDTO> updateProductValidator)
     {
         _productRepository = productRepository;
-        _productValidator = productValidator;
+        _createProductValidator = createProductValidator;
+        _updateProductValidator = updateProductValidator;
     }
 
-    public async Task<int> CreateProductAsync(CreateUpdateProductDTO productDTO)
+    public async Task<int> CreateProductAsync(CreateProductDTO productDTO)
     {
-        await _productValidator.ValidateAsync(productDTO);
+        await _createProductValidator.ValidateAsync(productDTO);
         try
         {
             return await _productRepository.AddProductAsync(productDTO.ToEntity());
@@ -65,9 +69,9 @@ public class ProductService : IProductService
         return (await _productRepository.GetProductsAsync()).Select(p => p.ToDTO());
     }
 
-    public async Task UpdateProductAsync(CreateUpdateProductDTO productDTO)
+    public async Task UpdateProductAsync(UpdateProductDTO productDTO)
     {
-        await _productValidator.ValidateAsync(productDTO);
+        await _updateProductValidator.ValidateAsync(productDTO);
         try
         {
             await _productRepository.UpdateProductAsync(productDTO.ToEntity());

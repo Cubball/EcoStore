@@ -5,25 +5,27 @@ using EcoStore.DAL.Repositories.Interfaces;
 
 namespace EcoStore.BLL.Validation;
 
-public class ProductValidator : IValidator<CreateUpdateProductDTO>
+public class UpdateProductValidator : IValidator<UpdateProductDTO>
 {
-    private readonly IProductRepository _productRepository;
     private readonly IBrandRepository _brandRepository;
     private readonly ICategoryRepository _categoryRepository;
 
-    public ProductValidator(
-            IProductRepository productRepository,
+    public UpdateProductValidator(
             IBrandRepository brandRepository,
             ICategoryRepository categoryRepository)
     {
-        _productRepository = productRepository;
         _brandRepository = brandRepository;
         _categoryRepository = categoryRepository;
     }
 
-    public async Task ValidateAsync(CreateUpdateProductDTO obj)
+    public async Task ValidateAsync(UpdateProductDTO obj)
     {
         var errors = new List<ValidationError>();
+        if (obj.Id <= 0)
+        {
+            errors.Add(new ValidationError(nameof(obj.Id), "Id товару не може бути меншим або рівним 0"));
+        }
+
         if (string.IsNullOrWhiteSpace(obj.Name))
         {
             errors.Add(new ValidationError(nameof(obj.Name), "Назва товару не може бути порожньою"));
@@ -31,11 +33,6 @@ public class ProductValidator : IValidator<CreateUpdateProductDTO>
         else if (obj.Name.Length is < 2 or > 100)
         {
             errors.Add(new ValidationError(nameof(obj.Name), "Назва товару має містити від 2 до 100 символів"));
-        }
-
-        if (await _productRepository.ProductExistsAsync(obj.Name))
-        {
-            errors.Add(new ValidationError(nameof(obj.Name), $"Товар з назвою {obj.Name} вже існує"));
         }
 
         if (string.IsNullOrWhiteSpace(obj.Description))

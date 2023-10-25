@@ -1,6 +1,6 @@
 namespace EcoStore.BLL.DTO;
 
-public class CreateUpdateProductDTO
+public class UpdateProductDTO
 {
     public int Id { get; set; }
 
