@@ -15,8 +15,8 @@ public static class ProductMappingExtensions
             Price = product.Price,
             ImageUrl = product.ImageUrl,
             Stock = product.Stock,
-            Brand = product.Brand.ToDTO(),
-            Category = product.Category.ToDTO()
+            Brand = product.Brand?.ToDTO(),
+            Category = product.Category?.ToDTO(),
         };
     }
 
@@ -30,7 +30,7 @@ public static class ProductMappingExtensions
             ImageUrl = productDTO.ImageUrl,
             Stock = productDTO.Stock,
             BrandId = productDTO.BrandId,
-            CategoryId = productDTO.CategoryId
+            CategoryId = productDTO.CategoryId,
         };
     }
 }

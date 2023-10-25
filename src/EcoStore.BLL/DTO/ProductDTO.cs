@@ -14,7 +14,7 @@ public class ProductDTO
 
     public int Stock { get; set; }
 
-    public BrandDTO Brand { get; set; } = default!;
+    public BrandDTO? Brand { get; set; }
 
-    public CategoryDTO Category { get; set; } = default!;
+    public CategoryDTO? Category { get; set; }
 }
