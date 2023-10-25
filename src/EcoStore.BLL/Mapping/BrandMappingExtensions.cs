@@ -28,6 +28,7 @@ public static class BrandMappingExtensions
     {
         return new Brand
         {
+            Id = brandDto.Id,
             Name = brandDto.Name,
             Description = brandDto.Description
         };
