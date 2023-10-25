@@ -15,11 +15,19 @@ public static class BrandMappingExtensions
         };
     }
 
-    public static Brand ToEntity(this BrandDTO brandDto)
+    public static Brand ToEntity(this CreateBrandDTO brandDto)
     {
         return new Brand
         {
-            Id = brandDto.Id,
+            Name = brandDto.Name,
+            Description = brandDto.Description
+        };
+    }
+
+    public static Brand ToEntity(this UpdateBrandDTO brandDto)
+    {
+        return new Brand
+        {
             Name = brandDto.Name,
             Description = brandDto.Description
         };

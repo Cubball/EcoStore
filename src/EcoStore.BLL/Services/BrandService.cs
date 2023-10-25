@@ -11,17 +11,21 @@ namespace EcoStore.BLL.Services;
 public class BrandService : IBrandService
 {
     private readonly IBrandRepository _brandRepository;
-    private readonly IValidator<BrandDTO> _brandValidator;
+    private readonly IValidator<CreateBrandDTO> _createBrandValidator;
+    private readonly IValidator<UpdateBrandDTO> _updateBrandValidator;
 
-    public BrandService(IBrandRepository brandRepository, IValidator<BrandDTO> brandValidator)
+    public BrandService(IBrandRepository brandRepository,
+            IValidator<CreateBrandDTO> createBrandValidator,
+            IValidator<UpdateBrandDTO> updateBrandValidator)
     {
         _brandRepository = brandRepository;
-        _brandValidator = brandValidator;
+        _createBrandValidator = createBrandValidator;
+        _updateBrandValidator = updateBrandValidator;
     }
 
-    public async Task<int> CreateBrandAsync(BrandDTO brandDto)
+    public async Task<int> CreateBrandAsync(CreateBrandDTO brandDto)
     {
-        await _brandValidator.ValidateAsync(brandDto);
+        await _createBrandValidator.ValidateAsync(brandDto);
         try
         {
             return await _brandRepository.AddBrandAsync(brandDto.ToEntity());
@@ -71,9 +75,9 @@ public class BrandService : IBrandService
         return brand.Products.Select(p => p.ToDTO());
     }
 
-    public async Task UpdateBrandAsync(BrandDTO brandDto)
+    public async Task UpdateBrandAsync(UpdateBrandDTO brandDto)
     {
-        await _brandValidator.ValidateAsync(brandDto);
+        await _updateBrandValidator.ValidateAsync(brandDto);
         try
         {
             await _brandRepository.UpdateBrandAsync(brandDto.ToEntity());

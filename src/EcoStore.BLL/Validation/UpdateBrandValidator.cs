@@ -5,16 +5,16 @@ using EcoStore.DAL.Repositories.Interfaces;
 
 namespace EcoStore.BLL.Validation;
 
-public class BrandValidator : IValidator<BrandDTO>
+public class UpdateBrandValidator : IValidator<UpdateBrandDTO>
 {
     private readonly IBrandRepository _brandRepository;
 
-    public BrandValidator(IBrandRepository brandRepository)
+    public UpdateBrandValidator(IBrandRepository brandRepository)
     {
         _brandRepository = brandRepository;
     }
 
-    public async Task ValidateAsync(BrandDTO obj)
+    public Task ValidateAsync(UpdateBrandDTO obj)
     {
         var errors = new List<ValidationError>();
         if (string.IsNullOrWhiteSpace(obj.Name))
@@ -24,11 +24,6 @@ public class BrandValidator : IValidator<BrandDTO>
         else if (obj.Name.Length is < 2 or > 100)
         {
             errors.Add(new ValidationError(nameof(obj.Name), "Назва бренду має містити від 2 до 100 символів"));
-        }
-
-        if (await _brandRepository.BrandExistsAsync(obj.Name))
-        {
-            errors.Add(new ValidationError(nameof(obj.Name), $"Бренд з назвою {obj.Name} вже існує"));
         }
 
         if (string.IsNullOrWhiteSpace(obj.Description))
@@ -44,5 +39,7 @@ public class BrandValidator : IValidator<BrandDTO>
         {
             throw new ValidationException(errors);
         }
+
+        return Task.CompletedTask;
     }
 }

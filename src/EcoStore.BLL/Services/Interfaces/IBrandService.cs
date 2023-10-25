@@ -8,9 +8,9 @@ public interface IBrandService
 
     Task<IEnumerable<BrandDTO>> GetBrandsAsync();
 
-    Task<int> CreateBrandAsync(BrandDTO brandDto);
+    Task<int> CreateBrandAsync(CreateBrandDTO brandDto);
 
-    Task UpdateBrandAsync(BrandDTO brandDto);
+    Task UpdateBrandAsync(UpdateBrandDTO brandDto);
 
     Task DeleteBrandAsync(int id);
 
