@@ -69,6 +69,7 @@ public class OrderRepository : IOrderRepository
             .Where(o => o.UserId == userId)
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
+            .Include(o => o.Payment)
             .ToListAsync();
     }
 
