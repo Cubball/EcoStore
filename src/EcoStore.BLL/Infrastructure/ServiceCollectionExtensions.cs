@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IClock, Clock>();
+        services.AddScoped<IValidator<CancelOrderByAdminDTO>, CancelOrderByAdminValidator>();
+        services.AddScoped<IValidator<CancelOrderByUserDTO>, CancelOrderByUserValidator>();
         services.AddScoped<IValidator<CreateBrandDTO>, CreateBrandValidator>();
         services.AddScoped<IValidator<CreateCategoryDTO>, CreateCategoryValidator>();
         services.AddScoped<IValidator<CreateOrderDTO>, CreateOrderValidator>();
