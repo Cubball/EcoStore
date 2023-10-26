@@ -57,12 +57,12 @@ public class CategoryRepository : ICategoryRepository
             ?? throw new EntityNotFoundException($"Категорію з Id {id} не знайдено");
     }
 
-    public async Task UpdateCategoryAsync(Category category)
+    public async Task UpdateCategoryAsync(int id, Action<Category> updateAction)
     {
-        var retrievedCategory = await GetCategoryByIdAsync(category.Id);
+        var category = await GetCategoryByIdAsync(id);
+        updateAction(category);
         try
         {
-            UpdateCategoryProperties(retrievedCategory, category);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -79,11 +79,5 @@ public class CategoryRepository : ICategoryRepository
     public async Task<bool> CategoryExistsAsync(string name)
     {
         return await _context.Categories.AnyAsync(c => c.Name == name);
-    }
-
-    private static void UpdateCategoryProperties(Category categoryFromDb, Category newCategory)
-    {
-        categoryFromDb.Name = newCategory.Name;
-        categoryFromDb.Description = newCategory.Description;
     }
 }

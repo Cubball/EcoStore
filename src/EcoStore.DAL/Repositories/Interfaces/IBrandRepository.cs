@@ -10,7 +10,7 @@ public interface IBrandRepository
 
     Task<int> AddBrandAsync(Brand brand);
 
-    Task UpdateBrandAsync(Brand brand);
+    Task UpdateBrandAsync(int id, Action<Brand> updateAction);
 
     Task DeleteBrandAsync(int id);
 

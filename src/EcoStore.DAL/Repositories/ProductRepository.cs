@@ -58,12 +58,12 @@ public class ProductRepository : IProductRepository
         return await _context.Products.ToListAsync();
     }
 
-    public async Task UpdateProductAsync(Product product)
+    public async Task UpdateProductAsync(int id, Action<Product> updateAction)
     {
-        var retrievedProduct = await GetProductByIdAsync(product.Id);
+        var product = await GetProductByIdAsync(id);
+        updateAction(product);
         try
         {
-            UpdateProductProperties(retrievedProduct, product);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -80,16 +80,5 @@ public class ProductRepository : IProductRepository
     public async Task<bool> ProductExistsAsync(string name)
     {
         return await _context.Products.AnyAsync(p => p.Name == name);
-    }
-
-    private static void UpdateProductProperties(Product productFromDb, Product newProduct)
-    {
-        productFromDb.Name = newProduct.Name;
-        productFromDb.Description = newProduct.Description;
-        productFromDb.Price = newProduct.Price;
-        productFromDb.ImageUrl = newProduct.ImageUrl;
-        productFromDb.Stock = newProduct.Stock;
-        productFromDb.CategoryId = newProduct.CategoryId;
-        productFromDb.BrandId = newProduct.BrandId;
     }
 }

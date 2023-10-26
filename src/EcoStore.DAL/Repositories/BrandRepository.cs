@@ -57,12 +57,12 @@ public class BrandRepository : IBrandRepository
             ?? throw new EntityNotFoundException($"Бренд з Id {id} не знайдено");
     }
 
-    public async Task UpdateBrandAsync(Brand brand)
+    public async Task UpdateBrandAsync(int id, Action<Brand> updateAction)
     {
-        var retrievedBrand = await GetBrandByIdAsync(brand.Id);
+        var brand = await GetBrandByIdAsync(id);
+        updateAction(brand);
         try
         {
-            UpdateBrandProperties(retrievedBrand, brand);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -79,11 +79,5 @@ public class BrandRepository : IBrandRepository
     public async Task<bool> BrandExistsAsync(string name)
     {
         return await _context.Brands.AnyAsync(b => b.Name == name);
-    }
-
-    private static void UpdateBrandProperties(Brand brandFromDb, Brand newBrand)
-    {
-        brandFromDb.Name = newBrand.Name;
-        brandFromDb.Description = newBrand.Description;
     }
 }
