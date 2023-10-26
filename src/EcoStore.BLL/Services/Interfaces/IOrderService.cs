@@ -18,7 +18,7 @@ public interface IOrderService
 
     Task DeleteOrderAsync(int id);
 
-    Task CancelOrderAsUserAsync(int id);
+    Task CancelOrderByUserAsync(CancelOrderByUserDTO orderDTO);
 
-    Task CancelOrderAsAdminAsync(int id);
+    Task CancelOrderByAdminAsync(CancelOrderByAdminDTO orderDTO);
 }

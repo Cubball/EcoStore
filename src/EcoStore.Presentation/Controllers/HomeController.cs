@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 
+using EcoStore.BLL.Services.Interfaces;
 using EcoStore.Presentation.ViewModels;
 
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +10,17 @@ namespace EcoStore.Presentation.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IOrderService _orderService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IOrderService orderService)
     {
         _logger = logger;
+        _orderService = orderService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        await _orderService.DeleteOrderAsync(6);
         return View();
     }
 

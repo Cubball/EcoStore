@@ -21,6 +21,8 @@ public class OrderService : IOrderService
     private readonly IValidator<CreateOrderDTO> _createOrderValidator;
     private readonly IValidator<UpdateOrderStatusDTO> _updateOrderStatusValidator;
     private readonly IValidator<UpdateOrderTrackingNumberDTO> _updateOrderTrackingNumberValidator;
+    private readonly IValidator<CancelOrderByAdminDTO> _cancelOrderByAdminValidator;
+    private readonly IValidator<CancelOrderByUserDTO> _cancelOrderByUserValidator;
 
     public OrderService(
             IOrderRepository orderRepository,
@@ -29,7 +31,9 @@ public class OrderService : IOrderService
             IClock clock,
             IValidator<CreateOrderDTO> createOrderValidator,
             IValidator<UpdateOrderStatusDTO> updateOrderStatusValidator,
-            IValidator<UpdateOrderTrackingNumberDTO> updateOrderTrackingNumberValidator)
+            IValidator<UpdateOrderTrackingNumberDTO> updateOrderTrackingNumberValidator,
+            IValidator<CancelOrderByAdminDTO> cancelOrderByAdminValidator,
+            IValidator<CancelOrderByUserDTO> cancelOrderByUserValidator)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
@@ -38,13 +42,15 @@ public class OrderService : IOrderService
         _createOrderValidator = createOrderValidator;
         _updateOrderStatusValidator = updateOrderStatusValidator;
         _updateOrderTrackingNumberValidator = updateOrderTrackingNumberValidator;
+        _cancelOrderByAdminValidator = cancelOrderByAdminValidator;
+        _cancelOrderByUserValidator = cancelOrderByUserValidator;
     }
 
     public async Task<int> CreateOrderAsync(CreateOrderDTO orderDTO)
     {
         await _createOrderValidator.ValidateAsync(orderDTO);
         var order = orderDTO.ToEntity();
-        await FillOrderDetails(orderDTO, order);
+        await SetOrderDetailsAsync(orderDTO, order);
 
         if (order.PaymentMethod == DAL.Entities.PaymentMethod.Card)
         {
@@ -68,36 +74,19 @@ public class OrderService : IOrderService
 
     public async Task<OrderDTO> GetOrderAsync(int id)
     {
-        try
-        {
-            return (await _orderRepository.GetOrderByIdAsync(id)).ToDTO();
-        }
-        catch (EntityNotFoundException e)
-        {
-            throw new ObjectNotFoundException(e.Message, e);
-        }
+        return (await TryGetOrder(id)).ToDTO();
     }
 
 
     public async Task DeleteOrderAsync(int id)
     {
-        string? paymentId;
-        try
-        {
-            var order = await _orderRepository.GetOrderByIdAsync(id);
-            paymentId = order.Payment?.Id;
-        }
-        catch (EntityNotFoundException e)
-        {
-            throw new ObjectNotFoundException(e.Message, e);
-        }
-
+        var order = await TryGetOrder(id);
         try
         {
             await _orderRepository.DeleteOrderAsync(id);
-            if (paymentId is not null)
+            if (order.PaymentId is not null)
             {
-                await _paymentRepository.DeletePaymentAsync(paymentId);
+                await _paymentRepository.DeletePaymentAsync(order.PaymentId);
             }
         }
         catch (RepositoryException e)
@@ -120,19 +109,16 @@ public class OrderService : IOrderService
     {
         await _updateOrderStatusValidator.ValidateAsync(orderDTO);
         var orderStatus = Enum.Parse<OrderStatus>(orderDTO.OrderStatus);
-        var order = await TryGetOrderAsync(orderDTO.Id);
-        await UpdateOrderStatusAsync(order, orderStatus);
+        await UpdateOrderStatusAsync(orderDTO.Id, orderStatus);
     }
 
     public async Task UpdateOrderTrackingNumberAsync(UpdateOrderTrackingNumberDTO orderDTO)
     {
         await _updateOrderTrackingNumberValidator.ValidateAsync(orderDTO);
-        var order = await TryGetOrderAsync(orderDTO.Id);
-
-        order.TrackingNumber = orderDTO.TrackingNumber;
         try
         {
-            await _orderRepository.UpdateOrderAsync(order);
+            await _orderRepository.UpdateOrderAsync(orderDTO.Id,
+                    o => o.TrackingNumber = orderDTO.TrackingNumber);
         }
         catch (RepositoryException e)
         {
@@ -140,39 +126,23 @@ public class OrderService : IOrderService
         }
     }
 
-    public async Task CancelOrderAsUserAsync(int id)
+    public async Task CancelOrderByUserAsync(CancelOrderByUserDTO orderDTO)
     {
-        var order = await TryGetOrderAsync(id);
-        await UpdateOrderStatusAsync(order, OrderStatus.CancelledByUser);
-        await AddBackProductStockFromCancelledOrder(order);
+        await _cancelOrderByUserValidator.ValidateAsync(orderDTO);
+        await UpdateOrderStatusAsync(orderDTO.Id, OrderStatus.CancelledByUser);
+        await CancelOrder(orderDTO.Id);
     }
 
-    // TODO : refactor
-    public async Task CancelOrderAsAdminAsync(int id)
+    public async Task CancelOrderByAdminAsync(CancelOrderByAdminDTO orderDTO)
     {
-        var order = await TryGetOrderAsync(id);
-        await UpdateOrderStatusAsync(order, OrderStatus.CancelledByAdmin);
-        await AddBackProductStockFromCancelledOrder(order);
+        await _cancelOrderByAdminValidator.ValidateAsync(orderDTO);
+        await UpdateOrderStatusAsync(orderDTO.Id, OrderStatus.CancelledByAdmin);
+        await CancelOrder(orderDTO.Id);
     }
 
-    // TODO Check for status before cancelling and so on, StatusChangedDate
-    private async Task UpdateOrderStatusAsync(Order order, OrderStatus status)
+    private async Task CancelOrder(int orderId)
     {
-        order.OrderStatus = status;
-        order.StatusChangedDate = new DateTime(_clock.UtcNow.Ticks, DateTimeKind.Utc);
-        try
-        {
-            await _orderRepository.UpdateOrderAsync(order);
-        }
-        catch (RepositoryException e)
-        {
-            throw new ServiceException(e.Message, e);
-        }
-    }
-
-    // TODO: fix this
-    private async Task AddBackProductStockFromCancelledOrder(Order order)
-    {
+        var order = await TryGetOrder(orderId);
         if (order.Payment is not null)
         {
             await RefundChargeAsync(order.Payment.Id);
@@ -180,10 +150,24 @@ public class OrderService : IOrderService
 
         foreach (var orderedProduct in order.OrderedProducts)
         {
-            var product = await _productRepository.GetProductByIdAsync(orderedProduct.ProductId);
-            product.Stock += orderedProduct.Quantity;
-            // TODO: change repo update logic?
-            await _productRepository.UpdateProductAsync(product);
+            await _productRepository.UpdateProductAsync(orderedProduct.ProductId,
+                    p => p.Stock += orderedProduct.Quantity);
+        }
+    }
+
+    private async Task UpdateOrderStatusAsync(int orderId, OrderStatus status)
+    {
+        try
+        {
+            await _orderRepository.UpdateOrderAsync(orderId, o =>
+            {
+                o.StatusChangedDate = new DateTime(_clock.UtcNow.Ticks, DateTimeKind.Utc);
+                o.OrderStatus = status;
+            });
+        }
+        catch (RepositoryException e)
+        {
+            throw new ServiceException(e.Message, e);
         }
     }
 
@@ -198,7 +182,7 @@ public class OrderService : IOrderService
         await refundService.CreateAsync(refundCreateOptions);
     }
 
-    private async Task FillOrderDetails(CreateOrderDTO orderDTO, Order order)
+    private async Task SetOrderDetailsAsync(CreateOrderDTO orderDTO, Order order)
     {
         var utcNow = new DateTime(_clock.UtcNow.Ticks, DateTimeKind.Utc);
         order.OrderDate = utcNow;
@@ -206,17 +190,37 @@ public class OrderService : IOrderService
         order.StatusChangedDate = utcNow;
         order.PaymentMethod = Enum.Parse<DAL.Entities.PaymentMethod>(orderDTO.PaymentMethod);
         order.ShippingMethod = Enum.Parse<ShippingMethod>(orderDTO.ShippingMethod);
-        await FillOrderedProductsDetails(order);
+        await SetOrderedProductsDetailsAsync(order);
+        await ReduceProductsStockAsync(order);
     }
 
-    private async Task FillOrderedProductsDetails(Order order)
+    private async Task SetOrderedProductsDetailsAsync(Order order)
     {
         foreach (var orderedProduct in order.OrderedProducts)
         {
             var product = await _productRepository.GetProductByIdAsync(orderedProduct.ProductId);
             orderedProduct.ProductPrice = product.Price;
-            product.Stock -= orderedProduct.Quantity;
-            await _productRepository.UpdateProductAsync(product);
+        }
+    }
+
+    private async Task ReduceProductsStockAsync(Order order)
+    {
+        foreach (var orderedProduct in order.OrderedProducts)
+        {
+            await _productRepository.UpdateProductAsync(orderedProduct.ProductId,
+                    p => p.Stock -= orderedProduct.Quantity);
+        }
+    }
+
+    private async Task<Order> TryGetOrder(int orderId)
+    {
+        try
+        {
+            return await _orderRepository.GetOrderByIdAsync(orderId);
+        }
+        catch (EntityNotFoundException e)
+        {
+            throw new ObjectDisposedException(e.Message, e);
         }
     }
 
@@ -230,29 +234,15 @@ public class OrderService : IOrderService
         };
         var chargeService = new ChargeService();
         var charge = await chargeService.CreateAsync(chargeCreateOptions);
-        if (!charge.Paid)
-        {
-            throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {charge.FailureCode}");
-        }
 
-        return new Payment
-        {
-            Id = charge.Id,
-            Created = charge.Created,
-            Amount = (int)charge.Amount,
-            Currency = charge.Currency,
-        };
-    }
-
-    private async Task<Order> TryGetOrderAsync(int id)
-    {
-        try
-        {
-            return await _orderRepository.GetOrderByIdAsync(id);
-        }
-        catch (EntityNotFoundException e)
-        {
-            throw new ObjectNotFoundException(e.Message, e);
-        }
+        return charge.Paid
+            ? new Payment
+            {
+                Id = charge.Id,
+                Created = charge.Created,
+                Amount = (int)charge.Amount,
+                Currency = charge.Currency,
+            }
+            : throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {charge.FailureCode}");
     }
 }
