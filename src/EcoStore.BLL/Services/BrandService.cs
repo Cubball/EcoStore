@@ -80,7 +80,11 @@ public class BrandService : IBrandService
         await _updateBrandValidator.ValidateAsync(brandDto);
         try
         {
-            await _brandRepository.UpdateBrandAsync(brandDto.ToEntity());
+            await _brandRepository.UpdateBrandAsync(brandDto.Id, b =>
+            {
+                b.Name = brandDto.Name;
+                b.Description = brandDto.Description;
+            });
         }
         catch (RepositoryException e)
         {

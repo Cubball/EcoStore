@@ -80,7 +80,11 @@ public class CategoryService : ICategoryService
         await _updateCategoryValidator.ValidateAsync(categoryDto);
         try
         {
-            await _categoryRepository.UpdateCategoryAsync(categoryDto.ToEntity());
+            await _categoryRepository.UpdateCategoryAsync(categoryDto.Id, c =>
+            {
+                c.Name = categoryDto.Name;
+                c.Description = categoryDto.Description;
+            });
         }
         catch (RepositoryException e)
         {

@@ -23,14 +23,4 @@ public static class CategoryMappingExtensions
             Description = categoryDto.Description
         };
     }
-
-    public static Category ToEntity(this UpdateCategoryDTO categoryDto)
-    {
-        return new Category
-        {
-            Id = categoryDto.Id,
-            Name = categoryDto.Name,
-            Description = categoryDto.Description
-        };
-    }
 }

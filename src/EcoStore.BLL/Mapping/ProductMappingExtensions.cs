@@ -33,19 +33,4 @@ public static class ProductMappingExtensions
             CategoryId = productDTO.CategoryId,
         };
     }
-
-    public static Product ToEntity(this UpdateProductDTO productDTO)
-    {
-        return new Product
-        {
-            Id = productDTO.Id,
-            Name = productDTO.Name,
-            Description = productDTO.Description,
-            Price = productDTO.Price,
-            ImageUrl = productDTO.ImageUrl,
-            Stock = productDTO.Stock,
-            BrandId = productDTO.BrandId,
-            CategoryId = productDTO.CategoryId,
-        };
-    }
 }

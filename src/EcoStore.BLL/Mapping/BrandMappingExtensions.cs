@@ -23,14 +23,4 @@ public static class BrandMappingExtensions
             Description = brandDto.Description
         };
     }
-
-    public static Brand ToEntity(this UpdateBrandDTO brandDto)
-    {
-        return new Brand
-        {
-            Id = brandDto.Id,
-            Name = brandDto.Name,
-            Description = brandDto.Description
-        };
-    }
 }

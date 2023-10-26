@@ -74,7 +74,16 @@ public class ProductService : IProductService
         await _updateProductValidator.ValidateAsync(productDTO);
         try
         {
-            await _productRepository.UpdateProductAsync(productDTO.ToEntity());
+            await _productRepository.UpdateProductAsync(productDTO.Id, p =>
+            {
+                p.Name = productDTO.Name;
+                p.Description = productDTO.Description;
+                p.Price = productDTO.Price;
+                p.ImageUrl = productDTO.ImageUrl;
+                p.Stock = productDTO.Stock;
+                p.BrandId = productDTO.BrandId;
+                p.CategoryId = productDTO.CategoryId;
+            });
         }
         catch (RepositoryException e)
         {
