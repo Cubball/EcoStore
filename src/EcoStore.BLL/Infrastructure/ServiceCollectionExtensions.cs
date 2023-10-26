@@ -13,8 +13,19 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IClock, Clock>();
+        services.AddScoped<IValidator<CreateBrandDTO>, CreateBrandValidator>();
+        services.AddScoped<IValidator<CreateCategoryDTO>, CreateCategoryValidator>();
         services.AddScoped<IValidator<CreateOrderDTO>, CreateOrderValidator>();
+        services.AddScoped<IValidator<CreateProductDTO>, CreateProductValidator>();
+        services.AddScoped<IValidator<UpdateBrandDTO>, UpdateBrandValidator>();
+        services.AddScoped<IValidator<UpdateCategoryDTO>, UpdateCategoryValidator>();
+        services.AddScoped<IValidator<UpdateOrderStatusDTO>, UpdateOrderStatusValidator>();
+        services.AddScoped<IValidator<UpdateOrderTrackingNumberDTO>, UpdateOrderTrackingNumberValidator>();
+        services.AddScoped<IValidator<UpdateProductDTO>, UpdateProductValidator>();
+        services.AddScoped<IBrandService, BrandService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IProductService, ProductService>();
         return services;
     }
 }
