@@ -16,19 +16,16 @@ public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IPaymentRepository _paymentRepository;
     private readonly IClock _clock;
     private readonly IValidator<CreateOrderDTO> _createOrderValidator;
 
     public OrderService(IOrderRepository orderRepository,
             IProductRepository productRepository,
-            IPaymentRepository paymentRepository,
             IClock clock,
             IValidator<CreateOrderDTO> createOrderValidator)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
-        _paymentRepository = paymentRepository;
         _clock = clock;
         _createOrderValidator = createOrderValidator;
     }
