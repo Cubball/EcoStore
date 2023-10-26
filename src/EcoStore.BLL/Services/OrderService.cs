@@ -147,6 +147,7 @@ public class OrderService : IOrderService
         await AddBackProductStockFromCancelledOrder(order);
     }
 
+    // TODO : refactor
     public async Task CancelOrderAsAdminAsync(int id)
     {
         var order = await TryGetOrderAsync(id);
@@ -154,9 +155,11 @@ public class OrderService : IOrderService
         await AddBackProductStockFromCancelledOrder(order);
     }
 
+    // TODO Check for status before cancelling and so on, StatusChangedDate
     private async Task UpdateOrderStatusAsync(Order order, OrderStatus status)
     {
         order.OrderStatus = status;
+        order.StatusChangedDate = new DateTime(_clock.UtcNow.Ticks, DateTimeKind.Utc);
         try
         {
             await _orderRepository.UpdateOrderAsync(order);
@@ -167,6 +170,7 @@ public class OrderService : IOrderService
         }
     }
 
+    // TODO: fix this
     private async Task AddBackProductStockFromCancelledOrder(Order order)
     {
         if (order.Payment is not null)
@@ -178,6 +182,7 @@ public class OrderService : IOrderService
         {
             var product = await _productRepository.GetProductByIdAsync(orderedProduct.ProductId);
             product.Stock += orderedProduct.Quantity;
+            // TODO: change repo update logic?
             await _productRepository.UpdateProductAsync(product);
         }
     }
