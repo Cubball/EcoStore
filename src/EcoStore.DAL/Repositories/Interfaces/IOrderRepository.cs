@@ -12,7 +12,7 @@ public interface IOrderRepository
 
     Task<int> AddOrderAsync(Order order);
 
-    Task UpdateOrderAsync(Order order);
+    Task UpdateOrderAsync(int id, Action<Order> updateAction);
 
     Task DeleteOrderAsync(int id);
 }

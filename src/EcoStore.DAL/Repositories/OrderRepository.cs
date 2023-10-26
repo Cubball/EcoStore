@@ -73,36 +73,17 @@ public class OrderRepository : IOrderRepository
             .ToListAsync();
     }
 
-    public async Task UpdateOrderAsync(Order order)
+    public async Task UpdateOrderAsync(int id, Action<Order> updateAction)
     {
-        var retrievedOrder = await GetOrderByIdAsync(order.Id);
+        var order = await GetOrderByIdAsync(id);
+        updateAction(order);
         try
         {
-            UpdateOrderProperties(retrievedOrder, order);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
         {
             throw new RepositoryException("Не вдалося оновити замовлення", e);
         }
-    }
-
-    private static void UpdateOrderProperties(Order orderFromDb, Order newOrder)
-    {
-        orderFromDb.OrderedProducts.Clear();
-        foreach (var orderedProduct in newOrder.OrderedProducts)
-        {
-            orderFromDb.OrderedProducts.Add(orderedProduct);
-        }
-
-        orderFromDb.UserId = newOrder.UserId;
-        orderFromDb.OrderDate = newOrder.OrderDate;
-        orderFromDb.OrderStatus = newOrder.OrderStatus;
-        orderFromDb.StatusChangedDate = newOrder.StatusChangedDate;
-        orderFromDb.PaymentMethod = newOrder.PaymentMethod;
-        orderFromDb.PaymentId = newOrder.PaymentId;
-        orderFromDb.ShippingAddress = newOrder.ShippingAddress;
-        orderFromDb.ShippingMethod = newOrder.ShippingMethod;
-        orderFromDb.TrackingNumber = newOrder.TrackingNumber;
     }
 }
