@@ -2,7 +2,7 @@ namespace EcoStore.BLL.DTO;
 
 public class OrderedProductDTO
 {
-    public ProductDTO Product { get; set; } = default!;
+    public ProductDTO? Product { get; set; }
 
     public int Quantity { get; set; }
 

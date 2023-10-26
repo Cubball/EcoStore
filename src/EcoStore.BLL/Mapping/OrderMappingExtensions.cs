@@ -50,7 +50,7 @@ public static class OrderMappingExtenstions
     {
         return new OrderedProductDTO
         {
-            Product = orderedProduct.Product.ToDTO(),
+            Product = orderedProduct.Product?.ToDTO(),
             Quantity = orderedProduct.Quantity,
             ProductPrice = orderedProduct.ProductPrice,
         };

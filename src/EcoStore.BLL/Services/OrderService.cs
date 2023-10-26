@@ -78,6 +78,121 @@ public class OrderService : IOrderService
         }
     }
 
+
+    public async Task DeleteOrderAsync(int id)
+    {
+        string? paymentId;
+        try
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(id);
+            paymentId = order.Payment?.Id;
+        }
+        catch (EntityNotFoundException e)
+        {
+            throw new ObjectNotFoundException(e.Message, e);
+        }
+
+        try
+        {
+            await _orderRepository.DeleteOrderAsync(id);
+            if (paymentId is not null)
+            {
+                await _paymentRepository.DeletePaymentAsync(paymentId);
+            }
+        }
+        catch (RepositoryException e)
+        {
+            throw new ServiceException(e.Message, e);
+        }
+    }
+
+    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync()
+    {
+        return (await _orderRepository.GetOrdersAsync()).Select(o => o.ToDTO());
+    }
+
+    public async Task<IEnumerable<OrderDTO>> GetOrdersByUserIdAsync(string userId)
+    {
+        return (await _orderRepository.GetOrdersByUserIdAsync(userId)).Select(o => o.ToDTO());
+    }
+
+    public async Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO)
+    {
+        await _updateOrderStatusValidator.ValidateAsync(orderDTO);
+        var orderStatus = Enum.Parse<OrderStatus>(orderDTO.OrderStatus);
+        var order = await TryGetOrderAsync(orderDTO.Id);
+        await UpdateOrderStatusAsync(order, orderStatus);
+    }
+
+    public async Task UpdateOrderTrackingNumberAsync(UpdateOrderTrackingNumberDTO orderDTO)
+    {
+        await _updateOrderTrackingNumberValidator.ValidateAsync(orderDTO);
+        var order = await TryGetOrderAsync(orderDTO.Id);
+
+        order.TrackingNumber = orderDTO.TrackingNumber;
+        try
+        {
+            await _orderRepository.UpdateOrderAsync(order);
+        }
+        catch (RepositoryException e)
+        {
+            throw new ServiceException(e.Message, e);
+        }
+    }
+
+    public async Task CancelOrderAsUserAsync(int id)
+    {
+        var order = await TryGetOrderAsync(id);
+        await UpdateOrderStatusAsync(order, OrderStatus.CancelledByUser);
+        await AddBackProductStockFromCancelledOrder(order);
+    }
+
+    public async Task CancelOrderAsAdminAsync(int id)
+    {
+        var order = await TryGetOrderAsync(id);
+        await UpdateOrderStatusAsync(order, OrderStatus.CancelledByAdmin);
+        await AddBackProductStockFromCancelledOrder(order);
+    }
+
+    private async Task UpdateOrderStatusAsync(Order order, OrderStatus status)
+    {
+        order.OrderStatus = status;
+        try
+        {
+            await _orderRepository.UpdateOrderAsync(order);
+        }
+        catch (RepositoryException e)
+        {
+            throw new ServiceException(e.Message, e);
+        }
+    }
+
+    private async Task AddBackProductStockFromCancelledOrder(Order order)
+    {
+        if (order.Payment is not null)
+        {
+            await RefundChargeAsync(order.Payment.Id);
+        }
+
+        foreach (var orderedProduct in order.OrderedProducts)
+        {
+            var product = await _productRepository.GetProductByIdAsync(orderedProduct.ProductId);
+            product.Stock += orderedProduct.Quantity;
+            await _productRepository.UpdateProductAsync(product);
+        }
+    }
+
+    private static async Task RefundChargeAsync(string chargeId)
+    {
+        var refundCreateOptions = new RefundCreateOptions
+        {
+            Charge = chargeId,
+        };
+
+        var refundService = new RefundService();
+        await refundService.CreateAsync(refundCreateOptions);
+    }
+
     private async Task FillOrderDetails(CreateOrderDTO orderDTO, Order order)
     {
         var utcNow = new DateTime(_clock.UtcNow.Ticks, DateTimeKind.Utc);
@@ -124,115 +239,15 @@ public class OrderService : IOrderService
         };
     }
 
-    private static async Task RefundChargeAsync(string chargeId)
+    private async Task<Order> TryGetOrderAsync(int id)
     {
-        var refundCreateOptions = new RefundCreateOptions
-        {
-            Charge = chargeId,
-        };
-
-        var refundService = new RefundService();
-        await refundService.CreateAsync(refundCreateOptions);
-    }
-
-    public async Task DeleteOrderAsync(int id)
-    {
-        string? paymentId;
         try
         {
-            var order = await _orderRepository.GetOrderByIdAsync(id);
-            paymentId = order.Payment?.Id;
+            return await _orderRepository.GetOrderByIdAsync(id);
         }
         catch (EntityNotFoundException e)
         {
             throw new ObjectNotFoundException(e.Message, e);
-        }
-
-        try
-        {
-            await _orderRepository.DeleteOrderAsync(id);
-            if (paymentId is not null)
-            {
-                await _paymentRepository.DeletePaymentAsync(paymentId);
-            }
-        }
-        catch (RepositoryException e)
-        {
-            throw new ServiceException(e.Message, e);
-        }
-    }
-
-    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync()
-    {
-        return (await _orderRepository.GetOrdersAsync()).Select(o => o.ToDTO());
-    }
-
-    public async Task<IEnumerable<OrderDTO>> GetOrdersByUserIdAsync(string userId)
-    {
-        return (await _orderRepository.GetOrdersByUserIdAsync(userId)).Select(o => o.ToDTO());
-    }
-
-    public async Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO)
-    {
-        await _updateOrderStatusValidator.ValidateAsync(orderDTO);
-        var orderStatus = Enum.Parse<OrderStatus>(orderDTO.OrderStatus);
-        await UpdateOrderStatusAsync(orderDTO.Id, orderStatus);
-    }
-
-    public async Task UpdateOrderTrackingNumberAsync(UpdateOrderTrackingNumberDTO orderDTO)
-    {
-        await _updateOrderTrackingNumberValidator.ValidateAsync(orderDTO);
-        Order order;
-        try
-        {
-            order = await _orderRepository.GetOrderByIdAsync(orderDTO.Id);
-        }
-        catch (EntityNotFoundException e)
-        {
-            throw new ObjectNotFoundException(e.Message, e);
-        }
-
-        order.TrackingNumber = orderDTO.TrackingNumber;
-        try
-        {
-            await _orderRepository.UpdateOrderAsync(order);
-        }
-        catch (RepositoryException e)
-        {
-            throw new ServiceException(e.Message, e);
-        }
-    }
-
-    public async Task CancelOrderAsUserAsync(int id)
-    {
-        await UpdateOrderStatusAsync(id, OrderStatus.CancelledByUser);
-    }
-
-    public async Task CancelOrderAsAdminAsync(int id)
-    {
-        await UpdateOrderStatusAsync(id, OrderStatus.CancelledByAdmin);
-    }
-
-    private async Task UpdateOrderStatusAsync(int id, OrderStatus status)
-    {
-        Order order;
-        try
-        {
-            order = await _orderRepository.GetOrderByIdAsync(id);
-        }
-        catch (EntityNotFoundException e)
-        {
-            throw new ObjectNotFoundException(e.Message, e);
-        }
-
-        order.OrderStatus = status;
-        try
-        {
-            await _orderRepository.UpdateOrderAsync(order);
-        }
-        catch (RepositoryException e)
-        {
-            throw new ServiceException(e.Message, e);
         }
     }
 }
