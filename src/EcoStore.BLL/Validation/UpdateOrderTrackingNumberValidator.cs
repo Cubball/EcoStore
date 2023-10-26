@@ -23,7 +23,7 @@ public class UpdateOrderTrackingNumberValidator : IValidator<UpdateOrderTracking
             errors.Add(new ValidationError(nameof(obj.TrackingNumber), "Накладна не може бути більшою за 50 символів"));
         }
 
-        return errors.Any()
+        return errors.Count > 0
             ? throw new ValidationException(errors)
             : Task.CompletedTask;
     }

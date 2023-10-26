@@ -32,11 +32,8 @@ public class UpdateBrandValidator : IValidator<UpdateBrandDTO>
             errors.Add(new ValidationError(nameof(obj.Description), "Опис бренду має містити від 20 до 1000 символів"));
         }
 
-        if (errors.Any())
-        {
-            throw new ValidationException(errors);
-        }
-
-        return Task.CompletedTask;
+        return errors.Count > 0
+            ? throw new ValidationException(errors)
+            : Task.CompletedTask;
     }
 }

@@ -64,7 +64,7 @@ public class UpdateProductValidator : IValidator<UpdateProductDTO>
             errors.Add(new ValidationError(nameof(obj.CategoryId), $"Категорія з id {obj.CategoryId} не існує"));
         }
 
-        if (errors.Any())
+        if (errors.Count > 0)
         {
             throw new ValidationException(errors);
         }

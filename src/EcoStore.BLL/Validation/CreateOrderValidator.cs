@@ -61,6 +61,11 @@ public class CreateOrderValidator : IValidator<CreateOrderDTO>
         {
             await ValidateOrderedProducts(obj, errors);
         }
+
+        if (errors.Count > 0)
+        {
+            throw new ValidationException(errors);
+        }
     }
 
     private async Task ValidateOrderedProducts(CreateOrderDTO obj, List<ValidationError> errors)

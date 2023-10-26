@@ -40,7 +40,7 @@ public class CreateCategoryValidator : IValidator<CreateCategoryDTO>
             errors.Add(new ValidationError(nameof(obj.Description), "Опис категорії має містити від 20 до 1000 символів"));
         }
 
-        if (errors.Any())
+        if (errors.Count > 0)
         {
             throw new ValidationException(errors);
         }
