@@ -1,3 +1,4 @@
+using EcoStore.BLL.Infrastructure;
 using EcoStore.DAL.EF;
 using EcoStore.DAL.Entities;
 using EcoStore.DAL.Infrastructure;
@@ -22,7 +23,9 @@ builder.Services
 
 builder.Services.AddDbContext<AppDbContext>(
         opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddRepositories();
+builder.Services
+    .AddRepositories()
+    .AddApplicationServices();
 
 var app = builder.Build();
 

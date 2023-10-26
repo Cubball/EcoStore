@@ -332,6 +332,8 @@ dotnet_naming_symbols.local_functions.required_modifiers =
 
 # Naming styles
 
+dotnet_naming_style.private_prefix_style.required_prefix = _
+
 dotnet_naming_style.pascalcase.required_prefix = 
 dotnet_naming_style.pascalcase.required_suffix = 
 dotnet_naming_style.pascalcase.word_separator = 

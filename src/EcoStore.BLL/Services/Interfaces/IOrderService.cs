@@ -5,4 +5,6 @@ namespace EcoStore.BLL.Services.Interfaces;
 public interface IOrderService
 {
     Task<int> CreateOrderAsync(CreateOrderDTO orderDTO);
+
+    Task<OrderDTO> GetOrderAsync(int id);
 }
