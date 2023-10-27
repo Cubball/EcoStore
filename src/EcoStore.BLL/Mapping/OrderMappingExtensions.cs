@@ -44,6 +44,7 @@ public static class OrderMappingExtenstions
             PaymentMethod = order.PaymentMethod.ToString(),
             Payment = order.Payment?.ToDTO(),
             ShippingAddress = order.ShippingAddress,
+            ShippingMethod = order.ShippingMethod.ToString(),
             TrackingNumber = order.TrackingNumber,
         };
     }

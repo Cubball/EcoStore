@@ -1,5 +1,6 @@
 namespace EcoStore.BLL.DTO;
 
+// TODO: Use enums here?
 public class OrderDTO
 {
     public int Id { get; set; }
@@ -18,9 +19,9 @@ public class OrderDTO
 
     public PaymentDTO? Payment { get; set; }
 
-    // TODO: add shipping method
-
     public string ShippingAddress { get; set; } = default!;
+
+    public string ShippingMethod { get; set; } = default!;
 
     public string? TrackingNumber { get; set; }
 }
