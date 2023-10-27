@@ -4,7 +4,7 @@ namespace EcoStore.DAL.Repositories.Interfaces;
 
 public interface IProductRepository
 {
-    Task<IEnumerable<Product>> GetProductsAsync();
+    Task<IEnumerable<Product>> GetProductsAsync(int? skip = null, int? count = null, Predicate<Product>? predicate = null);
 
     Task<Product> GetProductByIdAsync(int id);
 

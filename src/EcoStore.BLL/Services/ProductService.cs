@@ -3,6 +3,7 @@ using EcoStore.BLL.Mapping;
 using EcoStore.BLL.Services.Exceptions;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.BLL.Validation.Interfaces;
+using EcoStore.DAL.Entities;
 using EcoStore.DAL.Repositories.Exceptions;
 using EcoStore.DAL.Repositories.Interfaces;
 
@@ -64,9 +65,43 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<IEnumerable<ProductDTO>> GetProductsAsync()
+    public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductsFilterDTO? filterDTO = null)
     {
-        return (await _productRepository.GetProductsAsync()).Select(p => p.ToDTO());
+        var pageNumber = filterDTO?.PageNumber ?? 1;
+        var pageSize = filterDTO?.PageSize ?? 25;
+        var skip = (pageNumber - 1) * pageSize;
+
+        Predicate<Product>? predicate = null;
+        if (filterDTO?.CategoryIds is not null)
+        {
+            predicate = Combine(predicate, p => filterDTO.CategoryIds.Contains(p.CategoryId));
+        }
+
+        if (filterDTO?.BrandIds is not null)
+        {
+            predicate = Combine(predicate, p => filterDTO.BrandIds.Contains(p.BrandId));
+        }
+
+        if (filterDTO?.MinPrice is not null)
+        {
+            predicate = Combine(predicate, p => p.Price >= filterDTO.MinPrice);
+        }
+
+        if (filterDTO?.MaxPrice is not null)
+        {
+            predicate = Combine(predicate, p => p.Price <= filterDTO.MaxPrice);
+        }
+
+        if (filterDTO?.SearchString is not null)
+        {
+            predicate = Combine(predicate, p => p.Name.Contains(filterDTO.SearchString));
+        }
+
+        var products = await _productRepository.GetProductsAsync(
+                skip: skip,
+                count: pageSize,
+                predicate: predicate);
+        return products.Select(p => p.ToDTO());
     }
 
     public async Task UpdateProductAsync(UpdateProductDTO productDTO)
@@ -89,5 +124,12 @@ public class ProductService : IProductService
         {
             throw new ServiceException(e.Message, e);
         }
+    }
+
+    private static Predicate<Product> Combine(Predicate<Product>? first, Predicate<Product> second)
+    {
+        return first is null
+            ? second
+            : (p => first(p) && second(p));
     }
 }

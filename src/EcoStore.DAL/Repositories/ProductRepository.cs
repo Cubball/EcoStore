@@ -53,9 +53,27 @@ public class ProductRepository : IProductRepository
             ?? throw new EntityNotFoundException($"Товар з Id {id} не знайдено");
     }
 
-    public async Task<IEnumerable<Product>> GetProductsAsync()
+    public async Task<IEnumerable<Product>> GetProductsAsync(
+            int? skip = null, int? count = null,
+            Predicate<Product>? predicate = null)
     {
-        return await _context.Products.ToListAsync();
+        var products = _context.Products.AsQueryable();
+        if (skip is not null)
+        {
+            products = products.Skip(skip.Value);
+        }
+
+        if (count is not null)
+        {
+            products = products.Take(count.Value);
+        }
+
+        if (predicate is not null)
+        {
+            products = products.Where(p => predicate(p));
+        }
+
+        return await products.ToListAsync();
     }
 
     public async Task UpdateProductAsync(int id, Action<Product> updateAction)
