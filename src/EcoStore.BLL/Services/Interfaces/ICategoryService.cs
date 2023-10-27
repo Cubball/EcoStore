@@ -6,7 +6,9 @@ public interface ICategoryService
 {
     Task<CategoryDTO> GetCategoryAsync(int id);
 
-    Task<IEnumerable<CategoryDTO>> GetCategorysAsync();
+    Task<IEnumerable<CategoryDTO>> GetAllCategoriesAsync();
+
+    Task<IEnumerable<CategoryDTO>> GetCategoriesAsync(int? pageNumber = null, int? pageSize = null);
 
     Task<int> CreateCategoryAsync(CreateCategoryDTO categoryDto);
 

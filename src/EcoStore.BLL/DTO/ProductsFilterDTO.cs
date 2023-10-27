@@ -1,5 +1,6 @@
 namespace EcoStore.BLL.DTO;
 
+// TODO: sorting by and asc or desc
 public class ProductsFilterDTO
 {
     public int? PageNumber { get; set; }

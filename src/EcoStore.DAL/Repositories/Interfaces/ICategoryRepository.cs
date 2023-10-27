@@ -4,7 +4,7 @@ namespace EcoStore.DAL.Repositories.Interfaces;
 
 public interface ICategoryRepository
 {
-    Task<IEnumerable<Category>> GetCategoriesAsync();
+    Task<IEnumerable<Category>> GetCategoriesAsync(int? skip = null, int? count = null);
 
     Task<Category> GetCategoryByIdAsync(int id);
 

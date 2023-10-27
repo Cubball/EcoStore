@@ -11,6 +11,8 @@ namespace EcoStore.BLL.Services;
 
 public class ProductService : IProductService
 {
+    private const int DefaultPageNumber = 1;
+    private const int DefaultPageSize = 25;
     private readonly IProductRepository _productRepository;
     private readonly IValidator<CreateProductDTO> _createProductValidator;
     private readonly IValidator<UpdateProductDTO> _updateProductValidator;
@@ -67,10 +69,19 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductsFilterDTO? filterDTO = null)
     {
-        var pageNumber = filterDTO?.PageNumber ?? 1;
-        var pageSize = filterDTO?.PageSize ?? 25;
-        var skip = (pageNumber - 1) * pageSize;
+        int pageNumber = DefaultPageNumber;
+        int pageSize = DefaultPageSize;
+        if (filterDTO?.PageNumber is not null and > 0)
+        {
+            pageNumber = filterDTO.PageNumber.Value;
+        }
 
+        if (filterDTO?.PageSize is not null and > 0)
+        {
+            pageSize = filterDTO.PageSize.Value;
+        }
+
+        var skip = (pageNumber - 1) * pageSize;
         Predicate<Product>? predicate = null;
         if (filterDTO?.CategoryIds is not null)
         {

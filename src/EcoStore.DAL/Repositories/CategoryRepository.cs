@@ -44,9 +44,20 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
-    public async Task<IEnumerable<Category>> GetCategoriesAsync()
+    public async Task<IEnumerable<Category>> GetCategoriesAsync(int? skip = null, int? count = null)
     {
-        return await _context.Categories.ToListAsync();
+        var categories = _context.Categories.AsQueryable();
+        if (skip is not null)
+        {
+            categories = categories.Skip(skip.Value);
+        }
+
+        if (count is not null)
+        {
+            categories = categories.Take(count.Value);
+        }
+
+        return await categories.ToListAsync();
     }
 
     public async Task<Category> GetCategoryByIdAsync(int id)
