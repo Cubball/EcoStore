@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using EcoStore.DAL.EF;
 using EcoStore.DAL.Entities;
 using EcoStore.DAL.Repositories.Exceptions;
@@ -56,12 +58,28 @@ public class OrderRepository : IOrderRepository
     }
 
     public async Task<IEnumerable<Order>> GetOrdersAsync(
-            int? skip = null, int? count = null, Predicate<Order>? predicate = null)
+            int? skip = null,
+            int? count = null,
+            Expression<Func<Order, bool>>? predicate = null,
+            Expression<Func<Order, object>>? orderBy = null,
+            bool descending = false)
     {
         var orders = _context.Orders
             .Include(o => o.User)
             .Include(o => o.OrderedProducts)
             .AsQueryable();
+        if (predicate is not null)
+        {
+            orders = orders.Where(predicate);
+        }
+
+        if (orderBy is not null)
+        {
+            orders = descending
+                ? orders.OrderByDescending(orderBy)
+                : orders.OrderBy(orderBy);
+        }
+
         if (skip is not null)
         {
             orders = orders.Skip(skip.Value);
@@ -72,16 +90,14 @@ public class OrderRepository : IOrderRepository
             orders = orders.Take(count.Value);
         }
 
-        if (predicate is not null)
-        {
-            orders = orders.Where(o => predicate(o));
-        }
-
         return await orders.ToListAsync();
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(
-        string userId, int? skip = null, int? count = null)
+    public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId,
+            int? skip = null,
+            int? count = null,
+            Expression<Func<Order, object>>? orderBy = null,
+            bool descending = false)
     {
         var orders = _context.Orders
             .Where(o => o.UserId == userId)
@@ -89,6 +105,13 @@ public class OrderRepository : IOrderRepository
                 .ThenInclude(op => op.Product)
             .Include(o => o.Payment)
             .AsQueryable();
+        if (orderBy is not null)
+        {
+            orders = descending
+                ? orders.OrderByDescending(orderBy)
+                : orders.OrderBy(orderBy);
+        }
+
         if (skip is not null)
         {
             orders = orders.Skip(skip.Value);

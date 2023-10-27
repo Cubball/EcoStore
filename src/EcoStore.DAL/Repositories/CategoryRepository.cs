@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using EcoStore.DAL.EF;
 using EcoStore.DAL.Entities;
 using EcoStore.DAL.Repositories.Exceptions;
@@ -44,9 +46,20 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
-    public async Task<IEnumerable<Category>> GetCategoriesAsync(int? skip = null, int? count = null)
+    public async Task<IEnumerable<Category>> GetCategoriesAsync(
+            int? skip = null,
+            int? count = null,
+            Expression<Func<Category, object>>? orderBy = null,
+            bool descending = false)
     {
         var categories = _context.Categories.AsQueryable();
+        if (orderBy is not null)
+        {
+            categories = descending
+                ? categories.OrderByDescending(orderBy)
+                : categories.OrderBy(orderBy);
+        }
+
         if (skip is not null)
         {
             categories = categories.Skip(skip.Value);

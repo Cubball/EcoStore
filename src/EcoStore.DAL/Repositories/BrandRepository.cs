@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using EcoStore.DAL.EF;
 using EcoStore.DAL.Entities;
 using EcoStore.DAL.Repositories.Exceptions;
@@ -44,9 +46,20 @@ public class BrandRepository : IBrandRepository
         }
     }
 
-    public async Task<IEnumerable<Brand>> GetBrandsAsync(int? skip = null, int? count = null)
+    public async Task<IEnumerable<Brand>> GetBrandsAsync(
+            int? skip = null,
+            int? count = null,
+            Expression<Func<Brand, object>>? orderBy = null,
+            bool descending = false)
     {
         var brands = _context.Brands.AsQueryable();
+        if (orderBy is not null)
+        {
+            brands = descending
+                ? brands.OrderByDescending(orderBy)
+                : brands.OrderBy(orderBy);
+        }
+
         if (skip is not null)
         {
             brands = brands.Skip(skip.Value);

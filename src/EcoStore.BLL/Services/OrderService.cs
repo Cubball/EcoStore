@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Infrastructure;
 using EcoStore.BLL.Mapping;
@@ -25,6 +27,8 @@ public class OrderService : IOrderService
     private readonly IValidator<UpdateOrderTrackingNumberDTO> _updateOrderTrackingNumberValidator;
     private readonly IValidator<CancelOrderByAdminDTO> _cancelOrderByAdminValidator;
     private readonly IValidator<CancelOrderByUserDTO> _cancelOrderByUserValidator;
+
+    private Expression<Func<Order, object>>? _orderBy;
 
     public OrderService(
             IOrderRepository orderRepository,
@@ -109,8 +113,13 @@ public class OrderService : IOrderService
             pageSize = DefaultPageSize;
         }
 
+        _orderBy ??= o => o.OrderDate;
         var skip = (pageNumber - 1) * pageSize;
-        var orders = await _orderRepository.GetOrdersAsync(skip: skip, count: pageSize);
+        var orders = await _orderRepository.GetOrdersAsync(
+                skip: skip,
+                count: pageSize,
+                orderBy: _orderBy,
+                descending: true);
         return orders.Select(o => o.ToDTO());
     }
 
@@ -126,8 +135,13 @@ public class OrderService : IOrderService
             pageSize = DefaultPageSize;
         }
 
+        _orderBy ??= o => o.OrderDate;
         var skip = (pageNumber - 1) * pageSize;
-        var orders = await _orderRepository.GetOrdersByUserIdAsync(userId, skip: skip, count: pageSize);
+        var orders = await _orderRepository.GetOrdersByUserIdAsync(userId,
+                skip: skip,
+                count: pageSize,
+                orderBy: _orderBy,
+                descending: true);
         return orders.Select(o => o.ToDTO());
     }
 

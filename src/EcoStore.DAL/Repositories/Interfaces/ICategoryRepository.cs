@@ -1,11 +1,16 @@
+using System.Linq.Expressions;
+
 using EcoStore.DAL.Entities;
 
 namespace EcoStore.DAL.Repositories.Interfaces;
 
 public interface ICategoryRepository
 {
-    Task<IEnumerable<Category>> GetCategoriesAsync(int? skip = null, int? count = null);
-
+    Task<IEnumerable<Category>> GetCategoriesAsync(
+            int? skip = null,
+            int? count = null,
+            Expression<Func<Category, object>>? orderBy = null,
+            bool descending = false);
     Task<Category> GetCategoryByIdAsync(int id);
 
     Task<int> AddCategoryAsync(Category category);

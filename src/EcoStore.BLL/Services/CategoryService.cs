@@ -1,8 +1,11 @@
+using System.Linq.Expressions;
+
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Mapping;
 using EcoStore.BLL.Services.Exceptions;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.BLL.Validation.Interfaces;
+using EcoStore.DAL.Entities;
 using EcoStore.DAL.Repositories.Exceptions;
 using EcoStore.DAL.Repositories.Interfaces;
 
@@ -15,6 +18,8 @@ public class CategoryService : ICategoryService
     private readonly ICategoryRepository _categoryRepository;
     private readonly IValidator<CreateCategoryDTO> _createCategoryValidator;
     private readonly IValidator<UpdateCategoryDTO> _updateCategoryValidator;
+
+    private Expression<Func<Category, object>>? _orderBy;
 
     public CategoryService(ICategoryRepository categoryRepository,
             IValidator<CreateCategoryDTO> createCategoryValidator,
@@ -68,7 +73,8 @@ public class CategoryService : ICategoryService
 
     public async Task<IEnumerable<CategoryDTO>> GetAllCategoriesAsync()
     {
-        return (await _categoryRepository.GetCategoriesAsync()).Select(b => b.ToDTO());
+        _orderBy ??= c => c.Name;
+        return (await _categoryRepository.GetCategoriesAsync(orderBy: _orderBy)).Select(b => b.ToDTO());
     }
 
     public async Task<IEnumerable<ProductDTO>> GetProductsByCategoryAsync(int categoryId)
@@ -105,8 +111,10 @@ public class CategoryService : ICategoryService
         {
             pageSize = DefaultPageSize;
         }
+
+        _orderBy ??= c => c.Name;
         var skip = (pageNumber - 1) * pageSize;
-        var categories = await _categoryRepository.GetCategoriesAsync(skip: skip, count: pageSize);
+        var categories = await _categoryRepository.GetCategoriesAsync(skip: skip, count: pageSize, orderBy: _orderBy);
         return categories.Select(c => c.ToDTO());
     }
 }

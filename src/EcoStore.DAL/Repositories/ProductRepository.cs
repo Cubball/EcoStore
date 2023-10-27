@@ -62,16 +62,16 @@ public class ProductRepository : IProductRepository
             bool descending = false)
     {
         var products = _context.Products.AsQueryable();
+        if (predicate is not null)
+        {
+            products = products.Where(predicate);
+        }
+
         if (orderBy is not null)
         {
             products = descending
                 ? products.OrderByDescending(orderBy)
                 : products.OrderBy(orderBy);
-        }
-
-        if (predicate is not null)
-        {
-            products = products.Where(predicate);
         }
 
         if (skip is not null)

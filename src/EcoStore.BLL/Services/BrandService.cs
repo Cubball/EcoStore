@@ -1,8 +1,11 @@
+using System.Linq.Expressions;
+
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Mapping;
 using EcoStore.BLL.Services.Exceptions;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.BLL.Validation.Interfaces;
+using EcoStore.DAL.Entities;
 using EcoStore.DAL.Repositories.Exceptions;
 using EcoStore.DAL.Repositories.Interfaces;
 
@@ -15,6 +18,8 @@ public class BrandService : IBrandService
     private readonly IBrandRepository _brandRepository;
     private readonly IValidator<CreateBrandDTO> _createBrandValidator;
     private readonly IValidator<UpdateBrandDTO> _updateBrandValidator;
+
+    private Expression<Func<Brand, object>>? _orderBy;
 
     public BrandService(IBrandRepository brandRepository,
             IValidator<CreateBrandDTO> createBrandValidator,
@@ -68,7 +73,8 @@ public class BrandService : IBrandService
 
     public async Task<IEnumerable<BrandDTO>> GetAllBrandsAsync()
     {
-        return (await _brandRepository.GetBrandsAsync()).Select(b => b.ToDTO());
+        _orderBy ??= b => b.Name;
+        return (await _brandRepository.GetBrandsAsync(orderBy: _orderBy)).Select(b => b.ToDTO());
     }
 
     public async Task<IEnumerable<BrandDTO>> GetBrandsAsync(int? pageNumber = null, int? pageSize = null)
@@ -83,8 +89,9 @@ public class BrandService : IBrandService
             pageSize = DefaultPageSize;
         }
 
+        _orderBy ??= b => b.Name;
         var skip = (pageNumber - 1) * pageSize;
-        var brands = await _brandRepository.GetBrandsAsync(skip: skip, count: pageSize);
+        var brands = await _brandRepository.GetBrandsAsync(skip: skip, count: pageSize, orderBy: _orderBy);
         return brands.Select(b => b.ToDTO());
     }
 

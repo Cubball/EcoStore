@@ -86,13 +86,13 @@ public class ProductService : IProductService
         var skip = (pageNumber - 1) * pageSize;
         var predicate = GetFilterPredicate(filterDTO);
         var orderBySelector = GetOrderBySelector(filterDTO);
-        var ascending = filterDTO?.Descending ?? false;
+        var descending = filterDTO?.Descending ?? false;
         var products = await _productRepository.GetProductsAsync(
                 skip: skip,
                 count: pageSize,
                 predicate: predicate,
                 orderBy: orderBySelector,
-                ascending: ascending);
+                descending: descending);
         return products.Select(p => p.ToDTO());
     }
 

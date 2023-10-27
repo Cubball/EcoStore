@@ -18,6 +18,8 @@ public class OrderDTO
 
     public PaymentDTO? Payment { get; set; }
 
+    // TODO: add shipping method
+
     public string ShippingAddress { get; set; } = default!;
 
     public string? TrackingNumber { get; set; }
