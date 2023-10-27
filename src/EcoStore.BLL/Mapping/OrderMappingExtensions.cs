@@ -11,6 +11,8 @@ public static class OrderMappingExtenstions
         {
             UserId = orderDTO.UserId,
             ShippingAddress = orderDTO.ShippingAddress,
+            PaymentMethod = orderDTO.PaymentMethod.ToEntity(),
+            ShippingMethod = orderDTO.ShippingMethod.ToEntity(),
         };
         foreach (var orderedProduct in orderDTO.OrderedProducts)
         {

@@ -39,19 +39,6 @@ public class UpdateOrderStatusValidator : IValidator<UpdateOrderStatusDTO>
             }
         }
 
-        if (!Enum.IsDefined(typeof(OrderStatus), obj.OrderStatus))
-        {
-            errors.Add(new ValidationError(nameof(obj.OrderStatus), $"Статус замовлення {obj.OrderStatus} не існує"));
-        }
-        else
-        {
-            var status = Enum.Parse<OrderStatus>(obj.OrderStatus);
-            if (status is OrderStatus.CancelledByUser or OrderStatus.CancelledByAdmin)
-            {
-                errors.Add(new ValidationError(nameof(obj.OrderStatus), $"Статус замовлення {obj.OrderStatus} не може бути встановлений вручну"));
-            }
-        }
-
         if (errors.Count > 0)
         {
             throw new ValidationException(errors);

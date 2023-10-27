@@ -10,18 +10,25 @@ namespace EcoStore.Presentation.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly IOrderService _orderService;
+    private readonly IProductService _productService;
 
-    public HomeController(ILogger<HomeController> logger, IOrderService orderService)
+    public HomeController(ILogger<HomeController> logger, IProductService productService)
     {
         _logger = logger;
-        _orderService = orderService;
+        _productService = productService;
     }
 
     public async Task<IActionResult> Index()
     {
-        await _orderService.DeleteOrderAsync(6);
-        return View();
+        var products = await _productService.GetProductsAsync(new BLL.DTO.ProductsFilterDTO
+        {
+            PageSize = 3,
+            PageNumber = 2,
+            // CategoryIds = new int[] { 1 },
+            SortBy = BLL.DTO.SortBy.DateCreated,
+            Descending = true,
+        });
+        return Ok(products);
     }
 
     public IActionResult Privacy()

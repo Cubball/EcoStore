@@ -4,5 +4,5 @@ public class UpdateOrderStatusDTO
 {
     public int Id { get; set; }
 
-    public string OrderStatus { get; set; } = default!;
+    public OrderStatusDTO OrderStatus { get; set; }
 }

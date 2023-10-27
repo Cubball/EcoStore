@@ -29,12 +29,7 @@ public class CreateOrderValidator : IValidator<CreateOrderDTO>
             errors.Add(new ValidationError(nameof(obj.UserId), $"Користувача з Id {obj.UserId} не знайдено"));
         }
 
-        if (!Enum.IsDefined(typeof(PaymentMethod), obj.PaymentMethod))
-        {
-            errors.Add(new ValidationError(nameof(obj.PaymentMethod), $"Метод оплати {obj.PaymentMethod} не існує"));
-        }
-        else if (Enum.Parse<PaymentMethod>(obj.PaymentMethod) == PaymentMethod.Card &&
-                 string.IsNullOrWhiteSpace(obj.StripeToken))
+        if (obj.PaymentMethod == PaymentMethodDTO.Card && string.IsNullOrWhiteSpace(obj.StripeToken))
         {
             errors.Add(new ValidationError(nameof(obj.StripeToken), "Токен для оплати картою відсутній"));
         }
@@ -46,11 +41,6 @@ public class CreateOrderValidator : IValidator<CreateOrderDTO>
         else if (obj.ShippingAddress.Length is < 10 or > 200)
         {
             errors.Add(new ValidationError(nameof(obj.ShippingAddress), "Адреса доставки має бути від 10 до 200 символів"));
-        }
-
-        if (!Enum.IsDefined(typeof(ShippingMethod), obj.ShippingMethod))
-        {
-            errors.Add(new ValidationError(nameof(obj.ShippingMethod), $"Метод доставки {obj.ShippingMethod} не існує"));
         }
 
         if (obj.OrderedProducts is null || !obj.OrderedProducts.Any())

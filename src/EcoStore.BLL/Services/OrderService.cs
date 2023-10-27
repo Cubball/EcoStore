@@ -14,7 +14,6 @@ namespace EcoStore.BLL.Services;
 
 public class OrderService : IOrderService
 {
-
     private const int DefaultPageNumber = 1;
     private const int DefaultPageSize = 25;
     private readonly IOrderRepository _orderRepository;
@@ -53,7 +52,7 @@ public class OrderService : IOrderService
     {
         await _createOrderValidator.ValidateAsync(orderDTO);
         var order = orderDTO.ToEntity();
-        await SetOrderDetailsAsync(orderDTO, order);
+        await SetOrderDetailsAsync(order);
 
         if (order.PaymentMethod == DAL.Entities.PaymentMethod.Card)
         {
@@ -132,12 +131,10 @@ public class OrderService : IOrderService
         return orders.Select(o => o.ToDTO());
     }
 
-    // TODO: Enums
     public async Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO)
     {
         await _updateOrderStatusValidator.ValidateAsync(orderDTO);
-        var orderStatus = Enum.Parse<OrderStatus>(orderDTO.OrderStatus);
-        await UpdateOrderStatusAsync(orderDTO.Id, orderStatus);
+        await UpdateOrderStatusAsync(orderDTO.Id, orderDTO.OrderStatus.ToEntity());
     }
 
     public async Task UpdateOrderTrackingNumberAsync(UpdateOrderTrackingNumberDTO orderDTO)
@@ -210,14 +207,12 @@ public class OrderService : IOrderService
         await refundService.CreateAsync(refundCreateOptions);
     }
 
-    private async Task SetOrderDetailsAsync(CreateOrderDTO orderDTO, Order order)
+    private async Task SetOrderDetailsAsync(Order order)
     {
         var utcNow = new DateTime(_clock.UtcNow.Ticks, DateTimeKind.Utc);
         order.OrderDate = utcNow;
         order.OrderStatus = OrderStatus.New;
         order.StatusChangedDate = utcNow;
-        order.PaymentMethod = Enum.Parse<DAL.Entities.PaymentMethod>(orderDTO.PaymentMethod);
-        order.ShippingMethod = Enum.Parse<ShippingMethod>(orderDTO.ShippingMethod);
         await SetOrderedProductsDetailsAsync(order);
         await ReduceProductsStockAsync(order);
     }

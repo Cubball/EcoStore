@@ -6,11 +6,11 @@ public class CreateOrderDTO
 
     public string? StripeToken { get; set; }
 
-    public string PaymentMethod { get; set; } = default!;
+    public PaymentMethodDTO PaymentMethod { get; set; }
 
     public string ShippingAddress { get; set; } = default!;
 
-    public string ShippingMethod { get; set; } = default!;
+    public ShippingMethodDTO ShippingMethod { get; set; }
 
     public IEnumerable<CreateOrderedProductDTO> OrderedProducts { get; set; } = default!;
 }

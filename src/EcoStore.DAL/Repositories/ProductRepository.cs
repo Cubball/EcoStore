@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using EcoStore.DAL.EF;
 using EcoStore.DAL.Entities;
 using EcoStore.DAL.Repositories.Exceptions;
@@ -55,9 +57,23 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetProductsAsync(
             int? skip = null, int? count = null,
-            Predicate<Product>? predicate = null)
+            Expression<Func<Product, bool>>? predicate = null,
+            Expression<Func<Product, object>>? orderBy = null,
+            bool descending = false)
     {
         var products = _context.Products.AsQueryable();
+        if (orderBy is not null)
+        {
+            products = descending
+                ? products.OrderByDescending(orderBy)
+                : products.OrderBy(orderBy);
+        }
+
+        if (predicate is not null)
+        {
+            products = products.Where(predicate);
+        }
+
         if (skip is not null)
         {
             products = products.Skip(skip.Value);
@@ -66,11 +82,6 @@ public class ProductRepository : IProductRepository
         if (count is not null)
         {
             products = products.Take(count.Value);
-        }
-
-        if (predicate is not null)
-        {
-            products = products.Where(p => predicate(p));
         }
 
         return await products.ToListAsync();

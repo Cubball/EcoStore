@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Mapping;
 using EcoStore.BLL.Services.Exceptions;
@@ -82,36 +84,15 @@ public class ProductService : IProductService
         }
 
         var skip = (pageNumber - 1) * pageSize;
-        Predicate<Product>? predicate = null;
-        if (filterDTO?.CategoryIds is not null)
-        {
-            predicate = Combine(predicate, p => filterDTO.CategoryIds.Contains(p.CategoryId));
-        }
-
-        if (filterDTO?.BrandIds is not null)
-        {
-            predicate = Combine(predicate, p => filterDTO.BrandIds.Contains(p.BrandId));
-        }
-
-        if (filterDTO?.MinPrice is not null)
-        {
-            predicate = Combine(predicate, p => p.Price >= filterDTO.MinPrice);
-        }
-
-        if (filterDTO?.MaxPrice is not null)
-        {
-            predicate = Combine(predicate, p => p.Price <= filterDTO.MaxPrice);
-        }
-
-        if (filterDTO?.SearchString is not null)
-        {
-            predicate = Combine(predicate, p => p.Name.Contains(filterDTO.SearchString));
-        }
-
+        var predicate = GetFilterPredicate(filterDTO);
+        var orderBySelector = GetOrderBySelector(filterDTO);
+        var ascending = filterDTO?.Descending ?? false;
         var products = await _productRepository.GetProductsAsync(
                 skip: skip,
                 count: pageSize,
-                predicate: predicate);
+                predicate: predicate,
+                orderBy: orderBySelector,
+                ascending: ascending);
         return products.Select(p => p.ToDTO());
     }
 
@@ -137,10 +118,57 @@ public class ProductService : IProductService
         }
     }
 
-    private static Predicate<Product> Combine(Predicate<Product>? first, Predicate<Product> second)
+    private static Expression<Func<Product, bool>> Combine(Expression<Func<Product, bool>>? first, Expression<Func<Product, bool>> second)
     {
-        return first is null
-            ? second
-            : (p => first(p) && second(p));
+        if (first is null)
+        {
+            return second;
+        }
+        var body = Expression.AndAlso(first.Body, second.Body);
+        return Expression.Lambda<Func<Product, bool>>(body, first.Parameters);
+    }
+
+    private static Expression<Func<Product, object>>? GetOrderBySelector(ProductsFilterDTO? filterDTO)
+    {
+        return filterDTO?.SortBy is null
+            ? null
+            : filterDTO.SortBy switch
+            {
+                SortBy.Price => p => p.Price,
+                SortBy.Name => p => p.Name,
+                SortBy.DateCreated => p => p.Id,
+                _ => null
+            };
+    }
+
+    private static Expression<Func<Product, bool>>? GetFilterPredicate(ProductsFilterDTO? filterDTO)
+    {
+        Expression<Func<Product, bool>>? predicate = null;
+        if (filterDTO?.CategoryIds is not null)
+        {
+            predicate = Combine(predicate, p => filterDTO.CategoryIds.Contains(p.CategoryId));
+        }
+
+        if (filterDTO?.BrandIds is not null)
+        {
+            predicate = Combine(predicate, p => filterDTO.BrandIds.Contains(p.BrandId));
+        }
+
+        if (filterDTO?.MinPrice is not null)
+        {
+            predicate = Combine(predicate, p => p.Price >= filterDTO.MinPrice);
+        }
+
+        if (filterDTO?.MaxPrice is not null)
+        {
+            predicate = Combine(predicate, p => p.Price <= filterDTO.MaxPrice);
+        }
+
+        if (filterDTO?.SearchString is not null)
+        {
+            predicate = Combine(predicate, p => p.Name.Contains(filterDTO.SearchString, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        return predicate;
     }
 }

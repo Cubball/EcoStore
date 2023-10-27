@@ -16,4 +16,8 @@ public class ProductsFilterDTO
     public int? MaxPrice { get; set; }
 
     public string? SearchString { get; set; }
+
+    public SortBy? SortBy { get; set; }
+
+    public bool Descending { get; set; }
 }
