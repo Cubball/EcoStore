@@ -55,22 +55,51 @@ public class OrderRepository : IOrderRepository
             ?? throw new EntityNotFoundException($"Замовлення з Id {id} не знайдено");
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersAsync()
+    public async Task<IEnumerable<Order>> GetOrdersAsync(
+            int? skip = null, int? count = null, Predicate<Order>? predicate = null)
     {
-        return await _context.Orders
+        var orders = _context.Orders
             .Include(o => o.User)
             .Include(o => o.OrderedProducts)
-            .ToListAsync();
+            .AsQueryable();
+        if (skip is not null)
+        {
+            orders = orders.Skip(skip.Value);
+        }
+
+        if (count is not null)
+        {
+            orders = orders.Take(count.Value);
+        }
+
+        if (predicate is not null)
+        {
+            orders = orders.Where(o => predicate(o));
+        }
+
+        return await orders.ToListAsync();
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId)
+    public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(
+        string userId, int? skip = null, int? count = null)
     {
-        return await _context.Orders
+        var orders = _context.Orders
             .Where(o => o.UserId == userId)
             .Include(o => o.OrderedProducts)
                 .ThenInclude(op => op.Product)
             .Include(o => o.Payment)
-            .ToListAsync();
+            .AsQueryable();
+        if (skip is not null)
+        {
+            orders = orders.Skip(skip.Value);
+        }
+
+        if (count is not null)
+        {
+            orders = orders.Take(count.Value);
+        }
+
+        return await orders.ToListAsync();
     }
 
     public async Task UpdateOrderAsync(int id, Action<Order> updateAction)

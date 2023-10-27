@@ -44,9 +44,20 @@ public class BrandRepository : IBrandRepository
         }
     }
 
-    public async Task<IEnumerable<Brand>> GetBrandsAsync()
+    public async Task<IEnumerable<Brand>> GetBrandsAsync(int? skip = null, int? count = null)
     {
-        return await _context.Brands.ToListAsync();
+        var brands = _context.Brands.AsQueryable();
+        if (skip is not null)
+        {
+            brands = brands.Skip(skip.Value);
+        }
+
+        if (count is not null)
+        {
+            brands = brands.Take(count.Value);
+        }
+
+        return await brands.ToListAsync();
     }
 
     public async Task<Brand> GetBrandByIdAsync(int id)

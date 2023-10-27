@@ -8,9 +8,9 @@ public interface IOrderService
 
     Task<OrderDTO> GetOrderAsync(int id);
 
-    Task<IEnumerable<OrderDTO>> GetOrdersAsync();
+    Task<IEnumerable<OrderDTO>> GetOrdersAsync(int? pageNumber = null, int? pageSize = null);
 
-    Task<IEnumerable<OrderDTO>> GetOrdersByUserIdAsync(string userId);
+    Task<IEnumerable<OrderDTO>> GetOrdersByUserIdAsync(string userId, int? pageNumber = null, int? pageSize = null);
 
     Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO);
 

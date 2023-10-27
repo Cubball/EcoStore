@@ -4,9 +4,9 @@ namespace EcoStore.DAL.Repositories.Interfaces;
 
 public interface IOrderRepository
 {
-    Task<IEnumerable<Order>> GetOrdersAsync();
+    Task<IEnumerable<Order>> GetOrdersAsync(int? skip = null, int? count = null, Predicate<Order>? predicate = null);
 
-    Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
+    Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId, int? skip = null, int? count = null);
 
     Task<Order> GetOrderByIdAsync(int id);
 

@@ -95,16 +95,26 @@ public class OrderService : IOrderService
         }
     }
 
-    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync()
+    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync(int? pageNumber = null, int? pageSize = null)
     {
-        return (await _orderRepository.GetOrdersAsync()).Select(o => o.ToDTO());
+        pageNumber ??= 1;
+        pageSize ??= 25;
+        var skip = (pageNumber - 1) * pageSize;
+        var orders = await _orderRepository.GetOrdersAsync(skip: skip, count: pageSize);
+        return orders.Select(o => o.ToDTO());
     }
 
-    public async Task<IEnumerable<OrderDTO>> GetOrdersByUserIdAsync(string userId)
+    // TODO: check for negative values
+    public async Task<IEnumerable<OrderDTO>> GetOrdersByUserIdAsync(string userId, int? pageNumber = null, int? pageSize = null)
     {
-        return (await _orderRepository.GetOrdersByUserIdAsync(userId)).Select(o => o.ToDTO());
+        pageNumber ??= 1;
+        pageSize ??= 25;
+        var skip = (pageNumber - 1) * pageSize;
+        var orders = await _orderRepository.GetOrdersByUserIdAsync(userId, skip: skip, count: pageSize);
+        return orders.Select(o => o.ToDTO());
     }
 
+    // TODO: Enums
     public async Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO)
     {
         await _updateOrderStatusValidator.ValidateAsync(orderDTO);

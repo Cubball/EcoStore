@@ -4,7 +4,7 @@ namespace EcoStore.DAL.Repositories.Interfaces;
 
 public interface IBrandRepository
 {
-    Task<IEnumerable<Brand>> GetBrandsAsync();
+    Task<IEnumerable<Brand>> GetBrandsAsync(int? skip = null, int? count = null);
 
     Task<Brand> GetBrandByIdAsync(int id);
 

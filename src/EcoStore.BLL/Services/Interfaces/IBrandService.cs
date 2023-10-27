@@ -6,7 +6,9 @@ public interface IBrandService
 {
     Task<BrandDTO> GetBrandAsync(int id);
 
-    Task<IEnumerable<BrandDTO>> GetBrandsAsync();
+    Task<IEnumerable<BrandDTO>> GetAllBrandsAsync();
+
+    Task<IEnumerable<BrandDTO>> GetBrandsAsync(int? pageNumber = null, int? pageSize = null);
 
     Task<int> CreateBrandAsync(CreateBrandDTO brandDto);
 

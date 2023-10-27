@@ -64,9 +64,19 @@ public class BrandService : IBrandService
         }
     }
 
-    public async Task<IEnumerable<BrandDTO>> GetBrandsAsync()
+    public async Task<IEnumerable<BrandDTO>> GetAllBrandsAsync()
     {
         return (await _brandRepository.GetBrandsAsync()).Select(b => b.ToDTO());
+    }
+
+    // TODO: magic numbers
+    public async Task<IEnumerable<BrandDTO>> GetBrandsAsync(int? pageNumber = null, int? pageSize = null)
+    {
+        pageNumber ??= 1;
+        pageSize ??= 25;
+        var skip = (pageNumber - 1) * pageSize;
+        var brands = await _brandRepository.GetBrandsAsync(skip: skip, count: pageSize);
+        return brands.Select(b => b.ToDTO());
     }
 
     public async Task<IEnumerable<ProductDTO>> GetProductsByBrandAsync(int brandId)
