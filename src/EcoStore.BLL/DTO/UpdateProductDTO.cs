@@ -10,7 +10,9 @@ public class UpdateProductDTO
 
     public decimal Price { get; set; }
 
-    public string ImageUrl { get; set; } = default!;
+    public string? ImageExtension { get; set; }
+
+    public Stream? ImageStream { get; set; }
 
     public int Stock { get; set; }
 

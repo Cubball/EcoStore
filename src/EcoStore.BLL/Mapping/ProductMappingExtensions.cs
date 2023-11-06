@@ -27,7 +27,6 @@ public static class ProductMappingExtensions
             Name = productDTO.Name,
             Description = productDTO.Description,
             Price = productDTO.Price,
-            ImageUrl = productDTO.ImageUrl,
             Stock = productDTO.Stock,
             BrandId = productDTO.BrandId,
             CategoryId = productDTO.CategoryId,

@@ -64,6 +64,11 @@ public class UpdateProductValidator : IValidator<UpdateProductDTO>
             errors.Add(new ValidationError(nameof(obj.CategoryId), $"Категорія з id {obj.CategoryId} не існує"));
         }
 
+        if ((obj.ImageStream is null) != (obj.ImageExtension is null))
+        {
+            errors.Add(new ValidationError(nameof(obj.ImageStream), "Зображення та його розширення повинні обоє або бути присутні, або відсутні"));
+        }
+
         if (errors.Count > 0)
         {
             throw new ValidationException(errors);
