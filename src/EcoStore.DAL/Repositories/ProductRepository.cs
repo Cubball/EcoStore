@@ -32,9 +32,8 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    public async Task DeleteProductAsync(int id)
+    public async Task DeleteProductAsync(Product product)
     {
-        var product = await GetProductByIdAsync(id);
         try
         {
             _context.Products.Remove(product);
