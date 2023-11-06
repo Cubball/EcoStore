@@ -14,12 +14,10 @@ public class FileManager : IFileManager
     public void DeleteFile(string fileName)
     {
         var filePath = Path.Combine(_folderPath, fileName);
-        if (!File.Exists(filePath))
+        if (File.Exists(filePath))
         {
-            throw new Exceptions.FileNotFoundException($"Не вдалося знайти файл за шляхом: {filePath}");
+            File.Delete(filePath);
         }
-
-        File.Delete(filePath);
     }
 
     public FileStream GetFileStream(string fileName)
