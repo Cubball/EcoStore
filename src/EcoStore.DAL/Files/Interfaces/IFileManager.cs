@@ -1,4 +1,4 @@
-namespace EcoStore.DAL.Files;
+namespace EcoStore.DAL.Files.Interfaces;
 
 public interface IFileManager
 {

@@ -7,8 +7,8 @@ using EcoStore.BLL.Services.Exceptions;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.BLL.Validation.Interfaces;
 using EcoStore.DAL.Entities;
-using EcoStore.DAL.Files;
 using EcoStore.DAL.Files.Exceptions;
+using EcoStore.DAL.Files.Interfaces;
 using EcoStore.DAL.Repositories.Exceptions;
 using EcoStore.DAL.Repositories.Interfaces;
 
@@ -61,7 +61,7 @@ public class ProductService : IProductService
         try
         {
             var product = await _productRepository.GetProductByIdAsync(id);
-            _fileManager.DeleteFile(product.ImageUrl);
+            _fileManager.DeleteFile(product.ImageName);
             await _productRepository.DeleteProductAsync(product);
         }
         catch (EntityNotFoundException e)
@@ -129,7 +129,7 @@ public class ProductService : IProductService
                 p.Stock = productDTO.Stock;
                 p.BrandId = productDTO.BrandId;
                 p.CategoryId = productDTO.CategoryId;
-                p.ImageUrl = newFileName ?? p.ImageUrl;
+                p.ImageName = newFileName ?? p.ImageName;
             });
         }
         catch (RepositoryException e)
@@ -141,7 +141,7 @@ public class ProductService : IProductService
     private async Task<string> UpdateProductImage(UpdateProductDTO productDTO)
     {
         var oldProduct = await _productRepository.GetProductByIdAsync(productDTO.Id);
-        _fileManager.DeleteFile(oldProduct.ImageUrl);
+        _fileManager.DeleteFile(oldProduct.ImageName);
         var fileName = $"img_{_guidProvider.NewGuid()}{productDTO.ImageExtension}";
         try
         {

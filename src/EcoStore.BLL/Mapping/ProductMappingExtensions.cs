@@ -13,7 +13,7 @@ public static class ProductMappingExtensions
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            ImageUrl = product.ImageUrl,
+            ImageName = product.ImageName,
             Stock = product.Stock,
             Brand = product.Brand?.ToDTO(),
             Category = product.Category?.ToDTO(),

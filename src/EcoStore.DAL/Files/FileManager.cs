@@ -1,4 +1,5 @@
 using EcoStore.DAL.Files.Exceptions;
+using EcoStore.DAL.Files.Interfaces;
 
 namespace EcoStore.DAL.Files;
 

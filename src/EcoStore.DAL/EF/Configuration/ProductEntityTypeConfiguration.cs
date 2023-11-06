@@ -18,7 +18,7 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Price)
             .HasColumnType("money");
 
-        builder.Property(p => p.ImageUrl)
+        builder.Property(p => p.ImageName)
             .HasMaxLength(2048);
 
         builder.HasIndex(p => p.Name)
