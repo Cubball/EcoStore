@@ -12,6 +12,8 @@ public interface IUserService
 
     Task<IEnumerable<AppUserDTO>> GetUsersAsync(int? pageNumber = null, int? pageSize = null);
 
+    Task<int> GetUsersCountAsync();
+
     Task<AppUserDTO> GetUserByEmailAsync(string email);
 
     Task UpdateUserAsync(UpdateAppUserDTO userDTO);

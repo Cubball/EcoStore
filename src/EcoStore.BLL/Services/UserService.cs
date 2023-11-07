@@ -78,6 +78,11 @@ public class UserService : IUserService
         return userDTOs;
     }
 
+    public async Task<int> GetUsersCountAsync()
+    {
+        return await _userManager.Users.CountAsync();
+    }
+
     public async Task<bool> RegisterAdminAsync(AdminRegisterDTO registerDTO)
     {
         await _adminRegisterValidator.ValidateAsync(registerDTO);
