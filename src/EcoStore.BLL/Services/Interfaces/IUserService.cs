@@ -10,7 +10,7 @@ public interface IUserService
 
     Task<bool> ChangePasswordAsync(UserChangePasswordDTO changePasswordDTO);
 
-    Task<IEnumerable<AppUserDTO>> GetUsersAsync();
+    Task<IEnumerable<AppUserDTO>> GetUsersAsync(int? pageNumber = null, int? pageSize = null);
 
     Task<AppUserDTO> GetUserByEmailAsync(string email);
 
