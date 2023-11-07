@@ -125,6 +125,17 @@ public class OrderRepository : IOrderRepository
         return await orders.ToListAsync();
     }
 
+    public async Task<int> GetOrdersCountAsync(Expression<Func<Order, bool>>? predicate = null)
+    {
+        var orders = _context.Orders.AsQueryable();
+        if (predicate is not null)
+        {
+            orders = orders.Where(predicate);
+        }
+
+        return await orders.CountAsync();
+    }
+
     public async Task UpdateOrderAsync(int id, Action<Order> updateAction)
     {
         var order = await GetOrderByIdAsync(id);

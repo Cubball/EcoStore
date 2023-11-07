@@ -101,7 +101,7 @@ public class OrderService : IOrderService
         }
     }
 
-    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync(int? pageNumber = null, int? pageSize = null)
+    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync(string? userId, int? pageNumber = null, int? pageSize = null)
     {
         if (pageNumber is null or < 1)
         {
@@ -118,31 +118,31 @@ public class OrderService : IOrderService
         var orders = await _orderRepository.GetOrdersAsync(
                 skip: skip,
                 count: pageSize,
+                predicate: userId is not null ? o => o.UserId == userId : null,
                 orderBy: _orderBy,
                 descending: true);
         return orders.Select(o => o.ToDTO());
     }
 
-    public async Task<IEnumerable<OrderDTO>> GetOrdersByUserIdAsync(string userId, int? pageNumber = null, int? pageSize = null)
+    public async Task<int> GetOrderCountAsync(string? userId = null, DateTime? startDate = null, DateTime? endDate = null)
     {
-        if (pageNumber is null or < 1)
+        Expression<Func<Order, bool>>? predicate = null;
+        if (userId is not null)
         {
-            pageNumber = DefaultPageNumber;
+            predicate = PredicateBuilder.Combine(predicate, o => o.UserId == userId);
         }
 
-        if (pageSize is null or < 1)
+        if (startDate is not null)
         {
-            pageSize = DefaultPageSize;
+            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate >= startDate);
         }
 
-        _orderBy ??= o => o.OrderDate;
-        var skip = (pageNumber - 1) * pageSize;
-        var orders = await _orderRepository.GetOrdersByUserIdAsync(userId,
-                skip: skip,
-                count: pageSize,
-                orderBy: _orderBy,
-                descending: true);
-        return orders.Select(o => o.ToDTO());
+        if (endDate is not null)
+        {
+            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate <= endDate);
+        }
+
+        return await _orderRepository.GetOrdersCountAsync(predicate);
     }
 
     public async Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO)

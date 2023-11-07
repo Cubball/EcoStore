@@ -13,11 +13,7 @@ public interface IOrderRepository
             Expression<Func<Order, object>>? orderBy = null,
             bool descending = false);
 
-    Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId,
-            int? skip = null,
-            int? count = null,
-            Expression<Func<Order, object>>? orderBy = null,
-            bool descending = false);
+    Task<int> GetOrdersCountAsync(Expression<Func<Order, bool>>? predicate = null);
 
     Task<Order> GetOrderByIdAsync(int id);
 
