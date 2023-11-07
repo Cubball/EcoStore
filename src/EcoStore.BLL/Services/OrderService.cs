@@ -101,7 +101,12 @@ public class OrderService : IOrderService
         }
     }
 
-    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync(string? userId, int? pageNumber = null, int? pageSize = null)
+    public async Task<IEnumerable<OrderDTO>> GetOrdersAsync(
+            string? userId,
+            DateTime? startDate = null,
+            DateTime? endDate = null,
+            int? pageNumber = null,
+            int? pageSize = null)
     {
         if (pageNumber is null or < 1)
         {
@@ -118,13 +123,21 @@ public class OrderService : IOrderService
         var orders = await _orderRepository.GetOrdersAsync(
                 skip: skip,
                 count: pageSize,
-                predicate: userId is not null ? o => o.UserId == userId : null,
+                predicate: GetOrderPredicate(userId, startDate, endDate),
                 orderBy: _orderBy,
                 descending: true);
         return orders.Select(o => o.ToDTO());
     }
 
-    public async Task<int> GetOrderCountAsync(string? userId = null, DateTime? startDate = null, DateTime? endDate = null)
+    public async Task<int> GetOrderCountAsync(
+            string? userId = null,
+            DateTime? startDate = null,
+            DateTime? endDate = null)
+    {
+        return await _orderRepository.GetOrdersCountAsync(GetOrderPredicate(userId, startDate, endDate));
+    }
+
+    private static Expression<Func<Order, bool>>? GetOrderPredicate(string? userId, DateTime? startDate, DateTime? endDate)
     {
         Expression<Func<Order, bool>>? predicate = null;
         if (userId is not null)
@@ -142,7 +155,7 @@ public class OrderService : IOrderService
             predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate <= endDate);
         }
 
-        return await _orderRepository.GetOrdersCountAsync(predicate);
+        return predicate;
     }
 
     public async Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO)
