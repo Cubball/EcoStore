@@ -113,7 +113,7 @@ public class ProductService : IProductService
         return products.Select(p => p.ToDTO());
     }
 
-    public async Task<int> GetProductsCountAsync(ProductsFilterDTO? filterDTO)
+    public async Task<int> GetProductsCountAsync(ProductsFilterDTO? filterDTO = null)
     {
         return await _productRepository.GetProductsCountAsync(GetFilterPredicate(filterDTO));
     }
