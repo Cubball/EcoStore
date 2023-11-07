@@ -13,6 +13,8 @@ public interface IProductRepository
             Expression<Func<Product, object>>? orderBy = null,
             bool descending = false);
 
+    Task<int> GetProductsCountAsync(Expression<Func<Product, bool>>? predicate = null);
+
     Task<Product> GetProductByIdAsync(int id);
 
     Task<int> AddProductAsync(Product product);

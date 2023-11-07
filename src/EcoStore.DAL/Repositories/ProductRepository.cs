@@ -86,6 +86,17 @@ public class ProductRepository : IProductRepository
         return await products.ToListAsync();
     }
 
+    public async Task<int> GetProductsCountAsync(Expression<Func<Product, bool>>? predicate = null)
+    {
+        var products = _context.Products.AsQueryable();
+        if (predicate is not null)
+        {
+            products = products.Where(predicate);
+        }
+
+        return await products.CountAsync();
+    }
+
     public async Task UpdateProductAsync(int id, Action<Product> updateAction)
     {
         var product = await GetProductByIdAsync(id);

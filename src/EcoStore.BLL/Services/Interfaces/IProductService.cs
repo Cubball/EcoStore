@@ -8,6 +8,8 @@ public interface IProductService
 
     Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductsFilterDTO? filterDTO);
 
+    Task<int> GetProductsCountAsync(ProductsFilterDTO? filterDTO);
+
     Task<int> CreateProductAsync(CreateProductDTO productDTO);
 
     Task UpdateProductAsync(UpdateProductDTO productDTO);
