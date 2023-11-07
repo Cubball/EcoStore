@@ -95,6 +95,11 @@ public class BrandService : IBrandService
         return brands.Select(b => b.ToDTO());
     }
 
+    public async Task<int> GetBrandsCountAsync()
+    {
+        return await _brandRepository.GetBrandsCountAsync();
+    }
+
     public async Task<IEnumerable<ProductDTO>> GetProductsByBrandAsync(int brandId)
     {
         var brand = await _brandRepository.GetBrandByIdAsync(brandId);

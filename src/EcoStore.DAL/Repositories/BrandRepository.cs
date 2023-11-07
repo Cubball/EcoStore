@@ -73,6 +73,11 @@ public class BrandRepository : IBrandRepository
         return await brands.ToListAsync();
     }
 
+    public async Task<int> GetBrandsCountAsync()
+    {
+        return await _context.Brands.CountAsync();
+    }
+
     public async Task<Brand> GetBrandByIdAsync(int id)
     {
         return await _context.Brands

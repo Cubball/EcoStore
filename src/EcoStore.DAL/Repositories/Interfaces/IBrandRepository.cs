@@ -12,6 +12,8 @@ public interface IBrandRepository
             Expression<Func<Brand, object>>? orderBy = null,
             bool descending = false);
 
+    Task<int> GetBrandsCountAsync();
+
     Task<Brand> GetBrandByIdAsync(int id);
 
     Task<int> AddBrandAsync(Brand brand);
