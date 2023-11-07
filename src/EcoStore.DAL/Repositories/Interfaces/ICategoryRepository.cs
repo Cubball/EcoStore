@@ -11,7 +11,10 @@ public interface ICategoryRepository
             int? count = null,
             Expression<Func<Category, object>>? orderBy = null,
             bool descending = false);
+
     Task<Category> GetCategoryByIdAsync(int id);
+
+    Task<int> GetCategoriesCountAsync();
 
     Task<int> AddCategoryAsync(Category category);
 

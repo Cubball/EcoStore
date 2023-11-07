@@ -73,6 +73,11 @@ public class CategoryRepository : ICategoryRepository
         return await categories.ToListAsync();
     }
 
+    public async Task<int> GetCategoriesCountAsync()
+    {
+        return await _context.Categories.CountAsync();
+    }
+
     public async Task<Category> GetCategoryByIdAsync(int id)
     {
         return await _context.Categories

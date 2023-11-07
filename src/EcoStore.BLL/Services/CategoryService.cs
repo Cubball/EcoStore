@@ -77,6 +77,11 @@ public class CategoryService : ICategoryService
         return (await _categoryRepository.GetCategoriesAsync(orderBy: _orderBy)).Select(b => b.ToDTO());
     }
 
+    public async Task<int> GetCategoriesCountAsync()
+    {
+        return await _categoryRepository.GetCategoriesCountAsync();
+    }
+
     public async Task<IEnumerable<ProductDTO>> GetProductsByCategoryAsync(int categoryId)
     {
         var category = await _categoryRepository.GetCategoryByIdAsync(categoryId);
