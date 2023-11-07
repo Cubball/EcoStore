@@ -154,17 +154,6 @@ public class ProductService : IProductService
         }
     }
 
-    private static Expression<Func<Product, bool>> Combine(Expression<Func<Product, bool>>? first, Expression<Func<Product, bool>> second)
-    {
-        if (first is null)
-        {
-            return second;
-        }
-
-        var body = Expression.AndAlso(first.Body, second.Body);
-        return Expression.Lambda<Func<Product, bool>>(body, first.Parameters);
-    }
-
     private static Expression<Func<Product, object>>? GetOrderBySelector(ProductsFilterDTO? filterDTO)
     {
         return filterDTO?.SortBy is null
@@ -183,27 +172,27 @@ public class ProductService : IProductService
         Expression<Func<Product, bool>>? predicate = null;
         if (filterDTO?.CategoryIds is not null)
         {
-            predicate = Combine(predicate, p => filterDTO.CategoryIds.Contains(p.CategoryId));
+            predicate = PredicateBuilder.Combine(predicate, p => filterDTO.CategoryIds.Contains(p.CategoryId));
         }
 
         if (filterDTO?.BrandIds is not null)
         {
-            predicate = Combine(predicate, p => filterDTO.BrandIds.Contains(p.BrandId));
+            predicate = PredicateBuilder.Combine(predicate, p => filterDTO.BrandIds.Contains(p.BrandId));
         }
 
         if (filterDTO?.MinPrice is not null)
         {
-            predicate = Combine(predicate, p => p.Price >= filterDTO.MinPrice);
+            predicate = PredicateBuilder.Combine(predicate, p => p.Price >= filterDTO.MinPrice);
         }
 
         if (filterDTO?.MaxPrice is not null)
         {
-            predicate = Combine(predicate, p => p.Price <= filterDTO.MaxPrice);
+            predicate = PredicateBuilder.Combine(predicate, p => p.Price <= filterDTO.MaxPrice);
         }
 
         if (filterDTO?.SearchString is not null)
         {
-            predicate = Combine(predicate, p => p.Name.Contains(filterDTO.SearchString, StringComparison.InvariantCultureIgnoreCase));
+            predicate = PredicateBuilder.Combine(predicate, p => p.Name.Contains(filterDTO.SearchString, StringComparison.InvariantCultureIgnoreCase));
         }
 
         return predicate;
