@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.Presentation.Mapping;
@@ -9,28 +11,28 @@ namespace EcoStore.Presentation.Controllers;
 
 public class ProductsController : Controller
 {
-    private const int DefaultPageNumber = 1;
-    private const int DefaultPageSize = 25;
-    private const string DefaultSortBy = "Name";
-
     private readonly IProductService _productService;
+    private readonly int _defaultPageNumber;
+    private readonly int _defaultPageSize;
     private readonly string _imagePath;
 
     public ProductsController(IProductService productService, IConfiguration configuration)
     {
         _productService = productService;
         _imagePath = configuration["Path:Images"]!;
+        _defaultPageNumber = int.Parse(configuration["Defaults:PageNumber"]!, CultureInfo.InvariantCulture);
+        _defaultPageSize = int.Parse(configuration["Defaults:PageSize"]!, CultureInfo.InvariantCulture);
     }
 
     public async Task<IActionResult> All(
         [FromQuery] int[] categories,
         [FromQuery] int[] brands,
-        [FromQuery] int page = DefaultPageNumber,
-        [FromQuery] int pageSize = DefaultPageSize,
+        [FromQuery] int page,
+        [FromQuery] int pageSize,
+        [FromQuery] string sortBy,
         [FromQuery] int? minPrice = null,
         [FromQuery] int? maxPrice = null,
         [FromQuery] string? search = null,
-        [FromQuery] string sortBy = DefaultSortBy,
         [FromQuery] bool descending = false)
     {
         var filter = GetProductsFilter(categories, brands, page, pageSize,
@@ -64,7 +66,7 @@ public class ProductsController : Controller
         return View(product);
     }
 
-    private static ProductsFilterDTO GetProductsFilter(
+    private ProductsFilterDTO GetProductsFilter(
             int[] categories,
             int[] brands,
             int page,
@@ -82,12 +84,12 @@ public class ProductsController : Controller
 
         if (page < 1)
         {
-            page = DefaultPageNumber;
+            page = _defaultPageNumber;
         }
 
         if (pageSize < 1)
         {
-            pageSize = DefaultPageSize;
+            pageSize = _defaultPageSize;
         }
 
         return new ProductsFilterDTO

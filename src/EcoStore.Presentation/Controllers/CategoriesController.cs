@@ -9,19 +9,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EcoStore.Presentation.Controllers;
 
-public class BrandsController : Controller
+public class CategoriesController : Controller
 {
-    private readonly IBrandService _brandService;
+    private readonly ICategoryService _categoryService;
     private readonly IProductService _productService;
     private readonly int _defaultPageNumber;
     private readonly int _defaultPageSize;
     private readonly string _imagePath;
 
-    public BrandsController(IBrandService brandService,
+    public CategoriesController(ICategoryService categoryService,
             IProductService productService,
             IConfiguration configuration)
     {
-        _brandService = brandService;
+        _categoryService = categoryService;
         _productService = productService;
         _imagePath = configuration["Path:Images"]!;
         _defaultPageNumber = int.Parse(configuration["Defaults:PageNumber"]!, CultureInfo.InvariantCulture);
@@ -31,23 +31,23 @@ public class BrandsController : Controller
     // TODO: catch?
     public async Task<IActionResult> Details(int id)
     {
-        var brand = (await _brandService.GetBrandAsync(id)).ToViewModel();
+        var category = (await _categoryService.GetCategoryAsync(id)).ToViewModel();
         var filter = new ProductsFilterDTO
         {
             PageNumber = _defaultPageNumber,
             PageSize = _defaultPageSize,
-            BrandIds = new int[] { id },
+            CategoryIds = new int[] { id },
         };
-        var brandProducts = (await _productService.GetProductsAsync(filter)).Select(p => p.ToViewModel());
-        foreach (var product in brandProducts)
+        var categoryProducts = (await _productService.GetProductsAsync(filter)).Select(p => p.ToViewModel());
+        foreach (var product in categoryProducts)
         {
             product.ImagePath = Path.Combine(_imagePath, product.ImagePath);
         }
 
-        return View(new BrandDetailsViewModel
+        return View(new CategoryDetailsViewModel
         {
-            Brand = brand,
-            Products = brandProducts,
+            Category = category,
+            Products = categoryProducts,
         });
     }
 }
