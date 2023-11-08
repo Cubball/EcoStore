@@ -56,14 +56,17 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetProductsAsync(
             int? skip = null, int? count = null,
-            Expression<Func<Product, bool>>? predicate = null,
+            IEnumerable<Expression<Func<Product, bool>>>? predicates = null,
             Expression<Func<Product, object>>? orderBy = null,
             bool descending = false)
     {
         var products = _context.Products.AsQueryable();
-        if (predicate is not null)
+        if (predicates is not null)
         {
-            products = products.Where(predicate);
+            foreach (var predicate in predicates)
+            {
+                products = products.Where(predicate);
+            }
         }
 
         if (orderBy is not null)
@@ -86,12 +89,15 @@ public class ProductRepository : IProductRepository
         return await products.ToListAsync();
     }
 
-    public async Task<int> GetProductsCountAsync(Expression<Func<Product, bool>>? predicate = null)
+    public async Task<int> GetProductsCountAsync(IEnumerable<Expression<Func<Product, bool>>>? predicates = null)
     {
         var products = _context.Products.AsQueryable();
-        if (predicate is not null)
+        if (predicates is not null)
         {
-            products = products.Where(predicate);
+            foreach (var predicate in predicates)
+            {
+                products = products.Where(predicate);
+            }
         }
 
         return await products.CountAsync();

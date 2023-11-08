@@ -9,11 +9,11 @@ public interface IProductRepository
     Task<IEnumerable<Product>> GetProductsAsync(
             int? skip = null,
             int? count = null,
-            Expression<Func<Product, bool>>? predicate = null,
+            IEnumerable<Expression<Func<Product, bool>>>? predicates = null,
             Expression<Func<Product, object>>? orderBy = null,
             bool descending = false);
 
-    Task<int> GetProductsCountAsync(Expression<Func<Product, bool>>? predicate = null);
+    Task<int> GetProductsCountAsync(IEnumerable<Expression<Func<Product, bool>>>? predicates = null);
 
     Task<Product> GetProductByIdAsync(int id);
 

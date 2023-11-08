@@ -128,19 +128,21 @@ public class OrderService : IOrderService
     private static Expression<Func<Order, bool>>? GetOrderPredicate(string? userId, DateTime? startDate, DateTime? endDate)
     {
         Expression<Func<Order, bool>>? predicate = null;
-        if (userId is not null)
+        if (!string.IsNullOrWhiteSpace(userId))
         {
             predicate = PredicateBuilder.Combine(predicate, o => o.UserId == userId);
         }
 
         if (startDate is not null)
         {
-            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate >= startDate);
+            var date = DateTime.Now.Subtract(TimeSpan.FromDays(1));
+            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate >= date);
         }
 
         if (endDate is not null)
         {
-            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate <= endDate);
+            var date = endDate.Value;
+            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate <= date);
         }
 
         return predicate;

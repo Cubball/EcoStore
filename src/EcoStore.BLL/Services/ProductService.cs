@@ -87,13 +87,13 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductsFilterDTO filterDTO)
     {
         var skip = (filterDTO.PageNumber - 1) * filterDTO.PageSize;
-        var predicate = GetFilterPredicate(filterDTO);
+        var predicates = GetFilterPredicates(filterDTO);
         var orderBySelector = GetOrderBySelector(filterDTO);
         var descending = filterDTO.Descending;
         var products = await _productRepository.GetProductsAsync(
                 skip: skip,
                 count: filterDTO.PageSize,
-                predicate: predicate,
+                predicates: predicates,
                 orderBy: orderBySelector,
                 descending: descending);
         return products.Select(p => p.ToDTO());
@@ -101,7 +101,7 @@ public class ProductService : IProductService
 
     public async Task<int> GetProductsCountAsync(ProductsFilterDTO filterDTO)
     {
-        return await _productRepository.GetProductsCountAsync(GetFilterPredicate(filterDTO));
+        return await _productRepository.GetProductsCountAsync(GetFilterPredicates(filterDTO));
     }
 
     public async Task UpdateProductAsync(UpdateProductDTO productDTO)
@@ -156,34 +156,34 @@ public class ProductService : IProductService
         };
     }
 
-    private static Expression<Func<Product, bool>>? GetFilterPredicate(ProductsFilterDTO filterDTO)
+    private static IEnumerable<Expression<Func<Product, bool>>>? GetFilterPredicates(ProductsFilterDTO filterDTO)
     {
-        Expression<Func<Product, bool>>? predicate = null;
+        var predicates = new List<Expression<Func<Product, bool>>>();
         if (filterDTO.CategoryIds is not null && filterDTO.CategoryIds.Length > 0)
         {
-            predicate = PredicateBuilder.Combine(predicate, p => filterDTO.CategoryIds.Contains(p.CategoryId));
+            predicates.Add(p => filterDTO.CategoryIds.Contains(p.CategoryId));
         }
 
         if (filterDTO.BrandIds is not null && filterDTO.BrandIds.Length > 0)
         {
-            predicate = PredicateBuilder.Combine(predicate, p => filterDTO.BrandIds.Contains(p.BrandId));
+            predicates.Add(p => filterDTO.BrandIds.Contains(p.BrandId));
         }
 
         if (filterDTO.MinPrice is not null)
         {
-            predicate = PredicateBuilder.Combine(predicate, p => p.Price >= filterDTO.MinPrice);
+            predicates.Add(p => p.Price >= filterDTO.MinPrice);
         }
 
         if (filterDTO.MaxPrice is not null)
         {
-            predicate = PredicateBuilder.Combine(predicate, p => p.Price <= filterDTO.MaxPrice);
+            predicates.Add(p => p.Price <= filterDTO.MaxPrice);
         }
 
-        if (filterDTO.SearchString is not null)
+        if (!string.IsNullOrWhiteSpace(filterDTO.SearchString))
         {
-            predicate = PredicateBuilder.Combine(predicate, p => p.Name.Contains(filterDTO.SearchString));
+            predicates.Add(p => p.Name.Contains(filterDTO.SearchString));
         }
 
-        return predicate;
+        return predicates;
     }
 }
