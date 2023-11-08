@@ -111,7 +111,7 @@ public class OrderService : IOrderService
         var orders = await _orderRepository.GetOrdersAsync(
                 skip: skip,
                 count: pageSize,
-                predicate: GetOrderPredicate(userId, startDate, endDate),
+                predicates: GetOrderPredicates(userId, startDate, endDate),
                 orderBy: _orderBy,
                 descending: true);
         return orders.Select(o => o.ToDTO());
@@ -122,30 +122,30 @@ public class OrderService : IOrderService
             DateTime? startDate = null,
             DateTime? endDate = null)
     {
-        return await _orderRepository.GetOrdersCountAsync(GetOrderPredicate(userId, startDate, endDate));
+        return await _orderRepository.GetOrdersCountAsync(GetOrderPredicates(userId, startDate, endDate));
     }
 
-    private static Expression<Func<Order, bool>>? GetOrderPredicate(string? userId, DateTime? startDate, DateTime? endDate)
+    private static IEnumerable<Expression<Func<Order, bool>>>? GetOrderPredicates(string? userId, DateTime? startDate, DateTime? endDate)
     {
-        Expression<Func<Order, bool>>? predicate = null;
+        var predicates = new List<Expression<Func<Order, bool>>>();
         if (!string.IsNullOrWhiteSpace(userId))
         {
-            predicate = PredicateBuilder.Combine(predicate, o => o.UserId == userId);
+            predicates.Add(o => o.UserId == userId);
         }
 
         if (startDate is not null)
         {
-            var date = DateTime.Now.Subtract(TimeSpan.FromDays(1));
-            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate >= date);
+            var date = startDate.Value;
+            predicates.Add(o => o.OrderDate >= date);
         }
 
         if (endDate is not null)
         {
             var date = endDate.Value;
-            predicate = PredicateBuilder.Combine(predicate, o => o.OrderDate <= date);
+            predicates.Add(o => o.OrderDate <= date);
         }
 
-        return predicate;
+        return predicates;
     }
 
     public async Task UpdateOrderStatusAsync(UpdateOrderStatusDTO orderDTO)

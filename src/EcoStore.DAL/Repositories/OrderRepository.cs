@@ -60,7 +60,7 @@ public class OrderRepository : IOrderRepository
     public async Task<IEnumerable<Order>> GetOrdersAsync(
             int? skip = null,
             int? count = null,
-            Expression<Func<Order, bool>>? predicate = null,
+            IEnumerable<Expression<Func<Order, bool>>>? predicates = null,
             Expression<Func<Order, object>>? orderBy = null,
             bool descending = false)
     {
@@ -68,9 +68,12 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.User)
             .Include(o => o.OrderedProducts)
             .AsQueryable();
-        if (predicate is not null)
+        if (predicates is not null)
         {
-            orders = orders.Where(predicate);
+            foreach (var predicate in predicates)
+            {
+                orders = orders.Where(predicate);
+            }
         }
 
         if (orderBy is not null)
@@ -93,12 +96,15 @@ public class OrderRepository : IOrderRepository
         return await orders.ToListAsync();
     }
 
-    public async Task<int> GetOrdersCountAsync(Expression<Func<Order, bool>>? predicate = null)
+    public async Task<int> GetOrdersCountAsync(IEnumerable<Expression<Func<Order, bool>>>? predicates = null)
     {
         var orders = _context.Orders.AsQueryable();
-        if (predicate is not null)
+        if (predicates is not null)
         {
-            orders = orders.Where(predicate);
+            foreach (var predicate in predicates)
+            {
+                orders = orders.Where(predicate);
+            }
         }
 
         return await orders.CountAsync();

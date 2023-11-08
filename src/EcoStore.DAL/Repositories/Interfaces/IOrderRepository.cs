@@ -9,11 +9,11 @@ public interface IOrderRepository
     Task<IEnumerable<Order>> GetOrdersAsync(
             int? skip = null,
             int? count = null,
-            Expression<Func<Order, bool>>? predicate = null,
+            IEnumerable<Expression<Func<Order, bool>>>? predicates = null,
             Expression<Func<Order, object>>? orderBy = null,
             bool descending = false);
 
-    Task<int> GetOrdersCountAsync(Expression<Func<Order, bool>>? predicate = null);
+    Task<int> GetOrdersCountAsync(IEnumerable<Expression<Func<Order, bool>>>? predicates = null);
 
     Task<Order> GetOrderByIdAsync(int id);
 
