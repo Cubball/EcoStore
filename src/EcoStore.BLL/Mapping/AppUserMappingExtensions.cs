@@ -13,7 +13,7 @@ public static class AppUserMappingExtensions
             Email = user.Email!,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            PhoneNumber = user.PhoneNumber,
+            PhoneNumber = user.PhoneNumber!,
         };
     }
 

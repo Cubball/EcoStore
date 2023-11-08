@@ -36,15 +36,15 @@ public static class OrderMappingExtenstions
         return new OrderDTO
         {
             Id = order.Id,
-            User = order.User?.ToDTO(),
+            User = order.User.ToDTO(),
             OrderedProducts = order.OrderedProducts.Select(op => op.ToDTO()),
             OrderDate = order.OrderDate,
-            OrderStatus = order.OrderStatus.ToString(),
+            OrderStatus = order.OrderStatus.ToDTO(),
             StatusChangedDate = order.StatusChangedDate,
-            PaymentMethod = order.PaymentMethod.ToString(),
+            PaymentMethod = order.PaymentMethod.ToDTO(),
             Payment = order.Payment?.ToDTO(),
             ShippingAddress = order.ShippingAddress,
-            ShippingMethod = order.ShippingMethod.ToString(),
+            ShippingMethod = order.ShippingMethod.ToDTO(),
             TrackingNumber = order.TrackingNumber,
         };
     }

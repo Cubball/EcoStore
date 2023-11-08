@@ -36,4 +36,39 @@ public static class EnumsMappingExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(orderStatusDTO), orderStatusDTO, null)
         };
     }
+
+    public static PaymentMethodDTO ToDTO(this PaymentMethod paymentMethod)
+    {
+        return paymentMethod switch
+        {
+            PaymentMethod.Cash => PaymentMethodDTO.Cash,
+            PaymentMethod.Card => PaymentMethodDTO.Card,
+            _ => throw new ArgumentOutOfRangeException(nameof(paymentMethod), paymentMethod, null)
+        };
+    }
+
+    public static ShippingMethodDTO ToDTO(this ShippingMethod shippingMethod)
+    {
+        return shippingMethod switch
+        {
+            ShippingMethod.NovaPoshta => ShippingMethodDTO.NovaPoshta,
+            ShippingMethod.UkrPoshta => ShippingMethodDTO.UkrPoshta,
+            _ => throw new ArgumentOutOfRangeException(nameof(shippingMethod), shippingMethod, null)
+        };
+    }
+
+    public static OrderStatusDTO ToDTO(this OrderStatus orderStatus)
+    {
+        return orderStatus switch
+        {
+            OrderStatus.New => OrderStatusDTO.New,
+            OrderStatus.Processing => OrderStatusDTO.Processing,
+            OrderStatus.Delivering => OrderStatusDTO.Delivering,
+            OrderStatus.Delivered => OrderStatusDTO.Delivered,
+            OrderStatus.Completed => OrderStatusDTO.Completed,
+            OrderStatus.CancelledByUser => OrderStatusDTO.CancelledByUser,
+            OrderStatus.CancelledByAdmin => OrderStatusDTO.CancelledByAdmin,
+            _ => throw new ArgumentOutOfRangeException(nameof(orderStatus), orderStatus, null)
+        };
+    }
 }
