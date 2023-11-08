@@ -13,6 +13,7 @@ public static class ProductMappingExtensions
             Name = productDTO.Name,
             Description = productDTO.Description,
             Price = productDTO.Price,
+            ImagePath = productDTO.ImageName,
             Stock = productDTO.Stock,
         };
         if (productDTO.Category is not null)

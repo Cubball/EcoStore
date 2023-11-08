@@ -16,9 +16,6 @@ namespace EcoStore.BLL.Services;
 
 public class ProductService : IProductService
 {
-    // TODO : move this somewhere else? like controller?
-    private const int DefaultPageNumber = 1;
-    private const int DefaultPageSize = 25;
     private readonly IProductRepository _productRepository;
     private readonly IFileManager _fileManager;
     private readonly IGuidProvider _guidProvider;
@@ -89,25 +86,13 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductsFilterDTO filterDTO)
     {
-        int pageNumber = DefaultPageNumber;
-        int pageSize = DefaultPageSize;
-        if (filterDTO.PageNumber > 0)
-        {
-            pageNumber = filterDTO.PageNumber;
-        }
-
-        if (filterDTO.PageSize > 0)
-        {
-            pageSize = filterDTO.PageSize;
-        }
-
-        var skip = (pageNumber - 1) * pageSize;
+        var skip = (filterDTO.PageNumber - 1) * filterDTO.PageSize;
         var predicate = GetFilterPredicate(filterDTO);
         var orderBySelector = GetOrderBySelector(filterDTO);
         var descending = filterDTO.Descending;
         var products = await _productRepository.GetProductsAsync(
                 skip: skip,
-                count: pageSize,
+                count: filterDTO.PageSize,
                 predicate: predicate,
                 orderBy: orderBySelector,
                 descending: descending);

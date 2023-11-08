@@ -12,6 +12,7 @@ public class ProductsController : Controller
     private const int DefaultPageNumber = 1;
     private const int DefaultPageSize = 25;
     private const string DefaultSortBy = "Name";
+
     private readonly IProductService _productService;
     private readonly string _imagePath;
 
@@ -21,7 +22,7 @@ public class ProductsController : Controller
         _imagePath = configuration["Path:Images"]!;
     }
 
-    public async Task<IActionResult> Index(
+    public async Task<IActionResult> All(
         [FromQuery] int[] categories,
         [FromQuery] int[] brands,
         [FromQuery] int page = DefaultPageNumber,
@@ -32,7 +33,49 @@ public class ProductsController : Controller
         [FromQuery] string sortBy = DefaultSortBy,
         [FromQuery] bool descending = false)
     {
-        if (sortBy is null || !Enum.TryParse<SortBy>(sortBy, out var sortByEnum))
+        var filter = GetProductsFilter(categories, brands, page, pageSize,
+                minPrice, maxPrice, search, sortBy, descending);
+        var products = (await _productService.GetProductsAsync(filter))
+                .Select(p => p.ToViewModel());
+        var productsCount = await _productService.GetProductsCountAsync(filter);
+        foreach (var product in products)
+        {
+            product.ImagePath = Path.Combine(_imagePath, product.ImagePath);
+        }
+
+        var productsListViewModel = new ProductsListViewModel
+        {
+            PageInfo = new PageInfoViewModel
+            {
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = productsCount
+            },
+            Products = products
+        };
+        return View(productsListViewModel);
+    }
+
+    // TODO: catch?
+    public async Task<IActionResult> Details(int id)
+    {
+        var product = (await _productService.GetProductByIdAsync(id)).ToViewModel();
+        product.ImagePath = Path.Combine(_imagePath, product.ImagePath);
+        return View(product);
+    }
+
+    private static ProductsFilterDTO GetProductsFilter(
+            int[] categories,
+            int[] brands,
+            int page,
+            int pageSize,
+            int? minPrice,
+            int? maxPrice,
+            string? search,
+            string sortBy,
+            bool descending)
+    {
+        if (!Enum.TryParse<SortBy>(sortBy, out var sortByEnum))
         {
             sortByEnum = SortBy.Name;
         }
@@ -47,7 +90,7 @@ public class ProductsController : Controller
             pageSize = DefaultPageSize;
         }
 
-        var filter = new ProductsFilterDTO
+        return new ProductsFilterDTO
         {
             PageNumber = page,
             PageSize = pageSize,
@@ -59,26 +102,5 @@ public class ProductsController : Controller
             SortBy = sortByEnum,
             Descending = descending
         };
-        var products = await _productService.GetProductsAsync(filter);
-        var productViewModels = new List<ProductViewModel>();
-        var productsCount = await _productService.GetProductsCountAsync(filter);
-        foreach (var product in products)
-        {
-            var viewModel = product.ToViewModel();
-            viewModel.ImagePath = Path.Combine(_imagePath, product.ImageName);
-            productViewModels.Add(viewModel);
-        }
-
-        var productsListViewModel = new ProductsListViewModel
-        {
-            PageInfo = new PageInfoViewModel
-            {
-                PageNumber = page,
-                PageSize = pageSize,
-                TotalCount = productsCount
-            },
-            Products = productViewModels
-        };
-        return View(productsListViewModel);
     }
 }
