@@ -10,7 +10,7 @@ public class AppUserDTO
 
     public string LastName { get; set; } = default!;
 
-    public string? PhoneNumber { get; set; } = default!;
+    public string PhoneNumber { get; set; } = default!;
 
-    public string? Role { get; set; }
+    public RoleDTO Role { get; set; }
 }

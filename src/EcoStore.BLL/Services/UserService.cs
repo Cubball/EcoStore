@@ -46,7 +46,7 @@ public class UserService : IUserService
     {
         var user = await TryGetUser(email);
         var userDTO = user.ToDTO();
-        userDTO.Role = await _userManager.IsInRoleAsync(user, _adminRoleName) ? _adminRoleName : _userRoleName;
+        userDTO.Role = await _userManager.IsInRoleAsync(user, _adminRoleName) ? RoleDTO.Admin : RoleDTO.User;
         return userDTO;
     }
 
@@ -71,7 +71,7 @@ public class UserService : IUserService
         foreach (var user in users)
         {
             var userDTO = user.ToDTO();
-            userDTO.Role = await _userManager.IsInRoleAsync(user, _adminRoleName) ? _adminRoleName : _userRoleName;
+            userDTO.Role = await _userManager.IsInRoleAsync(user, _adminRoleName) ? RoleDTO.Admin : RoleDTO.User;
             userDTOs.Add(userDTO);
         }
 
