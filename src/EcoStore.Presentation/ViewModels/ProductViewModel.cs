@@ -14,11 +14,7 @@ public class ProductViewModel
 
     public int Stock { get; set; }
 
-    public int? CategoryId { get; set; }
+    public CategoryViewModel? Category { get; set; }
 
-    public string? Category { get; set; }
-
-    public int? BrandId { get; set; }
-
-    public string? Brand { get; set; }
+    public BrandViewModel? Brand { get; set; }
 }

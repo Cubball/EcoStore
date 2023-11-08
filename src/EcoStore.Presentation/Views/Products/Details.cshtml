@@ -5,5 +5,5 @@
 <p>@Model.Price</p>
 <img src="@Model.ImagePath">
 <p>@Model.Stock</p>
-<p>@Model.Category - @Model.CategoryId</p>
-<p>@Model.Brand - @Model.BrandId</p>
+<p>@Model.Category!.Name - @Model.Category.Id</p>
+<p>@Model.Brand!.Name - @Model.Brand.Id</p>

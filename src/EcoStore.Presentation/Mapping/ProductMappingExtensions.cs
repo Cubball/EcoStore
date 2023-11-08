@@ -15,18 +15,9 @@ public static class ProductMappingExtensions
             Price = productDTO.Price,
             ImagePath = productDTO.ImageName,
             Stock = productDTO.Stock,
+            Category = productDTO.Category?.ToViewModel(),
+            Brand = productDTO.Brand?.ToViewModel(),
         };
-        if (productDTO.Category is not null)
-        {
-            viewModel.CategoryId = productDTO.Category.Id;
-            viewModel.Category = productDTO.Category.Name;
-        }
-
-        if (productDTO.Brand is not null)
-        {
-            viewModel.BrandId = productDTO.Brand.Id;
-            viewModel.Brand = productDTO.Brand.Name;
-        }
 
         return viewModel;
     }
