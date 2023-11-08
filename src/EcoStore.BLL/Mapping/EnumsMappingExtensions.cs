@@ -25,14 +25,14 @@ public static class EnumsMappingExtensions
         };
     }
 
-    public static OrderStatus ToEntity(this OrderStatusDTO orderStatusDTO)
+    public static OrderStatus ToEntity(this NewOrderStatusDTO orderStatusDTO)
     {
         return orderStatusDTO switch
         {
-            OrderStatusDTO.Processing => OrderStatus.Processing,
-            OrderStatusDTO.Delivering => OrderStatus.Delivering,
-            OrderStatusDTO.Delivered => OrderStatus.Delivered,
-            OrderStatusDTO.Completed => OrderStatus.Completed,
+            NewOrderStatusDTO.Processing => OrderStatus.Processing,
+            NewOrderStatusDTO.Delivering => OrderStatus.Delivering,
+            NewOrderStatusDTO.Delivered => OrderStatus.Delivered,
+            NewOrderStatusDTO.Completed => OrderStatus.Completed,
             _ => throw new ArgumentOutOfRangeException(nameof(orderStatusDTO), orderStatusDTO, null)
         };
     }

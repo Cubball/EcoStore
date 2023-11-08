@@ -10,19 +10,17 @@ public class OrderDTO
 
     public DateTime OrderDate { get; set; }
 
-    public string OrderStatus { get; set; } = default!;
+    public OrderStatusDTO OrderStatus { get; set; } = default!;
 
     public DateTime StatusChangedDate { get; set; }
 
-    // Maybe use enum for this?
-    public string PaymentMethod { get; set; } = default!;
+    public PaymentMethodDTO PaymentMethod { get; set; } = default!;
 
     public PaymentDTO? Payment { get; set; }
 
     public string ShippingAddress { get; set; } = default!;
 
-    // Maybe use enum for this?
-    public string ShippingMethod { get; set; } = default!;
+    public ShippingMethodDTO ShippingMethod { get; set; } = default!;
 
     public string? TrackingNumber { get; set; }
 }

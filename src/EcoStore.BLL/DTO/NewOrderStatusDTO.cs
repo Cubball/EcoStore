@@ -1,12 +1,9 @@
 namespace EcoStore.BLL.DTO;
 
-public enum OrderStatusDTO
+public enum NewOrderStatusDTO
 {
-    New,
     Processing,
     Delivering,
     Delivered,
     Completed,
-    CancelledByUser,
-    CancelledByAdmin,
 }
