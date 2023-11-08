@@ -80,12 +80,6 @@ public class CategoryService : ICategoryService
         return await _categoryRepository.GetCategoriesCountAsync();
     }
 
-    public async Task<IEnumerable<ProductDTO>> GetProductsByCategoryAsync(int categoryId)
-    {
-        var category = await _categoryRepository.GetCategoryByIdAsync(categoryId);
-        return category.Products.Select(p => p.ToDTO());
-    }
-
     public async Task UpdateCategoryAsync(UpdateCategoryDTO categoryDto)
     {
         await _updateCategoryValidator.ValidateAsync(categoryDto);

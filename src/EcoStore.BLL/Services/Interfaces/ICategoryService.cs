@@ -17,6 +17,4 @@ public interface ICategoryService
     Task UpdateCategoryAsync(UpdateCategoryDTO categoryDto);
 
     Task DeleteCategoryAsync(int id);
-
-    Task<IEnumerable<ProductDTO>> GetProductsByCategoryAsync(int categoryId);
 }
