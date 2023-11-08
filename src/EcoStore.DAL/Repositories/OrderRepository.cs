@@ -93,38 +93,6 @@ public class OrderRepository : IOrderRepository
         return await orders.ToListAsync();
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId,
-            int? skip = null,
-            int? count = null,
-            Expression<Func<Order, object>>? orderBy = null,
-            bool descending = false)
-    {
-        var orders = _context.Orders
-            .Where(o => o.UserId == userId)
-            .Include(o => o.OrderedProducts)
-                .ThenInclude(op => op.Product)
-            .Include(o => o.Payment)
-            .AsQueryable();
-        if (orderBy is not null)
-        {
-            orders = descending
-                ? orders.OrderByDescending(orderBy)
-                : orders.OrderBy(orderBy);
-        }
-
-        if (skip is not null)
-        {
-            orders = orders.Skip(skip.Value);
-        }
-
-        if (count is not null)
-        {
-            orders = orders.Take(count.Value);
-        }
-
-        return await orders.ToListAsync();
-    }
-
     public async Task<int> GetOrdersCountAsync(Expression<Func<Order, bool>>? predicate = null)
     {
         var orders = _context.Orders.AsQueryable();
