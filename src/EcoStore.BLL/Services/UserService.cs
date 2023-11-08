@@ -17,20 +17,26 @@ public class UserService : IUserService
     private readonly UserManager<AppUser> _userManager;
     private readonly IValidator<UserRegisterDTO> _userRegisterValidator;
     private readonly IValidator<AdminRegisterDTO> _adminRegisterValidator;
+    private readonly IValidator<UserChangePasswordDTO> _userChangePasswordValidator;
+    private readonly IValidator<UpdateAppUserDTO> _updateAppUserValidator;
     private readonly string _adminRoleName = Role.Admin.ToString();
-    private readonly string _userRoleName = Role.User.ToString();
 
     public UserService(UserManager<AppUser> userManager,
             IValidator<UserRegisterDTO> userRegisterValidator,
-            IValidator<AdminRegisterDTO> adminRegisterValidator)
+            IValidator<AdminRegisterDTO> adminRegisterValidator,
+            IValidator<UserChangePasswordDTO> userChangePasswordValidator,
+            IValidator<UpdateAppUserDTO> updateAppUserValidator)
     {
         _userManager = userManager;
         _userRegisterValidator = userRegisterValidator;
         _adminRegisterValidator = adminRegisterValidator;
+        _userChangePasswordValidator = userChangePasswordValidator;
+        _updateAppUserValidator = updateAppUserValidator;
     }
 
     public async Task<bool> ChangePasswordAsync(UserChangePasswordDTO changePasswordDTO)
     {
+        await _userChangePasswordValidator.ValidateAsync(changePasswordDTO);
         var user = await TryGetUser(changePasswordDTO.Email);
         var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.OldPassword, changePasswordDTO.NewPassword);
         return result.Succeeded;
@@ -111,6 +117,7 @@ public class UserService : IUserService
 
     public async Task UpdateUserAsync(UpdateAppUserDTO userDTO)
     {
+        await _updateAppUserValidator.ValidateAsync(userDTO);
         var user = await TryGetUser(userDTO.Email);
         user.FirstName = userDTO.FirstName;
         user.LastName = userDTO.LastName;
