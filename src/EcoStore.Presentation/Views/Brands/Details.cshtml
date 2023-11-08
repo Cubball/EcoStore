@@ -1,0 +1,27 @@
+@model BrandDetailsViewModel
+
+<h2>@Model.Brand.Name</h2>
+<p>@Model.Brand.Description</p>
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Desc</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Stock</th>
+        </tr>
+    </thead>
+    @foreach (var product in Model.Products)
+    {
+    <tr>
+        <td>@product.Id</td>
+        <td>@product.Name</td>
+        <td>@product.Description</td>
+        <td>@product.Price</td>
+        <td><img src="@product.ImagePath"></td>
+        <td>@product.Stock</td>
+    </tr>
+    }
+</table>
