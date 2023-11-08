@@ -13,8 +13,6 @@ namespace EcoStore.BLL.Services;
 
 public class BrandService : IBrandService
 {
-    private const int DefaultPageNumber = 1;
-    private const int DefaultPageSize = 25;
     private readonly IBrandRepository _brandRepository;
     private readonly IValidator<CreateBrandDTO> _createBrandValidator;
     private readonly IValidator<UpdateBrandDTO> _updateBrandValidator;
@@ -77,18 +75,8 @@ public class BrandService : IBrandService
         return (await _brandRepository.GetBrandsAsync(orderBy: _orderBy)).Select(b => b.ToDTO());
     }
 
-    public async Task<IEnumerable<BrandDTO>> GetBrandsAsync(int? pageNumber = null, int? pageSize = null)
+    public async Task<IEnumerable<BrandDTO>> GetBrandsAsync(int pageNumber, int pageSize)
     {
-        if (pageNumber is null or < 1)
-        {
-            pageNumber = DefaultPageNumber;
-        }
-
-        if (pageSize is null or < 1)
-        {
-            pageSize = DefaultPageSize;
-        }
-
         _orderBy ??= b => b.Name;
         var skip = (pageNumber - 1) * pageSize;
         var brands = await _brandRepository.GetBrandsAsync(skip: skip, count: pageSize, orderBy: _orderBy);

@@ -8,7 +8,7 @@ public interface IBrandService
 
     Task<IEnumerable<BrandDTO>> GetAllBrandsAsync();
 
-    Task<IEnumerable<BrandDTO>> GetBrandsAsync(int? pageNumber = null, int? pageSize = null);
+    Task<IEnumerable<BrandDTO>> GetBrandsAsync(int pageNumber, int pageSize);
 
     Task<int> GetBrandsCountAsync();
 

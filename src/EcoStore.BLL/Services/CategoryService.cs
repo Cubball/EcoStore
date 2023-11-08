@@ -13,8 +13,6 @@ namespace EcoStore.BLL.Services;
 
 public class CategoryService : ICategoryService
 {
-    private const int DefaultPageNumber = 1;
-    private const int DefaultPageSize = 25;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IValidator<CreateCategoryDTO> _createCategoryValidator;
     private readonly IValidator<UpdateCategoryDTO> _updateCategoryValidator;
@@ -105,18 +103,8 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public async Task<IEnumerable<CategoryDTO>> GetCategoriesAsync(int? pageNumber = null, int? pageSize = null)
+    public async Task<IEnumerable<CategoryDTO>> GetCategoriesAsync(int pageNumber, int pageSize)
     {
-        if (pageNumber is null or < 1)
-        {
-            pageNumber = DefaultPageNumber;
-        }
-
-        if (pageSize is null or < 1)
-        {
-            pageSize = DefaultPageSize;
-        }
-
         _orderBy ??= c => c.Name;
         var skip = (pageNumber - 1) * pageSize;
         var categories = await _categoryRepository.GetCategoriesAsync(skip: skip, count: pageSize, orderBy: _orderBy);
