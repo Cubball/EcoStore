@@ -1,0 +1,8 @@
+@model LoginViewModel
+
+<form asp-action="Login" method="post">
+    <input asp-for="Email" required>
+    <span asp-validation-for="Email" class="text-danger"></span>
+    <input asp-for="Password" required>
+    <button type="submit">Увійти</button>
+</form>
