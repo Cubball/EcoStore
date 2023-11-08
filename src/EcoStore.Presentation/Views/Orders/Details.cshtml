@@ -1,0 +1,20 @@
+@model OrderViewModel
+
+<p>@Model.TotalPrice</p>
+<p>@Model.OrderDate</p>
+<p>@Model.OrderStatus</p>
+<p>@Model.StatusChangedDate</p>
+<p>@Model.PaymentMethod</p>
+<p>@Model.Payment?.Id</p>
+<p>@Model.ShippingAddress</p>
+<p>@Model.ShippingMethod</p>
+<p>@Model.TrackingNumber</p>
+
+<ul>
+    @foreach (var orderedProduct in @Model.OrderedProducts)
+    {
+    <li>@orderedProduct.Product?.Name</li>
+    <li>@orderedProduct.Quantity</li>
+    <li>@orderedProduct.ProductPrice</li>
+    }
+</ul>

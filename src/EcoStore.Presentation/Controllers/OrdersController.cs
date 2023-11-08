@@ -70,4 +70,23 @@ public class OrdersController : Controller
         };
         return View(ordersListViewModel);
     }
+
+    // TODO: catch?
+    public async Task<IActionResult> Details(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        var order = await _orderService.GetOrderAsync(id);
+        if (userId != order.User.Id)
+        {
+            return RedirectToAction("All");
+        }
+
+        var orderViewModel = order.ToViewModel();
+        foreach (var orderedProduct in orderViewModel.OrderedProducts)
+        {
+            orderedProduct.Product!.ImagePath = Path.Combine(_imagePath, orderedProduct.Product.ImagePath);
+        }
+
+        return View(orderViewModel);
+    }
 }
