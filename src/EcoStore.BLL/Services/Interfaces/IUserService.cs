@@ -14,6 +14,7 @@ public interface IUserService
 
     Task<int> GetUsersCountAsync();
 
+    // TODO : by ID?
     Task<AppUserDTO> GetUserByEmailAsync(string email);
 
     Task UpdateUserAsync(UpdateAppUserDTO userDTO);
