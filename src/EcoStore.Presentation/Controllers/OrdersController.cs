@@ -1,5 +1,6 @@
 using System.Globalization;
 
+using EcoStore.BLL.DTO;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.DAL.Entities;
 using EcoStore.Presentation.Mapping;
@@ -88,5 +89,28 @@ public class OrdersController : Controller
         }
 
         return View(orderViewModel);
+    }
+
+    // TODO: catch
+    public async Task<IActionResult> Cancel(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        var order = await _orderService.GetOrderAsync(id);
+        return userId == order.User.Id ? View(id) : RedirectToAction("All");
+    }
+
+    // TODO: catch
+    public async Task<IActionResult> CancelConfirmed(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        var order = await _orderService.GetOrderAsync(id);
+        if (userId != order.User.Id)
+        {
+            return RedirectToAction("All");
+        }
+
+        var cancelOrderDTO = new CancelOrderByUserDTO { Id = id, };
+        await _orderService.CancelOrderByUserAsync(cancelOrderDTO);
+        return RedirectToAction("Details", id);
     }
 }
