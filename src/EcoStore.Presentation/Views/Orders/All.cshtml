@@ -1,0 +1,6 @@
+@model OrdersListViewModel
+
+@foreach (var order in Model.Orders)
+{
+    <p>@order.TotalPrice - @order.OrderDate</p>
+}
