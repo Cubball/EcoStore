@@ -4,7 +4,7 @@ public class OrderDTO
 {
     public int Id { get; set; }
 
-    public AppUserDTO? User { get; set; }
+    public AppUserDTO User { get; set; } = default!;
 
     public IEnumerable<OrderedProductDTO> OrderedProducts { get; set; } = default!;
 
