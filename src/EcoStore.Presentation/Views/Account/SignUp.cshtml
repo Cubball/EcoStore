@@ -1,0 +1,31 @@
+@model SignUpViewModel
+
+<form asp-action="SignUp" method="post">
+    <div>
+        <label asp-for="FirstName">Ім'я</label>
+        <input asp-for="FirstName" required>
+    </div>
+    <div>
+        <label asp-for="LastName">Прізвище</label>
+        <input asp-for="LastName" required>
+    </div>
+    <div>
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" required>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Password">Пароль</label>
+        <input asp-for="Password" required>
+    </div>
+    <div>
+        <label asp-for="ConfirmPassword">Пароль 2</label>
+        <input asp-for="ConfirmPassword" required>
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="PhoneNumber">Телефон</label>
+        <input asp-for="PhoneNumber" required>
+    </div>
+    <button type="submit">зареєструватися</button>
+</form>

@@ -17,4 +17,17 @@ public static class AppUserMappingExtensions
             Role = appUserDTO.Role.ToViewModel(),
         };
     }
+
+    public static UserRegisterDTO ToDTO(this SignUpViewModel signUpViewModel)
+    {
+        return new UserRegisterDTO
+        {
+            Email = signUpViewModel.Email,
+            FirstName = signUpViewModel.FirstName,
+            LastName = signUpViewModel.LastName,
+            Password = signUpViewModel.Password,
+            ConfirmPassword = signUpViewModel.ConfirmPassword,
+            PhoneNumber = signUpViewModel.PhoneNumber,
+        };
+    }
 }

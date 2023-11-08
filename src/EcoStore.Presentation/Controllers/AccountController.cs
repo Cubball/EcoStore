@@ -1,5 +1,6 @@
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.DAL.Entities;
+using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
 using Microsoft.AspNetCore.Identity;
@@ -9,16 +10,16 @@ namespace EcoStore.Presentation.Controllers;
 
 public class AccountController : Controller
 {
-    // private readonly IUserService _userService;
+    private readonly IUserService _userService;
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
 
     public AccountController(
-            // IUserService userService,
+            IUserService userService,
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager)
     {
-        // _userService = userService;
+        _userService = userService;
         _userManager = userManager;
         _signInManager = signInManager;
     }
@@ -48,6 +49,32 @@ public class AccountController : Controller
         {
             ModelState.AddModelError(string.Empty, "Введені дані некоректні");
             return View(loginViewModel);
+        }
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+
+    public IActionResult SignUp()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    // TODO: catch
+    public async Task<IActionResult> SignUp(SignUpViewModel signUpViewModel)
+    {
+        var success = await _userService.RegisterUserAsync(signUpViewModel.ToDTO());
+        if (!success)
+        {
+            // TODO: change this and the same code in Login
+            ModelState.AddModelError(string.Empty, "Введені дані некоректні");
+            return View(signUpViewModel);
         }
 
         return RedirectToAction("Index", "Home");
