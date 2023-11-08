@@ -1,7 +1,4 @@
-﻿@model IEnumerable<ProductViewModel>
-@{
-ViewData["Title"] = "Home Page";
-}
+@model ProductsListViewModel
 
 <table>
     <thead>
@@ -14,7 +11,7 @@ ViewData["Title"] = "Home Page";
             <th>Stock</th>
         </tr>
     </thead>
-    @foreach (var product in Model)
+    @foreach (var product in Model.Products)
     {
     <tr>
         <td>@product.Id</td>

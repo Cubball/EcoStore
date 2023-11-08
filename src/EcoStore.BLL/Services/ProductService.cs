@@ -16,6 +16,7 @@ namespace EcoStore.BLL.Services;
 
 public class ProductService : IProductService
 {
+    // TODO : move this somewhere else? like controller?
     private const int DefaultPageNumber = 1;
     private const int DefaultPageSize = 25;
     private readonly IProductRepository _productRepository;
@@ -86,24 +87,24 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductsFilterDTO? filterDTO = null)
+    public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductsFilterDTO filterDTO)
     {
         int pageNumber = DefaultPageNumber;
         int pageSize = DefaultPageSize;
-        if (filterDTO?.PageNumber is not null and > 0)
+        if (filterDTO.PageNumber > 0)
         {
-            pageNumber = filterDTO.PageNumber.Value;
+            pageNumber = filterDTO.PageNumber;
         }
 
-        if (filterDTO?.PageSize is not null and > 0)
+        if (filterDTO.PageSize > 0)
         {
-            pageSize = filterDTO.PageSize.Value;
+            pageSize = filterDTO.PageSize;
         }
 
         var skip = (pageNumber - 1) * pageSize;
         var predicate = GetFilterPredicate(filterDTO);
         var orderBySelector = GetOrderBySelector(filterDTO);
-        var descending = filterDTO?.Descending ?? false;
+        var descending = filterDTO.Descending;
         var products = await _productRepository.GetProductsAsync(
                 skip: skip,
                 count: pageSize,
@@ -113,7 +114,7 @@ public class ProductService : IProductService
         return products.Select(p => p.ToDTO());
     }
 
-    public async Task<int> GetProductsCountAsync(ProductsFilterDTO? filterDTO = null)
+    public async Task<int> GetProductsCountAsync(ProductsFilterDTO filterDTO)
     {
         return await _productRepository.GetProductsCountAsync(GetFilterPredicate(filterDTO));
     }
@@ -159,45 +160,43 @@ public class ProductService : IProductService
         }
     }
 
-    private static Expression<Func<Product, object>>? GetOrderBySelector(ProductsFilterDTO? filterDTO)
+    private static Expression<Func<Product, object>>? GetOrderBySelector(ProductsFilterDTO filterDTO)
     {
-        return filterDTO?.SortBy is null
-            ? null
-            : filterDTO.SortBy switch
-            {
-                SortBy.Price => p => p.Price,
-                SortBy.Name => p => p.Name,
-                SortBy.DateCreated => p => p.Id,
-                _ => null
-            };
+        return filterDTO.SortBy switch
+        {
+            SortBy.Price => p => p.Price,
+            SortBy.Name => p => p.Name,
+            SortBy.DateCreated => p => p.Id,
+            _ => null
+        };
     }
 
-    private static Expression<Func<Product, bool>>? GetFilterPredicate(ProductsFilterDTO? filterDTO)
+    private static Expression<Func<Product, bool>>? GetFilterPredicate(ProductsFilterDTO filterDTO)
     {
         Expression<Func<Product, bool>>? predicate = null;
-        if (filterDTO?.CategoryIds is not null)
+        if (filterDTO.CategoryIds is not null && filterDTO.CategoryIds.Length > 0)
         {
             predicate = PredicateBuilder.Combine(predicate, p => filterDTO.CategoryIds.Contains(p.CategoryId));
         }
 
-        if (filterDTO?.BrandIds is not null)
+        if (filterDTO.BrandIds is not null && filterDTO.BrandIds.Length > 0)
         {
             predicate = PredicateBuilder.Combine(predicate, p => filterDTO.BrandIds.Contains(p.BrandId));
         }
 
-        if (filterDTO?.MinPrice is not null)
+        if (filterDTO.MinPrice is not null)
         {
             predicate = PredicateBuilder.Combine(predicate, p => p.Price >= filterDTO.MinPrice);
         }
 
-        if (filterDTO?.MaxPrice is not null)
+        if (filterDTO.MaxPrice is not null)
         {
             predicate = PredicateBuilder.Combine(predicate, p => p.Price <= filterDTO.MaxPrice);
         }
 
-        if (filterDTO?.SearchString is not null)
+        if (filterDTO.SearchString is not null)
         {
-            predicate = PredicateBuilder.Combine(predicate, p => p.Name.Contains(filterDTO.SearchString, StringComparison.InvariantCultureIgnoreCase));
+            predicate = PredicateBuilder.Combine(predicate, p => p.Name.Contains(filterDTO.SearchString));
         }
 
         return predicate;

@@ -1,6 +1,5 @@
 namespace EcoStore.BLL.DTO;
 
-// TODO: Use enums here?
 public class OrderDTO
 {
     public int Id { get; set; }
@@ -15,12 +14,14 @@ public class OrderDTO
 
     public DateTime StatusChangedDate { get; set; }
 
+    // Maybe use enum for this?
     public string PaymentMethod { get; set; } = default!;
 
     public PaymentDTO? Payment { get; set; }
 
     public string ShippingAddress { get; set; } = default!;
 
+    // Maybe use enum for this?
     public string ShippingMethod { get; set; } = default!;
 
     public string? TrackingNumber { get; set; }

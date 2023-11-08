@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-
+﻿using EcoStore.BLL.DTO;
 using EcoStore.BLL.Services.Interfaces;
+using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
 using Microsoft.AspNetCore.Mvc;
@@ -9,28 +9,34 @@ namespace EcoStore.Presentation.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IOrderService _orderService;
+    private const int DefaultPageNumber = 1;
+    private const int DefaultPageSize = 25;
+    private readonly IProductService _productService;
+    private readonly string _imagePath;
 
-    public HomeController(ILogger<HomeController> logger, IOrderService orderService)
+    public HomeController(IProductService productService, IConfiguration configuration)
     {
-        _logger = logger;
-        _orderService = orderService;
+        _productService = productService;
+        _imagePath = configuration["Path:Images"]!;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return Ok();
-    }
+        var products = await _productService.GetProductsAsync(new ProductsFilterDTO
+        {
+            PageNumber = DefaultPageNumber,
+            PageSize = DefaultPageSize,
+            SortBy = SortBy.DateCreated,
+            Descending = true,
+        });
+        var productViewModels = new List<ProductViewModel>();
+        foreach (var product in products)
+        {
+            var viewModel = product.ToViewModel();
+            viewModel.ImagePath = Path.Combine(_imagePath, product.ImageName);
+            productViewModels.Add(viewModel);
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(productViewModels);
     }
 }
