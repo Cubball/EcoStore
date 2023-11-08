@@ -9,11 +9,11 @@ public interface IOrderService
     Task<OrderDTO> GetOrderAsync(int id);
 
     Task<IEnumerable<OrderDTO>> GetOrdersAsync(
+            int pageNumber,
+            int pageSize,
             string? userId = null,
             DateTime? startDate = null,
-            DateTime? endDate = null,
-            int? pageNumber = null,
-            int? pageSize = null);
+            DateTime? endDate = null);
 
     Task<int> GetOrderCountAsync(
             string? userId = null,

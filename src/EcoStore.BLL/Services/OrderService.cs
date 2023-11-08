@@ -16,8 +16,6 @@ namespace EcoStore.BLL.Services;
 
 public class OrderService : IOrderService
 {
-    private const int DefaultPageNumber = 1;
-    private const int DefaultPageSize = 25;
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
     private readonly IPaymentRepository _paymentRepository;
@@ -102,22 +100,12 @@ public class OrderService : IOrderService
     }
 
     public async Task<IEnumerable<OrderDTO>> GetOrdersAsync(
-            string? userId,
+            int pageNumber,
+            int pageSize,
+            string? userId = null,
             DateTime? startDate = null,
-            DateTime? endDate = null,
-            int? pageNumber = null,
-            int? pageSize = null)
+            DateTime? endDate = null)
     {
-        if (pageNumber is null or < 1)
-        {
-            pageNumber = DefaultPageNumber;
-        }
-
-        if (pageSize is null or < 1)
-        {
-            pageSize = DefaultPageSize;
-        }
-
         _orderBy ??= o => o.OrderDate;
         var skip = (pageNumber - 1) * pageSize;
         var orders = await _orderRepository.GetOrdersAsync(
