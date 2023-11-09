@@ -1,9 +1,19 @@
+@* Remove this and add to cart without the user id ?*@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<EcoStore.DAL.Entities.AppUser> userManager
 @model ProductViewModel
 
 <h2>@Model.Name</h2>
 <p>@Model.Description</p>
 <p>@Model.Price</p>
 <img src="@Model.ImagePath">
-<p>@Model.Stock</p>
 <p>@Model.Category!.Name - @Model.Category.Id</p>
 <p>@Model.Brand!.Name - @Model.Brand.Id</p>
+@{
+    var userId = userManager.GetUserId(User);
+}
+<input id="product-count" type="number" min="1" max="@Model.Stock" step="1">
+<button id="add-to-cart" onclick="setCartCookieForProduct('@userId', '@Model.Id', document.getElementById('product-count').value)">
+    Add to cart</button>
+<button onclick="console.log(getCartCookie('@userId'))"></button>
+<button onclick="removeProductFromCartCookie('@userId', '@Model.Id')">x</button>
