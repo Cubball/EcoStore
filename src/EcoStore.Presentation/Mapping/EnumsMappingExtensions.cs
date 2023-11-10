@@ -49,4 +49,24 @@ public static class EnumsMappingExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(shippingMethodDTO), shippingMethodDTO, null),
         };
     }
+
+    public static PaymentMethodDTO ToDTO(this PaymentMethodViewModel paymentMethodViewModel)
+    {
+        return paymentMethodViewModel switch
+        {
+            PaymentMethodViewModel.Cash => PaymentMethodDTO.Cash,
+            PaymentMethodViewModel.Card => PaymentMethodDTO.Card,
+            _ => throw new ArgumentOutOfRangeException(nameof(paymentMethodViewModel), paymentMethodViewModel, null),
+        };
+    }
+
+    public static ShippingMethodDTO ToDTO(this ShippingMethodViewModel shippingMethodViewModel)
+    {
+        return shippingMethodViewModel switch
+        {
+            ShippingMethodViewModel.NovaPoshta => ShippingMethodDTO.NovaPoshta,
+            ShippingMethodViewModel.UkrPoshta => ShippingMethodDTO.UkrPoshta,
+            _ => throw new ArgumentOutOfRangeException(nameof(shippingMethodViewModel), shippingMethodViewModel, null),
+        };
+    }
 }

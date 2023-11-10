@@ -275,7 +275,6 @@ public class OrderService : IOrderService
             Currency = "uah",
             Source = stripeToken,
             Description = $"Замовлення #{order.Id}",
-            Customer = order.User.Email,
         };
         var chargeService = new ChargeService();
         try
@@ -293,7 +292,7 @@ public class OrderService : IOrderService
         }
         catch (StripeException e)
         {
-            throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {e.StripeError?.Code}");
+            throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {e.StripeError?.ToJson()}");
         }
     }
 }

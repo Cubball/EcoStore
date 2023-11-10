@@ -6,6 +6,8 @@ using EcoStore.DAL.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using Stripe;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -26,6 +28,8 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services
     .AddRepositories(builder.Configuration["Path:Images"]!)
     .AddApplicationServices();
+
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 var app = builder.Build();
 

@@ -1,0 +1,43 @@
+@model CreateOrderViewModel
+
+<script src="https://js.stripe.com/v3/"></script>
+
+@if (Model.Cart.CartItems is not null && Model.Cart.CartItems.Any())
+{
+    <ul>
+        @foreach (var item in Model.Cart.CartItems)
+        {
+        <li>@item.Product.Name - @item.Quantity</li>
+        }
+    </ul>
+    <form id="payment-form" asp-action="Checkout" method="post">
+        <!-- handle onchange for payment method and display the card input-->
+        <div id="card-element"></div>
+        <input asp-for="StripeToken" type="hidden">
+        <select asp-for="PaymentMethod" asp-items="Html.GetEnumSelectList<PaymentMethodViewModel>()">
+        </select>
+        <input asp-for="ShippingAddress">
+        <select asp-for="ShippingMethod" asp-items="Html.GetEnumSelectList<ShippingMethodViewModel>()">
+        </select>
+        <button type="submit"></button>
+    </form>
+}
+
+<script>
+    const stripe = Stripe('pk_test_51NuCruKg8vt03mmR4gRXfKYofFNh5UhsZSiqTX36OFlHS8VkjKGX31kIV6KWPnOualCFXr5R2SNEX6w6vCarcwwj00n1605wNb')
+    const card = stripe.elements().create('card')
+    card.mount('#card-element')
+
+    const form = document.getElementById('payment-form')
+    form.addEventListener('submit', async event => {
+        event.preventDefault()
+        const { token, error } = await stripe.createToken(card)
+
+        if (error) {
+            // display an error
+        } else {
+            document.getElementById('StripeToken').value = token.id
+            form.submit()
+        }
+    })
+</script>

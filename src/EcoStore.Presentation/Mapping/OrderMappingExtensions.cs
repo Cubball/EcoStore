@@ -32,4 +32,20 @@ public static class OrderMappingExtensions
             ProductPrice = orderedProductDTO.ProductPrice,
         };
     }
+
+    public static CreateOrderDTO ToDTO(this CreateOrderViewModel createOrderViewModel)
+    {
+        return new CreateOrderDTO
+        {
+            StripeToken = createOrderViewModel.StripeToken,
+            PaymentMethod = createOrderViewModel.PaymentMethod.ToDTO(),
+            ShippingAddress = createOrderViewModel.ShippingAddress,
+            ShippingMethod = createOrderViewModel.ShippingMethod.ToDTO(),
+            OrderedProducts = createOrderViewModel.Cart.CartItems!.Select(ci => new CreateOrderedProductDTO
+            {
+                ProductId = ci.Product.Id,
+                Quantity = ci.Quantity,
+            }),
+        };
+    }
 }
