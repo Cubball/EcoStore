@@ -13,7 +13,7 @@ const getCartCookie = (userId) => {
         const trimmedCookie = cookie.trim();
         if (trimmedCookie.startsWith(key)) {
             const cartCookie = trimmedCookie.substring(key.length);
-            return JSON.parse(cartCookie);
+            return JSON.parse(decodeURIComponent(cartCookie));
         }
     }
 
@@ -43,7 +43,7 @@ const removeProductFromCartCookie = (userId, productId) => {
 }
 
 const setCookie = (keyWithEquals, value, expiresIn) => {
-    document.cookie = `${keyWithEquals}${value};expires=${expiresIn};path=/`;
+    document.cookie = `${keyWithEquals}${encodeURIComponent(value)};expires=${expiresIn};path=/;SameSite=Strict`;
 }
 
 const getMilisecondsInDays = (days) => 24 * 60 * 60 * 1000 * days;

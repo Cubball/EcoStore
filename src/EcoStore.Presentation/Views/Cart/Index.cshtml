@@ -1,0 +1,11 @@
+@model CartViewModel
+
+@if (Model.CartItems is not null)
+{
+    <ul>
+        @foreach (var item in Model.CartItems)
+        {
+            <li>@item.Product.Name - @item.Quantity</li>
+        }
+    </ul>
+}
