@@ -1,0 +1,31 @@
+@model OrderViewModel
+
+<p>@Model.TotalPrice</p>
+<p>@Model.OrderDate</p>
+<p>@Model.OrderStatus</p>
+<p>@Model.StatusChangedDate</p>
+<p>@Model.PaymentMethod</p>
+<p>@Model.Payment?.Id</p>
+<p>@Model.ShippingAddress</p>
+<p>@Model.ShippingMethod</p>
+<p>@Model.TrackingNumber</p>
+
+<ul>
+    @foreach (var orderedProduct in @Model.OrderedProducts)
+    {
+    <li>@orderedProduct.Product?.Name</li>
+    <li>@orderedProduct.Quantity</li>
+    <li>@orderedProduct.ProductPrice</li>
+    }
+</ul>
+
+<form asp-action="UpdateTrackingNumber" method="post" asp-route-id="@Model.Id">
+    <input name="trackingNumber">
+    <button type="submit">Update Tracking Number</button>
+</form>
+
+<form asp-action="UpdateOrderStatus" method="post" asp-route-id="@Model.Id">
+    <select name="orderStatus" asp-items="Html.GetEnumSelectList<NewOrderStatusViewModel>()">
+    </select>
+    <button type="submit">Update Order Status</button>
+</form>

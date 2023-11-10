@@ -51,13 +51,19 @@ public class OrdersController : Controller
         }
 
         DateTime? startDate = from.HasValue
-            ? from.Value.ToDateTime(new TimeOnly(0, 0, 0), DateTimeKind.Utc)
+            ? from.Value.ToDateTime(new TimeOnly(0, 0, 0), DateTimeKind.Local).ToUniversalTime()
             : null;
         DateTime? endDate = to.HasValue
-            ? to.Value.ToDateTime(new TimeOnly(23, 59, 59), DateTimeKind.Utc)
+            ? to.Value.ToDateTime(new TimeOnly(23, 59, 59), DateTimeKind.Local).ToUniversalTime()
             : null;
         var orders = (await _orderService.GetOrdersAsync(page, pageSize, userId, startDate, endDate))
-            .Select(o => o.ToViewModel());
+            .Select(o => o.ToViewModel())
+            .ToList();
+        foreach (var order in orders)
+        {
+            UpdateOrdersTime(order);
+        }
+
         var ordersCount = await _orderService.GetOrderCountAsync(userId, startDate, endDate);
         var ordersListViewModel = new OrdersListViewModel
         {
@@ -83,11 +89,8 @@ public class OrdersController : Controller
         }
 
         var orderViewModel = order.ToViewModel();
-        foreach (var orderedProduct in orderViewModel.OrderedProducts)
-        {
-            orderedProduct.Product!.ImagePath = Path.Combine(_imagePath, orderedProduct.Product.ImagePath);
-        }
-
+        UpdateOrdersTime(orderViewModel);
+        UpdateOrderedProductsImagePaths(orderViewModel);
         return View(orderViewModel);
     }
 
@@ -112,5 +115,19 @@ public class OrdersController : Controller
         var cancelOrderDTO = new CancelOrderByUserDTO { Id = id, };
         await _orderService.CancelOrderByUserAsync(cancelOrderDTO);
         return RedirectToAction("Details", id);
+    }
+
+    private void UpdateOrderedProductsImagePaths(OrderViewModel orderViewModel)
+    {
+        foreach (var orderedProduct in orderViewModel.OrderedProducts)
+        {
+            orderedProduct.Product!.ImagePath = Path.Combine(_imagePath, orderedProduct.Product.ImagePath);
+        }
+    }
+
+    private static void UpdateOrdersTime(OrderViewModel orderViewModel)
+    {
+        orderViewModel.OrderDate = orderViewModel.OrderDate.ToLocalTime();
+        orderViewModel.StatusChangedDate = orderViewModel.StatusChangedDate.ToLocalTime();
     }
 }

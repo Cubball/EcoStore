@@ -1,0 +1,6 @@
+@model OrdersListViewModel
+
+@foreach (var order in Model.Orders)
+{
+    <p>@order.User.Id - @order.TotalPrice - @order.Id - @order.OrderStatus</p>
+}
