@@ -30,4 +30,36 @@ public static class AppUserMappingExtensions
             PhoneNumber = signUpViewModel.PhoneNumber,
         };
     }
+
+    public static UserChangePasswordDTO ToDTO(this ChangePasswordViewModel changePasswordViewModel)
+    {
+        return new UserChangePasswordDTO
+        {
+            OldPassword = changePasswordViewModel.OldPassword,
+            NewPassword = changePasswordViewModel.NewPassword,
+            ConfirmNewPassword = changePasswordViewModel.ConfirmNewPassword,
+        };
+    }
+
+    public static UpdateAppUserViewModel ToUpdateViewModel(this AppUserDTO appUserDTO)
+    {
+        return new UpdateAppUserViewModel
+        {
+            Id = appUserDTO.Id,
+            FirstName = appUserDTO.FirstName,
+            LastName = appUserDTO.LastName,
+            PhoneNumber = appUserDTO.PhoneNumber,
+        };
+    }
+
+    public static UpdateAppUserDTO ToDTO(this UpdateAppUserViewModel updateAppUserViewModel)
+    {
+        return new UpdateAppUserDTO
+        {
+            Id = updateAppUserViewModel.Id,
+            FirstName = updateAppUserViewModel.FirstName,
+            LastName = updateAppUserViewModel.LastName,
+            PhoneNumber = updateAppUserViewModel.PhoneNumber,
+        };
+    }
 }

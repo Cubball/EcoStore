@@ -1,0 +1,9 @@
+@model UpdateAppUserViewModel
+
+<form asp-action="Update" method="post">
+    <input asp-for="Id" type="hidden">
+    <input asp-for="FirstName">
+    <input asp-for="LastName">
+    <input asp-for="PhoneNumber">
+    <button type="submit"></button>
+</form>

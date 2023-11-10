@@ -16,7 +16,6 @@ public interface IUserService
 
     Task<AppUserDTO> GetUserByIdAsync(string id);
 
-    // TODO: Add Id to the DTO? since email may change?
     Task UpdateUserAsync(UpdateAppUserDTO userDTO);
 
     Task DeleteUserAsync(string id);

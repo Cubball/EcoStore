@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EcoStore.Presentation.Controllers;
 
-// TODO: change password 
 public class AccountController : Controller
 {
     private readonly IUserService _userService;
@@ -79,5 +78,49 @@ public class AccountController : Controller
         }
 
         return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> Info()
+    {
+        var userId = _userManager.GetUserId(User);
+        var userDTO = await _userService.GetUserByIdAsync(userId!);
+        var userViewModel = userDTO.ToViewModel();
+        return View(userViewModel);
+    }
+
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changePasswordViewModel)
+    {
+        var changePasswordDTO = changePasswordViewModel.ToDTO();
+        changePasswordDTO.Id = _userManager.GetUserId(User)!;
+        // note: doesnt throw, returns a bool
+        var success = await _userService.ChangePasswordAsync(changePasswordDTO);
+        if (!success)
+        {
+            return View();
+        }
+        // TODO: redirect to success page??
+        return RedirectToAction("Profile");
+    }
+
+    public async Task<IActionResult> Update()
+    {
+        var userId = _userManager.GetUserId(User);
+        var user = await _userService.GetUserByIdAsync(userId!);
+        return View(user.ToUpdateViewModel());
+    }
+
+    // catch
+    [HttpPost]
+    public async Task<IActionResult> Update(UpdateAppUserViewModel updateAppUserViewModel)
+    {
+        var updateAppUserDTO = updateAppUserViewModel.ToDTO();
+        await _userService.UpdateUserAsync(updateAppUserDTO);
+        return RedirectToAction(nameof(Info));
     }
 }

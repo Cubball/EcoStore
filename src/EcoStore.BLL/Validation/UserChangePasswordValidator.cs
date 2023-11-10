@@ -34,7 +34,7 @@ public class UserChangePasswordValidator : IValidator<UserChangePasswordDTO>
         }
 
         return errors.Count > 0
-            ? throw new Exceptions.ValidationException(errors)
+            ? throw new ValidationException(errors)
             : Task.CompletedTask;
     }
 }

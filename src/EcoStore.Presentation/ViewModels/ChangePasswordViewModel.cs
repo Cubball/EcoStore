@@ -1,9 +1,7 @@
-namespace EcoStore.BLL.DTO;
+namespace EcoStore.Presentation.ViewModels;
 
-public class UserChangePasswordDTO
+public class ChangePasswordViewModel
 {
-    public string Id { get; set; } = default!;
-
     public string OldPassword { get; set; } = default!;
 
     public string NewPassword { get; set; } = default!;

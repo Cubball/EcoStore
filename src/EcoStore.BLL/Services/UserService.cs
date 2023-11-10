@@ -37,7 +37,7 @@ public class UserService : IUserService
     public async Task<bool> ChangePasswordAsync(UserChangePasswordDTO changePasswordDTO)
     {
         await _userChangePasswordValidator.ValidateAsync(changePasswordDTO);
-        var user = await TryGetUserByEmail(changePasswordDTO.Email);
+        var user = await TryGetUserById(changePasswordDTO.Id);
         var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.OldPassword, changePasswordDTO.NewPassword);
         return result.Succeeded;
     }
@@ -118,7 +118,7 @@ public class UserService : IUserService
     public async Task UpdateUserAsync(UpdateAppUserDTO userDTO)
     {
         await _updateAppUserValidator.ValidateAsync(userDTO);
-        var user = await TryGetUserByEmail(userDTO.Email);
+        var user = await TryGetUserById(userDTO.Id);
         user.FirstName = userDTO.FirstName;
         user.LastName = userDTO.LastName;
         user.PhoneNumber = userDTO.PhoneNumber;
@@ -129,11 +129,5 @@ public class UserService : IUserService
     {
         return await _userManager.FindByIdAsync(id)
             ?? throw new ObjectNotFoundException($"Користувача з Id {id} не було знайдено");
-    }
-
-    private async Task<AppUser> TryGetUserByEmail(string email)
-    {
-        return await _userManager.FindByEmailAsync(email)
-            ?? throw new ObjectNotFoundException($"Користувача з поштою {email} не було знайдено");
     }
 }

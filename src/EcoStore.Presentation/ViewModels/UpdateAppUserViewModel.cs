@@ -1,6 +1,6 @@
-namespace EcoStore.BLL.DTO;
+namespace EcoStore.Presentation.ViewModels;
 
-public class UpdateAppUserDTO
+public class UpdateAppUserViewModel
 {
     public string Id { get; set; } = default!;
 
