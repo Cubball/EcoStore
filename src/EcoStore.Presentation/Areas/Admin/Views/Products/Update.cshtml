@@ -1,0 +1,19 @@
+<!--TODO: required-->
+@model UpdateProductViewModel
+
+<form asp-controller="Products" asp-action="Update" asp-area="Admin" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id">
+    <label asp-for="Name">Name:</label>
+    <input asp-for="Name">
+    <label asp-for="Description">Description:</label>
+    <input asp-for="Description">
+    <label asp-for="Price">Price:</label>
+    <input asp-for="Price" type="number" min="0" step="0.01">
+    <input asp-for="Image">
+    <input asp-for="Stock" type="number" min="0" step="1">
+    <label asp-for="CategoryId">CategoryId:</label>
+    <input asp-for="CategoryId">
+    <label asp-for="BrandId">BrandId:</label>
+    <input asp-for="BrandId">
+    <button type="submit"></button>
+</form>

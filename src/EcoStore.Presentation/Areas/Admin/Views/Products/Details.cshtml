@@ -1,0 +1,9 @@
+@* Remove this and add to cart without the user id ?*@
+@model ProductViewModel
+
+<h2>@Model.Name</h2>
+<p>@Model.Description</p>
+<p>@Model.Price</p>
+<img src="@Model.ImagePath">
+<p>@Model.Category!.Name - @Model.Category.Id</p>
+<p>@Model.Brand!.Name - @Model.Brand.Id</p>

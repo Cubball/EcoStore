@@ -42,7 +42,9 @@ public class ProductService : IProductService
         {
             var fileName = $"img_{_guidProvider.NewGuid()}{productDTO.ImageExtension}";
             await _fileManager.SaveFileAsync(productDTO.ImageStream, fileName);
-            return await _productRepository.AddProductAsync(productDTO.ToEntity());
+            var product = productDTO.ToEntity();
+            product.ImageName = fileName;
+            return await _productRepository.AddProductAsync(product);
         }
         catch (FileUploadFailedException e)
         {
