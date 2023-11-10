@@ -16,18 +16,15 @@ public class CartController : Controller
 {
     private const string CarCookieKeyPrefix = "cart_for_";
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IProductService _productService;
     private readonly IOrderService _orderService;
     private readonly UserManager<AppUser> _userManager;
 
     public CartController(
-            IHttpContextAccessor httpContextAccessor,
             IProductService productService,
             IOrderService orderService,
             UserManager<AppUser> userManager)
     {
-        _httpContextAccessor = httpContextAccessor;
         _productService = productService;
         _orderService = orderService;
         _userManager = userManager;

@@ -25,8 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(
         opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services
     .AddRepositories(builder.Configuration["Path:Images"]!)
-    .AddApplicationServices()
-    .AddHttpContextAccessor();
+    .AddApplicationServices();
 
 var app = builder.Build();
 
