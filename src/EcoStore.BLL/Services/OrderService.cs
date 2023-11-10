@@ -50,28 +50,31 @@ public class OrderService : IOrderService
         _cancelOrderByUserValidator = cancelOrderByUserValidator;
     }
 
+    // TODO: double-check
     public async Task<int> CreateOrderAsync(CreateOrderDTO orderDTO)
     {
         await _createOrderValidator.ValidateAsync(orderDTO);
         var order = orderDTO.ToEntity();
         await SetOrderDetailsAsync(order);
 
-        if (order.PaymentMethod == DAL.Entities.PaymentMethod.Card)
-        {
-            order.Payment = await GetPaymentForOrderAsync(order, orderDTO.StripeToken!);
-        }
-
         try
         {
-            return await _orderRepository.AddOrderAsync(order);
+            await _orderRepository.AddOrderAsync(order);
+            if (order.PaymentMethod == DAL.Entities.PaymentMethod.Card)
+            {
+                order.Payment = await GetPaymentForOrderAsync(order, orderDTO.StripeToken!);
+                await _orderRepository.UpdateOrderAsync(order.Id, o => o.PaymentId = order.Payment.Id);
+            }
+
+            return order.Id;
         }
         catch (RepositoryException e)
         {
-            if (order.PaymentMethod == DAL.Entities.PaymentMethod.Card)
-            {
-                await RefundChargeAsync(order.Payment!.Id);
-            }
-
+            throw new ServiceException(e.Message, e);
+        }
+        catch (PaymentFailedException e)
+        {
+            await _orderRepository.DeleteOrderAsync(order.Id);
             throw new ServiceException(e.Message, e);
         }
     }
@@ -271,18 +274,26 @@ public class OrderService : IOrderService
             Amount = (long)(order.TotalPrice * 100),
             Currency = "uah",
             Source = stripeToken,
+            Description = $"Замовлення #{order.Id}",
+            Customer = order.User.Email,
         };
         var chargeService = new ChargeService();
-        var charge = await chargeService.CreateAsync(chargeCreateOptions);
-
-        return charge.Paid
-            ? new Payment
-            {
-                Id = charge.Id,
-                Created = charge.Created,
-                Amount = (int)charge.Amount,
-                Currency = charge.Currency,
-            }
-            : throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {charge.FailureCode}");
+        try
+        {
+            var charge = await chargeService.CreateAsync(chargeCreateOptions);
+            return charge.Paid
+                ? new Payment
+                {
+                    Id = charge.Id,
+                    Created = charge.Created,
+                    Amount = (int)charge.Amount,
+                    Currency = charge.Currency,
+                }
+                : throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {charge.FailureCode}");
+        }
+        catch (StripeException e)
+        {
+            throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {e.StripeError?.Code}");
+        }
     }
 }
