@@ -36,9 +36,11 @@ public class CategoriesController : Controller
         {
             PageNumber = _defaultPageNumber,
             PageSize = _defaultPageSize,
-            CategoryIds = new int[] { id },
+            CategoryIds = new int[] { category.Id },
         };
-        var categoryProducts = (await _productService.GetProductsAsync(filter)).Select(p => p.ToViewModel());
+        var categoryProducts = (await _productService.GetProductsAsync(filter))
+            .Select(p => p.ToViewModel())
+            .ToList();
         foreach (var product in categoryProducts)
         {
             product.ImagePath = Path.Combine(_imagePath, product.ImagePath);

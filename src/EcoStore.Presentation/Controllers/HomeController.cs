@@ -29,12 +29,10 @@ public class HomeController : Controller
             SortBy = SortBy.DateCreated,
             Descending = true,
         });
-        var productViewModels = new List<ProductViewModel>();
-        foreach (var product in products)
+        var productViewModels = products.Select(p => p.ToViewModel()).ToList();
+        foreach (var product in productViewModels)
         {
-            var viewModel = product.ToViewModel();
-            viewModel.ImagePath = Path.Combine(_imagePath, product.ImageName);
-            productViewModels.Add(viewModel);
+            product.ImagePath = Path.Combine(_imagePath, product.ImagePath);
         }
 
         return View(productViewModels);

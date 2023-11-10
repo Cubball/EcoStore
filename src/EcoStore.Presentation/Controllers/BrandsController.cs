@@ -38,7 +38,9 @@ public class BrandsController : Controller
             PageSize = _defaultPageSize,
             BrandIds = new int[] { id },
         };
-        var brandProducts = (await _productService.GetProductsAsync(filter)).Select(p => p.ToViewModel());
+        var brandProducts = (await _productService.GetProductsAsync(filter))
+            .Select(p => p.ToViewModel())
+            .ToList();
         foreach (var product in brandProducts)
         {
             product.ImagePath = Path.Combine(_imagePath, product.ImagePath);

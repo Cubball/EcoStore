@@ -38,7 +38,8 @@ public class ProductsController : Controller
     {
         var filter = GetProductsFilter(page, pageSize, search, sortBy, descending);
         var products = (await _productService.GetProductsAsync(filter))
-                .Select(p => p.ToViewModel());
+                .Select(p => p.ToViewModel())
+                .ToList();
         var productsCount = await _productService.GetProductsCountAsync(filter);
         foreach (var product in products)
         {
