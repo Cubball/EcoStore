@@ -1,0 +1,5 @@
+@model AppUserViewModel
+
+<p>are u sure? @Model.Email</p>
+<a asp-action="DeleteConfirmed" asp-route-id="@Model.Id">ye</a>
+<a asp-action="Details" asp-route-id="@Model.Id">no</a>

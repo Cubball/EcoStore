@@ -1,0 +1,6 @@
+@model AppUsersListViewModel
+
+@foreach (var user in @Model.Users)
+{
+<p>@user.Email - @user.Id - @user.Role</p>
+}
