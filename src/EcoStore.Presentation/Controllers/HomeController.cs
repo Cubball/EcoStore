@@ -1,7 +1,6 @@
 ﻿using EcoStore.BLL.DTO;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.Presentation.Mapping;
-using EcoStore.Presentation.ViewModels;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +25,7 @@ public class HomeController : Controller
         {
             PageNumber = DefaultPageNumber,
             PageSize = DefaultPageSize,
-            SortBy = SortBy.DateCreated,
+            SortBy = SortByDTO.DateCreated,
             Descending = true,
         });
         var productViewModels = products.Select(p => p.ToViewModel()).ToList();

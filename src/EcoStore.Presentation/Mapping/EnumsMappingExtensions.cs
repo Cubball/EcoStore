@@ -69,4 +69,15 @@ public static class EnumsMappingExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(shippingMethodViewModel), shippingMethodViewModel, null),
         };
     }
+
+    public static SortByDTO ToDTO(this SortProductsByViewModel sortByViewModel)
+    {
+        return sortByViewModel switch
+        {
+            SortProductsByViewModel.Name => SortByDTO.Name,
+            SortProductsByViewModel.Price => SortByDTO.Price,
+            SortProductsByViewModel.DateCreated => SortByDTO.DateCreated,
+            _ => throw new ArgumentOutOfRangeException(nameof(sortByViewModel), sortByViewModel, null),
+        };
+    }
 }

@@ -29,7 +29,7 @@ public class ProductsController : Controller
         [FromQuery] int[] brands,
         [FromQuery] int page,
         [FromQuery] int pageSize,
-        [FromQuery] string sortBy,
+        [FromQuery] SortProductsByViewModel sortBy,
         [FromQuery] int? minPrice = null,
         [FromQuery] int? maxPrice = null,
         [FromQuery] string? search = null,
@@ -75,13 +75,9 @@ public class ProductsController : Controller
             int? minPrice,
             int? maxPrice,
             string? search,
-            string sortBy,
+            SortProductsByViewModel sortBy,
             bool descending)
     {
-        if (!Enum.TryParse<SortBy>(sortBy, out var sortByEnum))
-        {
-            sortByEnum = SortBy.Name;
-        }
 
         if (page < 1)
         {
@@ -102,7 +98,7 @@ public class ProductsController : Controller
             MinPrice = minPrice,
             MaxPrice = maxPrice,
             SearchString = search,
-            SortBy = sortByEnum,
+            SortBy = sortBy.ToDTO(),
             Descending = descending
         };
     }

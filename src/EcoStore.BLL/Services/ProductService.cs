@@ -151,9 +151,9 @@ public class ProductService : IProductService
     {
         return filterDTO.SortBy switch
         {
-            SortBy.Price => p => p.Price,
-            SortBy.Name => p => p.Name,
-            SortBy.DateCreated => p => p.Id,
+            SortByDTO.Price => p => p.Price,
+            SortByDTO.Name => p => p.Name,
+            SortByDTO.DateCreated => p => p.Id,
             _ => null
         };
     }

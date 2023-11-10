@@ -16,7 +16,7 @@ public class ProductsFilterDTO
 
     public string? SearchString { get; set; }
 
-    public SortBy SortBy { get; set; }
+    public SortByDTO SortBy { get; set; }
 
     public bool Descending { get; set; }
 }

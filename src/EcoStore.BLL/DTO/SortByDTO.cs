@@ -1,6 +1,6 @@
 namespace EcoStore.BLL.DTO;
 
-public enum SortBy
+public enum SortByDTO
 {
     Name,
     Price,

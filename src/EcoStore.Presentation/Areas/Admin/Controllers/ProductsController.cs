@@ -32,7 +32,7 @@ public class ProductsController : Controller
     public async Task<IActionResult> All(
         [FromQuery] int page,
         [FromQuery] int pageSize,
-        [FromQuery] string sortBy,
+        [FromQuery] SortProductsByViewModel sortBy,
         [FromQuery] string? search = null,
         [FromQuery] bool descending = false)
     {
@@ -121,14 +121,9 @@ public class ProductsController : Controller
             int page,
             int pageSize,
             string? search,
-            string sortBy,
+            SortProductsByViewModel sortBy,
             bool descending)
     {
-        if (!Enum.TryParse<SortBy>(sortBy, out var sortByEnum))
-        {
-            sortByEnum = SortBy.Name;
-        }
-
         if (page < 1)
         {
             page = _defaultPageNumber;
@@ -144,7 +139,7 @@ public class ProductsController : Controller
             PageNumber = page,
             PageSize = pageSize,
             SearchString = search,
-            SortBy = sortByEnum,
+            SortBy = sortBy.ToDTO(),
             Descending = descending
         };
     }
