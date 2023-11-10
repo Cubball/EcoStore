@@ -14,10 +14,10 @@ public interface IUserService
 
     Task<int> GetUsersCountAsync();
 
-    // TODO : by ID?
-    Task<AppUserDTO> GetUserByEmailAsync(string email);
+    Task<AppUserDTO> GetUserByIdAsync(string id);
 
+    // TODO: Add Id to the DTO? since email may change?
     Task UpdateUserAsync(UpdateAppUserDTO userDTO);
 
-    Task DeleteUserAsync(string email);
+    Task DeleteUserAsync(string id);
 }

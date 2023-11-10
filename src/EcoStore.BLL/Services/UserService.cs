@@ -37,20 +37,20 @@ public class UserService : IUserService
     public async Task<bool> ChangePasswordAsync(UserChangePasswordDTO changePasswordDTO)
     {
         await _userChangePasswordValidator.ValidateAsync(changePasswordDTO);
-        var user = await TryGetUser(changePasswordDTO.Email);
+        var user = await TryGetUserByEmail(changePasswordDTO.Email);
         var result = await _userManager.ChangePasswordAsync(user, changePasswordDTO.OldPassword, changePasswordDTO.NewPassword);
         return result.Succeeded;
     }
 
-    public async Task DeleteUserAsync(string email)
+    public async Task DeleteUserAsync(string id)
     {
-        var user = await TryGetUser(email);
+        var user = await TryGetUserById(id);
         await _userManager.DeleteAsync(user);
     }
 
-    public async Task<AppUserDTO> GetUserByEmailAsync(string email)
+    public async Task<AppUserDTO> GetUserByIdAsync(string id)
     {
-        var user = await TryGetUser(email);
+        var user = await TryGetUserById(id);
         var userDTO = user.ToDTO();
         userDTO.Role = await _userManager.IsInRoleAsync(user, _adminRoleName) ? RoleDTO.Admin : RoleDTO.User;
         return userDTO;
@@ -118,14 +118,20 @@ public class UserService : IUserService
     public async Task UpdateUserAsync(UpdateAppUserDTO userDTO)
     {
         await _updateAppUserValidator.ValidateAsync(userDTO);
-        var user = await TryGetUser(userDTO.Email);
+        var user = await TryGetUserByEmail(userDTO.Email);
         user.FirstName = userDTO.FirstName;
         user.LastName = userDTO.LastName;
         user.PhoneNumber = userDTO.PhoneNumber;
         await _userManager.UpdateAsync(user);
     }
 
-    private async Task<AppUser> TryGetUser(string email)
+    private async Task<AppUser> TryGetUserById(string id)
+    {
+        return await _userManager.FindByIdAsync(id)
+            ?? throw new ObjectNotFoundException($"Користувача з Id {id} не було знайдено");
+    }
+
+    private async Task<AppUser> TryGetUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email)
             ?? throw new ObjectNotFoundException($"Користувача з поштою {email} не було знайдено");
