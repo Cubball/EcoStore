@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EcoStore.Presentation.Controllers;
 
+// TODO: change password 
 public class AccountController : Controller
 {
     private readonly IUserService _userService;
