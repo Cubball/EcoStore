@@ -1,0 +1,4 @@
+@model BrandViewModel
+<h2>U sure? @Model.Name</h2>
+<a asp-action="DeleteConfirmed" asp-route-id="@Model.Id">ye</a>
+<a asp-action="Details" asp-route-id="@Model.Id">no</a>

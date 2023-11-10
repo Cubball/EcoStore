@@ -1,0 +1,7 @@
+@model BrandsListViewModel
+
+<h1>Total: @Model.PageInfo.TotalCount</h1>
+@foreach (var brand in @Model.Brands)
+{
+    <p>@brand.Name</p>
+}
