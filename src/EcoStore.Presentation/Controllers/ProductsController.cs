@@ -12,21 +12,18 @@ namespace EcoStore.Presentation.Controllers;
 public class ProductsController : Controller
 {
     private readonly IProductService _productService;
-    private readonly IReportService _reportService;
     private readonly int _defaultPageNumber;
     private readonly int _defaultPageSize;
     private readonly string _imagePath;
 
     public ProductsController(
             IProductService productService,
-            IReportService reportService,
             IConfiguration configuration)
     {
         _productService = productService;
         _imagePath = configuration["Path:Images"]!;
         _defaultPageNumber = int.Parse(configuration["Defaults:PageNumber"]!, CultureInfo.InvariantCulture);
         _defaultPageSize = int.Parse(configuration["Defaults:PageSize"]!, CultureInfo.InvariantCulture);
-        _reportService = reportService;
     }
 
     public async Task<IActionResult> All(
@@ -70,12 +67,6 @@ public class ProductsController : Controller
         var product = (await _productService.GetProductByIdAsync(id)).ToViewModel();
         product.ImagePath = Path.Combine(_imagePath, product.ImagePath);
         return View(product);
-    }
-
-    public async Task<IActionResult> Report()
-    {
-        var (content, fileName) = await _reportService.GetSalesReportAsync(SortSalesByDTO.Name, true, DateTime.Now.AddDays(-7));
-        return File(content, "text/html", fileName);
     }
 
     private ProductsFilterDTO GetProductsFilter(

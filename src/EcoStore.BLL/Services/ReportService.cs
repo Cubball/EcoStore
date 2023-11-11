@@ -14,6 +14,9 @@ public class ReportService : IReportService
     private static readonly string[] s_productReportTableHeaderValues = new[] { "Id", "Назва", "Ціна", "Бренд", "Категорія", "Кількість на складі" };
     private static readonly string[] s_productSalesReportTableHeaderValues = new[] { "Id", "Назва", "Ціна", "Бренд", "Категорія", "Кількість продано", "Сума продажів" };
     private static readonly string[] s_brandsCategoriesSalesReportTableHeaderValues = new[] { "Id", "Назва", "Кількість продано", "Сума продажів" };
+    private static readonly string[] s_ordersByStatusTableHeaderValues = new[] { "Статус", "Кількість", "Відсоток від загальної кількості", "Сума", "Відсоток від загальної суми" };
+    private static readonly string[] s_ordersByPaymentTableHeaderValues = new[] { "Метод оплати", "Кількість", "Відсоток від загальної кількості", "Сума", "Відсоток від загальної суми" };
+    private static readonly string[] s_ordersByShippingTableHeaderValues = new[] { "Метод доставки", "Кількість", "Відсоток від загальної кількості", "Сума", "Відсоток від загальної суми" };
     private readonly IClock _clock;
     private readonly IHtmlWriter _htmlWriter;
     private readonly IProductRepository _productRepository;
@@ -37,9 +40,57 @@ public class ReportService : IReportService
         _orderRepository = orderRepository;
     }
 
-    public Task<string> GetOrdersReportAsync(DateTime? startDate = null, DateTime? endDate = null)
+    public async Task<(byte[] Content, string FileName)> GetOrdersReportAsync(DateTime? startDate = null, DateTime? endDate = null)
     {
-        throw new NotImplementedException();
+        var orders = (await _orderRepository.GetOrdersAsync(predicates: GetOrderPredicates(startDate, endDate))).ToList();
+        var statusStatistics = orders
+            .GroupBy(o => o.OrderStatus)
+            .OrderBy(g => g.Key)
+            .ToDictionary(g => g.Key, g => (g.Count(), g.Sum(o => o.TotalPrice)));
+        var paymentMethodStatistics = orders
+            .GroupBy(o => o.PaymentMethod)
+            .OrderBy(g => g.Key)
+            .ToDictionary(g => g.Key, g => (g.Count(), g.Sum(o => o.TotalPrice)));
+        var shippingMethodStatistics = orders
+            .GroupBy(o => o.ShippingMethod)
+            .OrderBy(g => g.Key)
+            .ToDictionary(g => g.Key, g => (g.Count(), g.Sum(o => o.TotalPrice)));
+        var orderCount = orders.Count;
+        var ordersSum = orders.Sum(o => o.TotalPrice);
+
+        WriteOrdersTables(startDate, endDate, statusStatistics, paymentMethodStatistics, shippingMethodStatistics, orderCount, ordersSum);
+        return (_htmlWriter.GetDocument(), GetFileName("orders"));
+    }
+
+    private void WriteOrdersTables(
+            DateTime? startDate, DateTime? endDate,
+            Dictionary<OrderStatus, (int, decimal)> statusStatistics,
+            Dictionary<PaymentMethod, (int, decimal)> paymentMethodStatistics,
+            Dictionary<ShippingMethod, (int, decimal)> shippingMethodStatistics,
+            int orderCount, decimal ordersSum)
+    {
+        _htmlWriter.Clear();
+        _htmlWriter.AddStyles(CssStyles.BodyStyleFull + CssStyles.TableStyleFull);
+        _htmlWriter.AddHeader("Звіт по замовленнях");
+        if (startDate.HasValue || endDate.HasValue)
+        {
+            var paragraphText = "За період";
+            if (startDate.HasValue)
+            {
+                paragraphText += $" з {startDate.Value.ToLocalTime():dd-MM-yyyy}";
+            }
+
+            if (endDate.HasValue)
+            {
+                paragraphText += $" до {endDate.Value.ToLocalTime():dd-MM-yyyy}";
+            }
+
+            _htmlWriter.AddParagraph(paragraphText);
+        }
+
+        WriteOrdersByStatusTable(statusStatistics, orderCount, ordersSum);
+        WriteOrdersByPaymentMethodTable(paymentMethodStatistics, orderCount, ordersSum);
+        WriteOrdersByShippingMethodTable(shippingMethodStatistics, orderCount, ordersSum);
     }
 
     public async Task<(byte[] Content, string FileName)> GetSalesReportAsync(
@@ -48,7 +99,9 @@ public class ReportService : IReportService
             DateTime? startDate = null,
             DateTime? endDate = null)
     {
-        var orders = (await _orderRepository.GetOrdersAsync(predicates: GetOrderPredicates(startDate, endDate))).ToList();
+        var orderPredicates = GetOrderPredicates(startDate, endDate);
+        orderPredicates.Add(o => o.OrderStatus == OrderStatus.Completed);
+        var orders = (await _orderRepository.GetOrdersAsync(predicates: orderPredicates)).ToList();
         var products = new Dictionary<int, Product>();
         var productsStatistics = new Dictionary<int, (int Quantity, decimal TotalPrice)>();
         foreach (var order in orders)
@@ -58,6 +111,93 @@ public class ReportService : IReportService
 
         WriteSalesReport(products, productsStatistics, sortByDTO, descending, startDate, endDate);
         return (_htmlWriter.GetDocument(), GetFileName("sales"));
+    }
+
+    private void WriteOrdersByShippingMethodTable(Dictionary<ShippingMethod, (int, decimal)> shippingMethodStatistics, int orderCount, decimal ordersSum)
+    {
+        _htmlWriter.AddSubHeader("Замовлення за методом доставки");
+        _htmlWriter.StartTable();
+        _htmlWriter.AddTableHeader(s_ordersByShippingTableHeaderValues);
+        foreach (var entry in shippingMethodStatistics)
+        {
+            _htmlWriter.AddTableRow(new[]
+            {
+                GetShippingName(entry.Key),
+                entry.Value.Item1.ToString(CultureInfo.InvariantCulture),
+                ((double)entry.Value.Item1 / orderCount).ToString("P2", CultureInfo.InvariantCulture),
+                entry.Value.Item2.ToString("N2", CultureInfo.InvariantCulture),
+                (entry.Value.Item2 / ordersSum).ToString("P2", CultureInfo.InvariantCulture)
+            });
+        }
+
+        _htmlWriter.AddTableRow(new[]
+        {
+            "Всього",
+            orderCount.ToString(CultureInfo.InvariantCulture),
+            "100%",
+            ordersSum.ToString("N2", CultureInfo.InvariantCulture),
+            "100%"
+        },
+        CssStyles.BoldTextStyleValue);
+        _htmlWriter.EndTable();
+    }
+
+    private void WriteOrdersByPaymentMethodTable(Dictionary<PaymentMethod, (int, decimal)> paymentMethodStatistics, int orderCount, decimal ordersSum)
+    {
+        _htmlWriter.AddSubHeader("Замовлення за методом оплати");
+        _htmlWriter.StartTable();
+        _htmlWriter.AddTableHeader(s_ordersByPaymentTableHeaderValues);
+        foreach (var entry in paymentMethodStatistics)
+        {
+            _htmlWriter.AddTableRow(new[]
+            {
+                GetPaymentName(entry.Key),
+                entry.Value.Item1.ToString(CultureInfo.InvariantCulture),
+                ((double)entry.Value.Item1 / orderCount).ToString("P2", CultureInfo.InvariantCulture),
+                entry.Value.Item2.ToString("N2", CultureInfo.InvariantCulture),
+                (entry.Value.Item2 / ordersSum).ToString("P2", CultureInfo.InvariantCulture)
+            });
+        }
+
+        _htmlWriter.AddTableRow(new[]
+        {
+            "Всього",
+            orderCount.ToString(CultureInfo.InvariantCulture),
+            "100%",
+            ordersSum.ToString("N2", CultureInfo.InvariantCulture),
+            "100%"
+        },
+        CssStyles.BoldTextStyleValue);
+        _htmlWriter.EndTable();
+    }
+
+    private void WriteOrdersByStatusTable(Dictionary<OrderStatus, (int, decimal)> statusStatistics, int orderCount, decimal ordersSum)
+    {
+        _htmlWriter.AddSubHeader("Замовлення за статусом");
+        _htmlWriter.StartTable();
+        _htmlWriter.AddTableHeader(s_ordersByStatusTableHeaderValues);
+        foreach (var entry in statusStatistics)
+        {
+            _htmlWriter.AddTableRow(new[]
+            {
+                GetStatusName(entry.Key),
+                entry.Value.Item1.ToString(CultureInfo.InvariantCulture),
+                ((double)entry.Value.Item1 / orderCount).ToString("P2", CultureInfo.InvariantCulture),
+                entry.Value.Item2.ToString("N2", CultureInfo.InvariantCulture),
+                (entry.Value.Item2 / ordersSum).ToString("P2", CultureInfo.InvariantCulture)
+            });
+        }
+
+        _htmlWriter.AddTableRow(new[]
+        {
+            "Всього",
+            orderCount.ToString(CultureInfo.InvariantCulture),
+            "100%",
+            ordersSum.ToString("N2", CultureInfo.InvariantCulture),
+            "100%"
+        },
+        CssStyles.BoldTextStyleValue);
+        _htmlWriter.EndTable();
     }
 
     private void WriteSalesReport(
@@ -76,12 +216,12 @@ public class ReportService : IReportService
             var paragraphText = "За період";
             if (startDate.HasValue)
             {
-                paragraphText += $" з {startDate.Value:dd-MM-yyyy}";
+                paragraphText += $" з {startDate.Value.ToLocalTime():dd-MM-yyyy}";
             }
 
             if (endDate.HasValue)
             {
-                paragraphText += $" до {endDate.Value:dd-MM-yyyy}";
+                paragraphText += $" до {endDate.Value.ToLocalTime():dd-MM-yyyy}";
             }
 
             _htmlWriter.AddParagraph(paragraphText);
@@ -374,7 +514,7 @@ public class ReportService : IReportService
         return highlightLowStockThreshold is not null && product.Stock <= highlightLowStockThreshold;
     }
 
-    private static IEnumerable<Expression<Func<Order, bool>>> GetOrderPredicates(DateTime? startDate, DateTime? endDate)
+    private static List<Expression<Func<Order, bool>>> GetOrderPredicates(DateTime? startDate, DateTime? endDate)
     {
         var list = new List<Expression<Func<Order, bool>>>();
         if (startDate is not null)
@@ -388,5 +528,40 @@ public class ReportService : IReportService
         }
 
         return list;
+    }
+
+    private static string GetStatusName(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.New => "Новий",
+            OrderStatus.Processing => "В обробці",
+            OrderStatus.Delivering => "Відправлено",
+            OrderStatus.Delivered => "Доставлено",
+            OrderStatus.Completed => "Завершено",
+            OrderStatus.CancelledByUser => "Скасовано користувачем",
+            OrderStatus.CancelledByAdmin => "Скасовано адміністратором",
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
+    }
+
+    private static string GetPaymentName(PaymentMethod paymentMethod)
+    {
+        return paymentMethod switch
+        {
+            PaymentMethod.Cash => "Оплата при отриманні",
+            PaymentMethod.Card => "Оплата карткою",
+            _ => throw new ArgumentOutOfRangeException(nameof(paymentMethod), paymentMethod, null)
+        };
+    }
+
+    private static string GetShippingName(ShippingMethod shippingMethod)
+    {
+        return shippingMethod switch
+        {
+            ShippingMethod.NovaPoshta => "Нова Пошта",
+            ShippingMethod.UkrPoshta => "Укрпошта",
+            _ => throw new ArgumentOutOfRangeException(nameof(shippingMethod), shippingMethod, null)
+        };
     }
 }
