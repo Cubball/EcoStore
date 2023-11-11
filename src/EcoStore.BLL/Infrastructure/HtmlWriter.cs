@@ -66,4 +66,9 @@ public class HtmlWriter : IHtmlWriter
     {
         _htmlBuilder.AppendLine("<table>");
     }
+
+    public void Clear()
+    {
+        _htmlBuilder.Clear();
+    }
 }

@@ -19,4 +19,6 @@ public interface IHtmlWriter
     void EndTable();
 
     byte[] GetDocument();
+
+    void Clear();
 }

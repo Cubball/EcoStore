@@ -4,5 +4,6 @@ public enum SortProductsInReportByDTO
 {
     Name,
     Stock,
+    Price,
     DateCreated,
 }

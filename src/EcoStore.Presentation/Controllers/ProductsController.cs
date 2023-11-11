@@ -74,7 +74,7 @@ public class ProductsController : Controller
 
     public async Task<IActionResult> Report()
     {
-        var (content, fileName) = await _reportService.GetProductsReportAsync(SortProductsInReportByDTO.Name, false);
+        var (content, fileName) = await _reportService.GetSalesReportAsync(SortSalesByDTO.Name, true, DateTime.Now.AddDays(-7));
         return File(content, "text/html", fileName);
     }
 

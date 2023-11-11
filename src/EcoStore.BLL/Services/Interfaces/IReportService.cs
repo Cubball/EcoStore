@@ -10,4 +10,10 @@ public interface IReportService
             int? highlightLowStockThreshold = null);
 
     Task<string> GetOrdersReportAsync(DateTime? startDate = null, DateTime? endDate = null);
+
+    Task<(byte[] Content, string FileName)> GetSalesReportAsync(
+            SortSalesByDTO sortByDTO,
+            bool descending,
+            DateTime? startDate = null,
+            DateTime? endDate = null);
 }
