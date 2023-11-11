@@ -33,6 +33,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IHtmlWriter, HtmlWriter>();
+        services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IUserService, UserService>();
         return services;
     }
