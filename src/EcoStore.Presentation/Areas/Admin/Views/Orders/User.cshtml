@@ -1,0 +1,7 @@
+@model AppUsersOrdersListViewModel
+
+<h2>@Model.User.Email</h2>
+@foreach (var order in @Model.Orders)
+{
+<p>@order.Id - @order.TotalPrice</p>
+}
