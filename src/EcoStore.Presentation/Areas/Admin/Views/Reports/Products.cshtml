@@ -1,0 +1,10 @@
+@model ProductsReportOptionsViewModel
+
+<form asp-action="Products" method="post">
+    <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<SortProductsInReportByViewModel>()">
+    </select>
+    <input asp-for="Descending">
+    <input asp-for="HighlightLowStockProducts">
+    <input asp-for="LowStockThreshold">
+    <button type="submit"></button>
+</form>

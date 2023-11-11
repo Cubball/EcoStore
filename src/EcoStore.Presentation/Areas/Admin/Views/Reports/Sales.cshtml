@@ -1,0 +1,10 @@
+@model SalesReportOptionsViewModel
+
+<form asp-action="Sales" method="post">
+    <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<SortSalesByViewModel>()">
+    </select>
+    <input asp-for="Descending">
+    <input asp-for="From" type="date">
+    <input asp-for="To" type="date">
+    <button type="submit"></button>
+</form>
