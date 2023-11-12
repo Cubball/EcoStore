@@ -292,7 +292,7 @@ public class OrderService : IOrderService
         }
         catch (StripeException e)
         {
-            throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {e.StripeError?.ToJson()}");
+            throw new PaymentFailedException($"Оплата не вдалася. Код помилки: {e.StripeError.Code}");
         }
     }
 }
