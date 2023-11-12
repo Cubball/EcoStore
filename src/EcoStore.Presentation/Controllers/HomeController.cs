@@ -1,4 +1,6 @@
-﻿using EcoStore.BLL.DTO;
+﻿using System.Globalization;
+
+using EcoStore.BLL.DTO;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.Presentation.Mapping;
 
@@ -8,23 +10,25 @@ namespace EcoStore.Presentation.Controllers;
 
 public class HomeController : Controller
 {
-    private const int DefaultPageNumber = 1;
-    private const int DefaultPageSize = 25;
     private readonly IProductService _productService;
+    private readonly int _defaultPageNumber;
+    private readonly int _defaultPageSize;
     private readonly string _imagePath;
 
     public HomeController(IProductService productService, IConfiguration configuration)
     {
         _productService = productService;
         _imagePath = configuration["Path:Images"]!;
+        _defaultPageNumber = int.Parse(configuration["Defaults:PageNumber"]!, CultureInfo.InvariantCulture);
+        _defaultPageSize = int.Parse(configuration["Defaults:PageSize"]!, CultureInfo.InvariantCulture);
     }
 
     public async Task<IActionResult> Index()
     {
         var products = await _productService.GetProductsAsync(new ProductsFilterDTO
         {
-            PageNumber = DefaultPageNumber,
-            PageSize = DefaultPageSize,
+            PageNumber = _defaultPageNumber,
+            PageSize = _defaultPageSize,
             SortBy = SortByDTO.DateCreated,
             Descending = true,
         });

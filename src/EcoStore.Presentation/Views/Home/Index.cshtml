@@ -13,15 +13,15 @@
         <br>
         <h2>Новинки</h2>
     </div>
-    <div class="d-flex flex-wrap align-items-center justify-content-around">
+    <div class="d-flex flex-wrap align-items-stretch justify-content-around">
         @foreach (var product in Model)
         {
-        <div class="position-relative border rounded bg-light m-2 w-25">
-            <img src="@product.ImagePath" alt="Фото @product.Name" width="100%" class="rounded img-fluid">
-            <div class="p-2">
+        <div class="position-relative border rounded bg-light m-2 d-flex flex-wrap align-items-center" style="width:clamp(200px, 20%, 400px)">
+            <img src="@product.ImagePath" alt="Фото @product.Name" width="100%" class="rounded img-fluid w-100">
+            <div class="p-2 w-100">
                 <h5><a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="stretched-link link-dark" style="text-decoration: none;">@product.Name</a></h5>
                 <h5>
-                    ₴@product.Price.ToString("N2")
+                    @product.Price.ToString("N2") грн.
                 </h5>
             </div>
         </div>

@@ -6,9 +6,9 @@ public class ProductsFilterDTO
 
     public int PageSize { get; set; }
 
-    public int[] CategoryIds { get; set; } = default!;
+    public int[]? CategoryIds { get; set; } = default!;
 
-    public int[] BrandIds { get; set; } = default!;
+    public int[]? BrandIds { get; set; } = default!;
 
     public int? MinPrice { get; set; }
 

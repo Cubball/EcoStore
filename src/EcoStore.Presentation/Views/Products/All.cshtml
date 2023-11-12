@@ -1,34 +1,163 @@
 @model ProductsListViewModel
-
-<form method="get">
-    <input type="text" name="search">
-    <select name="categories" multiple>
-        <option value="1">1</option>
-        <option value="2">2</option>
-    </select>
-    <input type="submit">
-</form>
-
-<table>
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Desc</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>Stock</th>
-        </tr>
-    </thead>
-    @foreach (var product in Model.Products)
+@{
+    ViewData["Title"] = "Товари";
+    if (Model.PageInfo.PageNumber > 1)
     {
-    <tr>
-        <td>@product.Id</td>
-        <td>@product.Name</td>
-        <td>@product.Description</td>
-        <td>@product.Price</td>
-        <td><img src="@product.ImagePath"></td>
-        <td>@product.Stock</td>
-    </tr>
+        ViewData["Title"] += " - сторінка " + Model.PageInfo.PageNumber;
     }
-</table>
+}
+
+<div class="container">
+    <div class="row">
+        <h2>Усі товари</h2>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <div class="p-3">
+                <h4 class="text-center">Фільтр</h4>
+                <form method="get">
+                    <div class="form-group">
+                        <label asp-for="Filter.SortBy">Сортувати за:</label>
+                        <select asp-for="Filter.SortBy" asp-items="EnumHelper.SortByEnumSelectList" class="form-control">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Filter.Search">Пошук:</label>
+                        <input asp-for="Filter.Search" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Filter.MinPrice">Мінімальна ціна:</label>
+                        <input asp-for="Filter.MinPrice" type="number" min="0" step="0.01" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="Filter.MaxPrice">Максимальна ціна:</label>
+                        <input asp-for="Filter.MaxPrice" type="number" min="0" step="0.01" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Filter.Brands">Бренди:</label>
+                        <select asp-for="Filter.Brands" asp-items="@Model.Brands" multiple class="form-control">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Filter.Categories">Категорії:</label>
+                        <select asp-for="Filter.Categories" asp-items="@Model.Categories" multiple class="form-control">
+                        </select>
+                    </div>
+                    <div class="form-group text-center">
+                        <br>
+                        <button type="submit" class="btn btn-success w-100">Пошук</button>
+                        <br>
+                        <br>
+                        <a asp-area="" asp-controller="Products" asp-action="All" class="btn btn-danger w-100">Скинути фільтр</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-9 mt-3">
+            @if (!string.IsNullOrWhiteSpace(Model.Filter?.Search))
+            {
+            <h4>Результати пошуку "@Model.Filter.Search":</h4>
+            }
+            <div class="d-flex flex-wrap align-items-stretch justify-content-around">
+                @foreach (var product in Model.Products)
+                {
+                <div class="position-relative border rounded bg-light m-2 d-flex flex-wrap align-items-center" style="width:clamp(200px, 20%, 400px)">
+                    <img src="@product.ImagePath" alt="Фото @product.Name" width="100%" class="rounded img-fluid w-100">
+                    <div class="p-2 w-100">
+                        <h5><a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="stretched-link link-dark" style="text-decoration: none;">@product.Name</a></h5>
+                        <h5>
+                            @product.Price.ToString("N2") грн.
+                        </h5>
+                    </div>
+                </div>
+                }
+            </div>
+            <ul class="pagination">
+                @if (Model.PageInfo.PageNumber > 1)
+                {
+                <li class="page-item">
+                    <form asp-area="" asp-controller="Products" asp-action="All" asp-route-page="1">
+                        <select asp-for="Filter.SortBy" asp-items="EnumHelper.SortByEnumSelectList" hidden>
+                        </select>
+                        <input asp-for="Filter.Search" hidden>
+                        <input asp-for="Filter.MinPrice" hidden>
+                        <input asp-for="Filter.MaxPrice" hidden>
+                        <select asp-for="Filter.Brands" asp-items="@Model.Brands" multiple hidden>
+                        </select>
+                        <select asp-for="Filter.Categories" asp-items="@Model.Categories" multiple hidden>
+                        </select>
+                        <button type="submit" class="page-link">1</button>
+                    </form>
+                </li>
+                }
+                else
+                {
+                <li class="page-item active"><a class="page-link">1</a></li>
+                }
+                @if (Model.PageInfo.PageNumber > 3)
+                {
+                <li class="page-item"><a class="page-link">...</a></li>
+                }
+                @if (Model.PageInfo.PageNumber > 2)
+                {
+                <li class="page-item">
+                    <form asp-area="" asp-controller="Products" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber - 1)">
+                        <select asp-for="Filter.SortBy" asp-items="EnumHelper.SortByEnumSelectList" hidden>
+                        </select>
+                        <input asp-for="Filter.Search" hidden>
+                        <input asp-for="Filter.MinPrice" hidden>
+                        <input asp-for="Filter.MaxPrice" hidden>
+                        <select asp-for="Filter.Brands" asp-items="@Model.Brands" multiple hidden>
+                        </select>
+                        <select asp-for="Filter.Categories" asp-items="@Model.Categories" multiple hidden>
+                        </select>
+                        <button type="submit" class="page-link">@(Model.PageInfo.PageNumber - 1)</button>
+                    </form>
+                </li>
+                }
+                @if (Model.PageInfo.PageNumber > 1)
+                {
+                <li class="page-item active"><a class="page-link">@Model.PageInfo.PageNumber</a></li>
+                }
+                @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages)
+                {
+                <li class="page-item">
+                    <form asp-area="" asp-controller="Products" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber + 1)">
+                        <select asp-for="Filter.SortBy" asp-items="EnumHelper.SortByEnumSelectList" hidden>
+                        </select>
+                        <input asp-for="Filter.Search" hidden>
+                        <input asp-for="Filter.MinPrice" hidden>
+                        <input asp-for="Filter.MaxPrice" hidden>
+                        <select asp-for="Filter.Brands" asp-items="@Model.Brands" multiple hidden>
+                        </select>
+                        <select asp-for="Filter.Categories" asp-items="@Model.Categories" multiple hidden>
+                        </select>
+                        <button type="submit" class="page-link">@(Model.PageInfo.PageNumber + 1)</button>
+                    </form>
+                </li>
+                }
+                @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 2)
+                {
+                <li class="page-item"><a class="page-link">...</a></li>
+                }
+                @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 1)
+                {
+                <li class="page-item">
+                    <form asp-area="" asp-controller="Products" asp-action="All" asp-route-page="@Model.PageInfo.TotalPages">
+                        <select asp-for="Filter.SortBy" asp-items="EnumHelper.SortByEnumSelectList" hidden>
+                        </select>
+                        <input asp-for="Filter.Search" hidden>
+                        <input asp-for="Filter.MinPrice" hidden>
+                        <input asp-for="Filter.MaxPrice" hidden>
+                        <select asp-for="Filter.Brands" asp-items="@Model.Brands" multiple hidden>
+                        </select>
+                        <select asp-for="Filter.Categories" asp-items="@Model.Categories" multiple hidden>
+                        </select>
+                        <button type="submit" class="page-link">@Model.PageInfo.TotalPages</button>
+                    </form>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

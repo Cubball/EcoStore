@@ -1,19 +1,48 @@
-@* Remove this and add to cart without the user id ?*@
 @using Microsoft.AspNetCore.Identity
+@using System.Globalization
 @inject UserManager<EcoStore.DAL.Entities.AppUser> userManager
 @model ProductViewModel
 
-<h2>@Model.Name</h2>
-<p>@Model.Description</p>
-<p>@Model.Price</p>
-<img src="@Model.ImagePath">
-<p>@Model.Category!.Name - @Model.Category.Id</p>
-<p>@Model.Brand!.Name - @Model.Brand.Id</p>
 @{
-    var userId = userManager.GetUserId(User);
+    ViewData["Title"] = @Model.Name;
 }
-<input id="product-count" type="number" min="1" max="@Model.Stock" step="1">
-<button id="add-to-cart" onclick="setCartCookieForProduct('@userId', '@Model.Id', document.getElementById('product-count').value)">
-    Add to cart</button>
-<button onclick="console.log(getCartCookie('@userId'))"></button>
-<button onclick="removeProductFromCartCookie('@userId', '@Model.Id')">x</button>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <img src="@Model.ImagePath" class="rounded" width="80%" style="display: block; margin-left: auto;">
+        </div>
+        <div class="col-6">
+            <h2>@Model.Name</h2>
+            <br><br>
+            <h5>@Model.Price.ToString("N2", CultureInfo.InvariantCulture) грн.</h5>
+            <br>
+            @if (User.Identity is not null && User.Identity.IsAuthenticated)
+            {
+                var userId = userManager.GetUserId(User);
+                <label for="product-count">Кількість:</label>
+                <input id="product-count" type="number" value="1" min="1" max="@Model.Stock" class="form-control w-25" onchange="clampProductCountInput('product-count', 1, @Model.Stock)">
+                <button type="button" class="btn btn-secondary w-25 mt-2" onclick="setCartCookieForProduct('@userId', '@Model.Id', document.getElementById('product-count').value);onProductAddedToCart();">Додати в кошик</button>
+                <br>
+                <span class="text-success" id="product-added-to-cart-message" hidden>Товар додано в кошик!<br></span>
+                <br>
+            }
+            else
+            {
+                <p class="text-muted">Для того, щоб здійснити покупку, необхідно <a asp-area="" asp-controller="Account" asp-action="Login" class="text-muted">ввійти</a> або <a asp-area="" asp-controller="Account" asp-action="SignUp" class="text-muted">зареєструватися</a>.</p>
+            }
+            <p>Виробник: <a asp-area="" asp-controller="Brands" asp-action="Details" asp-route-id="@Model.Brand.Id" class="link-no-underline link-dark">@Model.Brand.Name</a></p>
+            <p>Категорія: <a asp-area="" asp-controller="Categories" asp-action="Details" asp-route-id="@Model.Category.Id" class="link-no-underline link-dark">@Model.Category.Name</a></p>
+            <p>@Model.Description</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const onProductAddedToCart = () => {
+        document.getElementById('product-added-to-cart-message').hidden = false;
+        setTimeout(() => {
+            document.getElementById('product-added-to-cart-message').hidden = true;
+        }, 3000);
+    }
+</script>

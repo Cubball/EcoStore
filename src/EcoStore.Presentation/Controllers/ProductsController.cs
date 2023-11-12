@@ -6,39 +6,37 @@ using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EcoStore.Presentation.Controllers;
 
 public class ProductsController : Controller
 {
     private readonly IProductService _productService;
+    private readonly IBrandService _brandService;
+    private readonly ICategoryService _categoryService;
     private readonly int _defaultPageNumber;
     private readonly int _defaultPageSize;
     private readonly string _imagePath;
 
     public ProductsController(
             IProductService productService,
+            IBrandService brandService,
+            ICategoryService categoryService,
             IConfiguration configuration)
     {
         _productService = productService;
+        _brandService = brandService;
+        _categoryService = categoryService;
         _imagePath = configuration["Path:Images"]!;
         _defaultPageNumber = int.Parse(configuration["Defaults:PageNumber"]!, CultureInfo.InvariantCulture);
         _defaultPageSize = int.Parse(configuration["Defaults:PageSize"]!, CultureInfo.InvariantCulture);
     }
 
-    public async Task<IActionResult> All(
-        [FromQuery] int[] categories,
-        [FromQuery] int[] brands,
-        [FromQuery] int page,
-        [FromQuery] int pageSize,
-        [FromQuery] SortProductsByViewModel sortBy,
-        [FromQuery] int? minPrice = null,
-        [FromQuery] int? maxPrice = null,
-        [FromQuery] string? search = null,
-        [FromQuery] bool descending = false)
+    public async Task<IActionResult> All(ProductsListViewModel productsViewModel,
+            [FromQuery] int page, [FromQuery] int pageSize)
     {
-        var filter = GetProductsFilter(categories, brands, page, pageSize,
-                minPrice, maxPrice, search, sortBy, descending);
+        var filter = GetProductsFilter(productsViewModel.Filter, page, pageSize);
         var products = (await _productService.GetProductsAsync(filter))
                 .Select(p => p.ToViewModel())
                 .ToList();
@@ -56,7 +54,12 @@ public class ProductsController : Controller
                 PageSize = filter.PageSize,
                 TotalCount = productsCount
             },
-            Products = products
+            Products = products,
+            Brands = (await _brandService.GetAllBrandsAsync())
+                    .Select(b => new SelectListItem(b.Name, b.Id.ToString(CultureInfo.InvariantCulture))),
+            Categories = (await _categoryService.GetAllCategoriesAsync())
+                    .Select(c => new SelectListItem(c.Name, c.Id.ToString(CultureInfo.InvariantCulture))),
+            Filter = productsViewModel.Filter,
         };
         return View(productsListViewModel);
     }
@@ -69,18 +72,8 @@ public class ProductsController : Controller
         return View(product);
     }
 
-    private ProductsFilterDTO GetProductsFilter(
-            int[] categories,
-            int[] brands,
-            int page,
-            int pageSize,
-            int? minPrice,
-            int? maxPrice,
-            string? search,
-            SortProductsByViewModel sortBy,
-            bool descending)
+    private ProductsFilterDTO GetProductsFilter(ProductFilterViewModel filter, int page, int pageSize)
     {
-
         if (page < 1)
         {
             page = _defaultPageNumber;
@@ -91,16 +84,17 @@ public class ProductsController : Controller
             pageSize = _defaultPageSize;
         }
 
+        var (sortByDTO, descending) = filter?.SortBy.ToDTO() ?? (SortByDTO.Name, false);
         return new ProductsFilterDTO
         {
             PageNumber = page,
             PageSize = pageSize,
-            CategoryIds = categories,
-            BrandIds = brands,
-            MinPrice = minPrice,
-            MaxPrice = maxPrice,
-            SearchString = search,
-            SortBy = sortBy.ToDTO(),
+            CategoryIds = filter?.Categories,
+            BrandIds = filter?.Brands,
+            MinPrice = filter?.MinPrice,
+            MaxPrice = filter?.MaxPrice,
+            SearchString = filter?.Search,
+            SortBy = sortByDTO,
             Descending = descending
         };
     }

@@ -70,13 +70,16 @@ public static class EnumsMappingExtensions
         };
     }
 
-    public static SortByDTO ToDTO(this SortProductsByViewModel sortByViewModel)
+    public static (SortByDTO SortBy, bool Descending) ToDTO(this SortProductsByViewModel sortByViewModel)
     {
         return sortByViewModel switch
         {
-            SortProductsByViewModel.Name => SortByDTO.Name,
-            SortProductsByViewModel.Price => SortByDTO.Price,
-            SortProductsByViewModel.DateCreated => SortByDTO.DateCreated,
+            SortProductsByViewModel.Name => (SortByDTO.Name, false),
+            SortProductsByViewModel.NameDesc => (SortByDTO.Name, true),
+            SortProductsByViewModel.Price => (SortByDTO.Price, false),
+            SortProductsByViewModel.PriceDesc => (SortByDTO.Price, true),
+            SortProductsByViewModel.DateCreated => (SortByDTO.DateCreated, false),
+            SortProductsByViewModel.DateCreatedDesc => (SortByDTO.DateCreated, true),
             _ => throw new ArgumentOutOfRangeException(nameof(sortByViewModel), sortByViewModel, null),
         };
     }

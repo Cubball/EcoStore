@@ -33,10 +33,9 @@ public class ProductsController : Controller
         [FromQuery] int page,
         [FromQuery] int pageSize,
         [FromQuery] SortProductsByViewModel sortBy,
-        [FromQuery] string? search = null,
-        [FromQuery] bool descending = false)
+        [FromQuery] string? search = null)
     {
-        var filter = GetProductsFilter(page, pageSize, search, sortBy, descending);
+        var filter = GetProductsFilter(page, pageSize, search, sortBy);
         var products = (await _productService.GetProductsAsync(filter))
                 .Select(p => p.ToViewModel())
                 .ToList();
@@ -121,8 +120,7 @@ public class ProductsController : Controller
             int page,
             int pageSize,
             string? search,
-            SortProductsByViewModel sortBy,
-            bool descending)
+            SortProductsByViewModel sortBy)
     {
         if (page < 1)
         {
@@ -134,12 +132,13 @@ public class ProductsController : Controller
             pageSize = _defaultPageSize;
         }
 
+        var (sortByDTO, descending) = sortBy.ToDTO();
         return new ProductsFilterDTO
         {
             PageNumber = page,
             PageSize = pageSize,
             SearchString = search,
-            SortBy = sortBy.ToDTO(),
+            SortBy = sortByDTO,
             Descending = descending
         };
     }

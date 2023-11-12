@@ -47,3 +47,13 @@ const setCookie = (keyWithEquals, value, expiresIn) => {
 }
 
 const getMilisecondsInDays = (days) => 24 * 60 * 60 * 1000 * days;
+
+const clampProductCountInput = (inputId, min, max) => {
+    const input = document.getElementById(inputId)
+    const inputValue = input.value
+    if (inputValue > max) {
+        input.value = max
+    } else if (inputValue < min) {
+        input.value = min
+    }
+}
