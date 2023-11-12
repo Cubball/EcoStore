@@ -19,4 +19,6 @@ public class ProductsFilterDTO
     public SortByDTO SortBy { get; set; }
 
     public bool Descending { get; set; }
+
+    public bool OnlyAvailable { get; set; }
 }

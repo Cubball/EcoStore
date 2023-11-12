@@ -37,6 +37,7 @@ public class BrandsController : Controller
             PageNumber = _defaultPageNumber,
             PageSize = _defaultPageSize,
             BrandIds = new int[] { id },
+            OnlyAvailable = true,
         };
         var brandProducts = (await _productService.GetProductsAsync(filter))
             .Select(p => p.ToViewModel())

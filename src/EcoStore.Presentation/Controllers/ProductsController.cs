@@ -95,7 +95,8 @@ public class ProductsController : Controller
             MaxPrice = filter?.MaxPrice,
             SearchString = filter?.Search,
             SortBy = sortByDTO,
-            Descending = descending
+            Descending = descending,
+            OnlyAvailable = true,
         };
     }
 }

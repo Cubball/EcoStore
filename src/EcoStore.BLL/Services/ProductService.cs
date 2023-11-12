@@ -186,6 +186,11 @@ public class ProductService : IProductService
             predicates.Add(p => p.Name.Contains(filterDTO.SearchString));
         }
 
+        if (filterDTO.OnlyAvailable)
+        {
+            predicates.Add(p => p.Stock > 0);
+        }
+
         return predicates;
     }
 }

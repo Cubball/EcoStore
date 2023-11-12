@@ -31,6 +31,7 @@ public class HomeController : Controller
             PageSize = _defaultPageSize,
             SortBy = SortByDTO.DateCreated,
             Descending = true,
+            OnlyAvailable = true,
         });
         var productViewModels = products.Select(p => p.ToViewModel()).ToList();
         foreach (var product in productViewModels)

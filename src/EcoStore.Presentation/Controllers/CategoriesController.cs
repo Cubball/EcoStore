@@ -37,6 +37,7 @@ public class CategoriesController : Controller
             PageNumber = _defaultPageNumber,
             PageSize = _defaultPageSize,
             CategoryIds = new int[] { category.Id },
+            OnlyAvailable = true,
         };
         var categoryProducts = (await _productService.GetProductsAsync(filter))
             .Select(p => p.ToViewModel())

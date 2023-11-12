@@ -139,7 +139,8 @@ public class ProductsController : Controller
             PageSize = pageSize,
             SearchString = search,
             SortBy = sortByDTO,
-            Descending = descending
+            Descending = descending,
+            OnlyAvailable = false,
         };
     }
 }
