@@ -1,27 +1,29 @@
 @model CategoryDetailsViewModel
+@{
+    ViewData["Title"] = @Model.Category.Name;
+}
 
-<h2>@Model.Category.Name</h2>
-<p>@Model.Category.Description</p>
-<table>
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Desc</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>Stock</th>
-        </tr>
-    </thead>
-    @foreach (var product in Model.Products)
-    {
-    <tr>
-        <td>@product.Id</td>
-        <td>@product.Name</td>
-        <td>@product.Description</td>
-        <td>@product.Price</td>
-        <td><img src="@product.ImagePath"></td>
-        <td>@product.Stock</td>
-    </tr>
-    }
-</table>
+<div>
+    <div>
+        <h1 class="text-center">@Model.Category.Name</h1>
+        <p>@Model.Category.Description</p>
+        <p>Переглянути всі товари з категорії можна 
+            <a asp-area="" asp-controller="Products" asp-action="All" asp-route-Filter.Categories="@Model.Category.Id" class="text-dark link-no-underline">тут</a>
+        </p>
+        <h3 class="text-center">Вибірка товарів з категорії</h3>
+    </div>
+    <div class="d-flex flex-wrap align-items-stretch justify-content-around">
+        @foreach (var product in Model.Products)
+        {
+        <div class="position-relative border rounded bg-light m-2 d-flex flex-wrap align-items-center" style="width:clamp(200px, 20%, 400px)">
+            <img src="@product.ImagePath" alt="Фото @product.Name" width="100%" class="rounded img-fluid w-100">
+            <div class="p-2 w-100">
+                <h5><a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="stretched-link link-dark" style="text-decoration: none;">@product.Name</a></h5>
+                <h5>
+                    @product.Price.ToString("N2") грн.
+                </h5>
+            </div>
+        </div>
+        }
+    </div>
+</div>
