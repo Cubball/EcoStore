@@ -1,27 +1,106 @@
+@using Microsoft.AspNetCore.Identity
+@using System.Globalization;
+@inject UserManager<EcoStore.DAL.Entities.AppUser> userManager
 @model CreateOrderViewModel
+@{
+    ViewData["Title"] = "Оформити замовлення";
+}
 
 <script src="https://js.stripe.com/v3/"></script>
 
-@if (Model.Cart.CartItems is not null && Model.Cart.CartItems.Any())
-{
-    <ul>
-        @foreach (var item in Model.Cart.CartItems)
-        {
-        <li>@item.Product.Name - @item.Quantity</li>
-        }
-    </ul>
-    <form id="payment-form" asp-action="Checkout" method="post">
-        <!-- handle onchange for payment method and display the card input-->
-        <div id="card-element"></div>
-        <input asp-for="StripeToken" type="hidden">
-        <select asp-for="PaymentMethod" asp-items="Html.GetEnumSelectList<PaymentMethodViewModel>()">
-        </select>
-        <input asp-for="ShippingAddress">
-        <select asp-for="ShippingMethod" asp-items="Html.GetEnumSelectList<ShippingMethodViewModel>()">
-        </select>
-        <button type="submit"></button>
-    </form>
-}
+<div>
+    <h2 class="text-center">Оформлення замовлення</h2>
+    @if (Model.Cart.CartItems is not null && Model.Cart.CartItems.Count > 0)
+    {
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <h4 class="m-3">Кошик</h4>
+                <ul class="list-group m-3">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-2">
+                                Зображення
+                            </div>
+                            <div class="col-4">
+                                Назва
+                            </div>
+                            <div class="col-2">
+                                Ціна
+                            </div>
+                            <div class="col-2">
+                                Кількість
+                            </div>
+                            <div class="col-2">
+                                Загальна вартість
+                            </div>
+                        </div>
+                    </li>
+                    @foreach (var cartItem in @Model.Cart.CartItems)
+                    {
+                    <li class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-2">
+                                <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@cartItem.Product.Id">
+                                    <img src="@cartItem.Product.ImagePath" alt="Фото @cartItem.Product.Name" width="100%">
+                                </a>
+                            </div>
+                            <div class="col-4">
+                                <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@cartItem.Product.Id" class="link-dark link-no-underline">
+                                    @cartItem.Product.Name
+                                </a>
+                            </div>
+                            <div class="col-2">
+                                @cartItem.Product.Price.ToString("N2", CultureInfo.InvariantCulture) грн.
+                            </div>
+                            <div class="col-2">
+                                @cartItem.Quantity
+                            </div>
+                            <div class="col-2" id="total-price-@cartItem.Product.Id">
+                                @((cartItem.Product.Price * cartItem.Quantity).ToString("N2", CultureInfo.InvariantCulture)) грн.
+                            </div>
+                        </div>
+                    </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-6">
+                <h4 class="m-3">Дані для покупки</h4>
+                <form id="payment-form" asp-action="Checkout" method="post" class="m-3">
+                    <input asp-for="StripeToken" type="hidden">
+                    <div class="form-group">
+                        <label asp-for="PaymentMethod">Метод оплати:</label>
+                        <select asp-for="PaymentMethod" asp-items="EnumHelper.PaymentMethodSelectList" class="form-control" onchange="onPaymentMethodChange()">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ShippingMethod">Спосіб доставки:</label>
+                        <select asp-for="ShippingMethod" asp-items="EnumHelper.ShippingMethodSelectList" class="form-control">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ShippingAddress">Адреса доставки:</label>
+                        <input asp-for="ShippingAddress" class="form-control">
+                    </div>
+                    <div class="form-group" id="card-group" hidden>
+                        <label for="card-element">Дані картки:</label>
+                        <div id="card-element" class="form-control"></div>
+                        <span id="card-errors" class="text-danger"></span>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Оформити замовлення</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+    else
+    {
+    <h5>Ваш кошик порожній!</h5>
+    }
+</div>
 
 <script>
     const stripe = Stripe('pk_test_51NuCruKg8vt03mmR4gRXfKYofFNh5UhsZSiqTX36OFlHS8VkjKGX31kIV6KWPnOualCFXr5R2SNEX6w6vCarcwwj00n1605wNb')
@@ -34,10 +113,21 @@
         const { token, error } = await stripe.createToken(card)
 
         if (error) {
-            // display an error
+            const cardErrorsElement = document.getElementById('card-errors');
+            cardErrorsElement.textContent = "Введені Вами дані картки некоректні";
         } else {
             document.getElementById('StripeToken').value = token.id
             form.submit()
         }
     })
+
+    const onPaymentMethodChange = () => {
+        const paymentMethod = document.getElementById('PaymentMethod').value
+        const cardGroup = document.getElementById('card-group')
+        if (paymentMethod === "Card") {
+            cardGroup.hidden = false
+        } else {
+            cardGroup.hidden = true
+        }
+    }
 </script>

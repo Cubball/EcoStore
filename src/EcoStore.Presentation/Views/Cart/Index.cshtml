@@ -1,11 +1,81 @@
+@using Microsoft.AspNetCore.Identity
+@using System.Globalization;
+@inject UserManager<EcoStore.DAL.Entities.AppUser> userManager
 @model CartViewModel
+@{
+    ViewData["Title"] = "Кошик";
+}
 
-@if (Model.CartItems is not null)
+<h2 class="text-center">Кошик</h2>
+@if (Model.CartItems is not null && Model.CartItems.Count > 0)
 {
-    <ul>
-        @foreach (var item in Model.CartItems)
-        {
-            <li>@item.Product.Name - @item.Quantity</li>
+    <div class="container">
+        <ul class="list-group container m-3">
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-2">
+                        Зображення
+                    </div>
+                    <div class="col-4">
+                        Назва
+                    </div>
+                    <div class="col-2">
+                        Ціна
+                    </div>
+                    <div class="col-2">
+                        Кількість
+                    </div>
+                    <div class="col-2">
+                        Загальна вартість
+                    </div>
+                </div>
+            </li>
+            @foreach (var cartItem in @Model.CartItems)
+            {
+            <li class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-2">
+                        <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@cartItem.Product.Id">
+                            <img src="@cartItem.Product.ImagePath" alt="Фото @cartItem.Product.Name" width="100%">
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@cartItem.Product.Id" class="link-dark link-no-underline">
+                            @cartItem.Product.Name
+                        </a>
+                    </div>
+                    <div class="col-2">
+                        @cartItem.Product.Price.ToString("N2", CultureInfo.InvariantCulture) грн.
+                    </div>
+                    <div class="col-2">
+                        <input id="product-count-@cartItem.Product.Id" class="form-control w-75" type="number" min="1" max="@cartItem.Product.Stock" value="@cartItem.Quantity"
+                            onchange="onCartItemCountChanged('@userManager.GetUserId(User)', @cartItem.Product.Id, @cartItem.Product.Stock)">
+                        <button type="button" class="btn btn-danger w-75 mt-2" onclick="onCartItemDeleted('@userManager.GetUserId(User)', @cartItem.Product.Id)">Видалити</button>
+                    </div>
+                    <div class="col-2" id="total-price-@cartItem.Product.Id">
+                        @((cartItem.Product.Price * cartItem.Quantity).ToString("N2", CultureInfo.InvariantCulture)) грн.
+                    </div>
+                </div>
+            </li>
+            }
+        </ul>
+        <a asp-area="" asp-controller="Cart" asp-action="Checkout" class="btn btn-primary m-3 mt-0 mb-0">Оформити замовлення</a>
+    </div>
+    <script>
+        const onCartItemCountChanged = (userId, productId, maxCount) => {
+            clampProductCountInput(`product-count-${productId}`, 1, maxCount);
+            const productCount = document.getElementById(`product-count-${productId}`).value;
+            setCartCookieForProduct(userId, productId, productCount);
+            location.reload();
         }
-    </ul>
+
+        const onCartItemDeleted = (userId, productId) => {
+            removeProductFromCartCookie(userId, productId, 0);
+            location.reload();
+        }
+    </script>
+}
+else
+{
+<h5>Ваш кошик порожній!<br><br><a asp-area="" asp-controller="Products" asp-action="All" class="btn btn-dark">Перейти до товарів</a></h5>
 }

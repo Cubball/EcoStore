@@ -15,6 +15,18 @@ public static class EnumHelper
         new SelectListItem("Спочатку новіші", "DateCreatedDesc"),
     };
 
+    public static IEnumerable<SelectListItem> PaymentMethodSelectList { get; } = new[]
+    {
+        new SelectListItem("При отриманні", "Cash"),
+        new SelectListItem("Карткою", "Card"),
+    };
+
+    public static IEnumerable<SelectListItem> ShippingMethodSelectList { get; } = new[]
+    {
+        new SelectListItem("Нова пошта", "NovaPoshta"),
+        new SelectListItem("Укрпошта", "UkrPoshta"),
+    };
+
     public static string GetOrderStatusName(OrderStatusViewModel orderStatus)
     {
         return orderStatus switch

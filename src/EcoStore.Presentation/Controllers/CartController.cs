@@ -19,15 +19,18 @@ public class CartController : Controller
     private readonly IProductService _productService;
     private readonly IOrderService _orderService;
     private readonly UserManager<AppUser> _userManager;
+    private readonly string _imagePath;
 
     public CartController(
             IProductService productService,
             IOrderService orderService,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            IConfiguration configuration)
     {
         _productService = productService;
         _orderService = orderService;
         _userManager = userManager;
+        _imagePath = configuration["Path:Images"]!;
     }
 
     public async Task<IActionResult> Index()
@@ -51,7 +54,11 @@ public class CartController : Controller
         var orderId = await _orderService.CreateOrderAsync(createOrderDTO);
         ClearCartCookie();
         return View("CheckoutSuccess", orderId);
-        // return RedirectToAction("Details", "Orders", new { id = orderId });
+    }
+
+    public IActionResult CheckoutSuccess()
+    {
+        return View();
     }
 
     private async Task<CartViewModel> GetCart()
@@ -73,9 +80,11 @@ public class CartController : Controller
         var cartItems = new List<CartItemViewModel>();
         foreach (var entry in keyValuePairs)
         {
+            var product = (await _productService.GetProductByIdAsync(entry.Key)).ToViewModel();
+            product.ImagePath = Path.Combine(_imagePath, product.ImagePath);
             cartItems.Add(new CartItemViewModel
             {
-                Product = (await _productService.GetProductByIdAsync(entry.Key)).ToViewModel(),
+                Product = product,
                 Quantity = entry.Value,
             });
         }

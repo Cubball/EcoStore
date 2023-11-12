@@ -21,10 +21,15 @@ const getCartCookie = (userId) => {
 }
 
 const setCartCookieForProduct = (userId, productId, productCount) => {
+    if (productCount <= 0) {
+        removeProductFromCartCookie(userId, productId);
+        return;
+    }
+
     const cartCookie = getCartCookie(userId);
     cartCookie[productId] = productCount;
-    const date = new Date()
-    date.setTime(date.getTime() + getMilisecondsInDays(7))
+    const date = new Date();
+    date.setTime(date.getTime() + getMilisecondsInDays(7));
     setCookie(getCartCookieKey(userId), JSON.stringify(cartCookie), date.toUTCString());
 }
 
