@@ -1,31 +1,40 @@
 @model SignUpViewModel
+@{
+    ViewData["Title"] = "Реєстрація";
+}
 
-<form asp-action="SignUp" method="post">
-    <div>
-        <label asp-for="FirstName">Ім'я</label>
-        <input asp-for="FirstName" required>
+<div class="d-flex justify-content-center">
+    <div class="w-50">
+        <h2 class="text-center">Зареєструватися</h2>
+        <form asp-action="SignUp" method="post">
+            <div class="form-group">
+                <label asp-for="FirstName">Ім'я:</label>
+                <input asp-for="FirstName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName">Прізвище:</label>
+                <input asp-for="LastName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber">Номер телефону:</label>
+                <input asp-for="PhoneNumber" class="form-control" type="tel">
+            </div>
+            <div class="form-group">
+                <label asp-for="Email">Email:</label>
+                <input asp-for="Email" class="form-control" type="email">
+            </div>
+            <div class="form-group">
+                <label asp-for="Password">Пароль:</label>
+                <input asp-for="Password" class="form-control" type="password">
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword">Повторіть пароль:</label>
+                <input asp-for="ConfirmPassword" class="form-control" type="password">
+            </div>
+            <div class="form-group text-center">
+                <br>
+                <button type="submit" class="btn btn-primary w-50">Зареєструватися</button>
+            </div>
+        </form>
     </div>
-    <div>
-        <label asp-for="LastName">Прізвище</label>
-        <input asp-for="LastName" required>
-    </div>
-    <div>
-        <label asp-for="Email">Email</label>
-        <input asp-for="Email" required>
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div>
-        <label asp-for="Password">Пароль</label>
-        <input asp-for="Password" required>
-    </div>
-    <div>
-        <label asp-for="ConfirmPassword">Пароль 2</label>
-        <input asp-for="ConfirmPassword" required>
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-    <div>
-        <label asp-for="PhoneNumber">Телефон</label>
-        <input asp-for="PhoneNumber" required>
-    </div>
-    <button type="submit">зареєструватися</button>
-</form>
+</div>

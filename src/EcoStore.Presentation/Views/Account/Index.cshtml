@@ -1,0 +1,38 @@
+@model AppUserViewModel
+@{
+    ViewData["Title"] = "Профіль";
+}
+
+<div class="container">
+    <div class="row text-center">
+        <h2>Профіль</h2>
+        <p>Привіт, @Model.FirstName! Тут Ви можете переглядати свої замовлення, змінити свої дані або змінити пароль</p>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="border p-3 rounded">
+                <h3 class="text-center">Інформація</h3>
+                <p>Email: @Model.Email</p>
+                <p>Ім'я: @Model.FirstName</p>
+                <p>Прізвище: @Model.LastName</p>
+                <p>Телефон: @Model.PhoneNumber</p>
+                <div class="text-center">
+                    <a asp-area="" asp-controller="Account" asp-action="Update" class="btn btn-primary w-50">Змінити</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="border p-3 rounded text-center h-100">
+                <h3>Інше</h3>
+                <br>
+                <a asp-area="" asp-controller="Orders" asp-action="All" class="btn btn-secondary w-50">Перейти до замовлень</a>
+                <br>
+                <br>
+                <a asp-area="" asp-controller="Account" asp-action="ChangePassword" class="btn btn-primary w-50">Змінити пароль</a>
+                <br>
+                <br>
+                <a asp-area="" asp-controller="Account" asp-action="Logout" class="btn btn-danger w-50">Вийти</a>
+            </div>
+        </div>
+    </div>
+</div>

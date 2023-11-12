@@ -1,9 +1,30 @@
 @model UpdateAppUserViewModel
+@{
+    ViewData["Title"] = "Оновлення даних профілю";
+}
 
-<form asp-action="Update" method="post">
-    <input asp-for="Id" type="hidden">
-    <input asp-for="FirstName">
-    <input asp-for="LastName">
-    <input asp-for="PhoneNumber">
-    <button type="submit"></button>
-</form>
+<div class="d-flex justify-content-center">
+    <div class="w-50">
+        <h2 class="text-center">Оновлення даних профілю</h2>
+        <form asp-action="Update" method="post">
+            <input asp-for="Id" type="hidden">
+            <div class="form-group">
+                <label asp-for="FirstName">Ім'я:</label>
+                <input asp-for="FirstName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName">Прізвище:</label>
+                <input asp-for="LastName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber">Телефон:</label>
+                <input asp-for="PhoneNumber" class="form-control">
+            </div>
+            <div class="form-group text-center">
+                <br>
+                <button type="submit" class="btn btn-primary w-50">Зберегти</button>
+            </div>
+        </form>
+    </div>
+</div>
+

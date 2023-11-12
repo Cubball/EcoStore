@@ -80,7 +80,7 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    public async Task<IActionResult> Info()
+    public async Task<IActionResult> Index()
     {
         var userId = _userManager.GetUserId(User);
         var userDTO = await _userService.GetUserByIdAsync(userId!);
@@ -105,7 +105,7 @@ public class AccountController : Controller
             return View();
         }
         // TODO: redirect to success page??
-        return RedirectToAction("Profile");
+        return RedirectToAction("Index");
     }
 
     public async Task<IActionResult> Update()
@@ -121,6 +121,6 @@ public class AccountController : Controller
     {
         var updateAppUserDTO = updateAppUserViewModel.ToDTO();
         await _userService.UpdateUserAsync(updateAppUserDTO);
-        return RedirectToAction(nameof(Info));
+        return RedirectToAction(nameof(Index));
     }
 }
