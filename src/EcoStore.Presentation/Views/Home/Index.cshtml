@@ -1,28 +1,30 @@
 ﻿@model IEnumerable<ProductViewModel>
 @{
-ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Головна";
 }
 
-<table>
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Desc</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>Stock</th>
-        </tr>
-    </thead>
-    @foreach (var product in Model)
-    {
-    <tr>
-        <td>@product.Id</td>
-        <td>@product.Name</td>
-        <td>@product.Description</td>
-        <td>@product.Price</td>
-        <td><img src="@product.ImagePath"></td>
-        <td>@product.Stock</td>
-    </tr>
-    }
-</table>
+<div>
+    <div class="text-center">
+        <h1>Еко Лінія</h1>
+        <img src="~/static/images/logo.png" alt="Логотип" class="img-fluid" width="300px">
+        <p>Ласкаво просимо до магазину "Еко Лінія". 
+        У нас Ви можете знайти різноманітні еко-товари, від біорозкладних пакетів до засобів для дому зроблених з натуральних інгредієнтів. 
+        </p>
+        <br>
+        <h2>Новинки</h2>
+    </div>
+    <div class="d-flex flex-wrap align-items-center justify-content-around">
+        @foreach (var product in Model)
+        {
+        <div class="position-relative border rounded bg-light m-2 w-25">
+            <img src="@product.ImagePath" alt="Фото @product.Name" width="100%" class="rounded img-fluid">
+            <div class="p-2">
+                <h5><a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="stretched-link link-dark" style="text-decoration: none;">@product.Name</a></h5>
+                <h5>
+                    ₴@product.Price.ToString("N2")
+                </h5>
+            </div>
+        </div>
+        }
+    </div>
+</div>
