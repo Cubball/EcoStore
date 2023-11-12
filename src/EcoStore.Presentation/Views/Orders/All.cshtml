@@ -1,6 +1,29 @@
+@using System.Globalization;
 @model OrdersListViewModel
-
-@foreach (var order in Model.Orders)
-{
-    <p>@order.TotalPrice - @order.OrderDate</p>
+@{
+    ViewData["Title"] = "Всі замовлення";
 }
+
+<div>
+    <h2 class="text-center">Ваші замовлення</h2>
+    @{
+        var orders = Model.Orders.ToList();
+        if (orders.Count == 0)
+        {
+            <h5>Схоже що Ви ще не робили жодного замовлення! Після того, як Ви зробите своє перше замовлення, воно з'явиться тут.</h5>
+        }
+        else
+        {
+            <p class="p-3">Для того, щоб переглянути деталі замовлення, натисніть на нього.</p>
+            foreach (var order in orders)
+            {
+                <div class="border rounded p-3 m-2 position-relative bg-light">
+                    <h4><a asp-area="" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id" class="link-dark link-no-underline stretched-link">Замовлення #@order.Id</a></h4>
+                    <p>Дата замовлення: @order.OrderDate</p>
+                    <p>Статус замовлення: @EnumHelper.GetOrderStatusName(order.OrderStatus)</p>
+                    <p>Загальна вартість: @order.TotalPrice.ToString("N2", CultureInfo.InvariantCulture) грн.</p>
+                </div> 
+            }
+        }
+    }
+</div>

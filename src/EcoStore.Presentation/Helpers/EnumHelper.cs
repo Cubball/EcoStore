@@ -1,3 +1,4 @@
+using EcoStore.Presentation.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EcoStore.Presentation.Helpers;
@@ -13,4 +14,39 @@ public static class EnumHelper
         new SelectListItem("Спочатку старіші", "DateCreated"),
         new SelectListItem("Спочатку новіші", "DateCreatedDesc"),
     };
+
+    public static string GetOrderStatusName(OrderStatusViewModel orderStatus)
+    {
+        return orderStatus switch
+        {
+            OrderStatusViewModel.New => "Нове",
+            OrderStatusViewModel.Processing => "В обробці",
+            OrderStatusViewModel.Delivering => "Відправлене",
+            OrderStatusViewModel.Delivered => "Доставлене",
+            OrderStatusViewModel.Completed => "Завершене",
+            OrderStatusViewModel.CancelledByUser => "Скасоване Вами",
+            OrderStatusViewModel.CancelledByAdmin => "Скасоване адміністратором",
+            _ => throw new ArgumentOutOfRangeException(nameof(orderStatus), orderStatus, null)
+        };
+    }
+
+    public static string GetPaymentMethodName(PaymentMethodViewModel paymentMethod)
+    {
+        return paymentMethod switch
+        {
+            PaymentMethodViewModel.Cash => "При отриманні",
+            PaymentMethodViewModel.Card => "Карткою",
+            _ => throw new ArgumentOutOfRangeException(nameof(paymentMethod), paymentMethod, null)
+        };
+    }
+
+    public static string GetShippingMethodName(ShippingMethodViewModel shippingMethod)
+    {
+        return shippingMethod switch
+        {
+            ShippingMethodViewModel.UkrPoshta => "Укрпошта",
+            ShippingMethodViewModel.NovaPoshta => "Нова пошта",
+            _ => throw new ArgumentOutOfRangeException(nameof(shippingMethod), shippingMethod, null)
+        };
+    }
 }

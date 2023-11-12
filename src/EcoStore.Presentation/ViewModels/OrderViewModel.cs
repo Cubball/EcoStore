@@ -6,7 +6,7 @@ public class OrderViewModel
 
     public AppUserViewModel User { get; set; } = default!;
 
-    public IEnumerable<OrderedProductViewModel> OrderedProducts { get; set; } = default!;
+    public List<OrderedProductViewModel> OrderedProducts { get; set; } = default!;
 
     public decimal TotalPrice => OrderedProducts.Sum(op => op.TotalPrice);
 

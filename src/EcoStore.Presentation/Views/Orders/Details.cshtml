@@ -1,20 +1,78 @@
+@using System.Globalization;
 @model OrderViewModel
+@{
+    ViewData["Title"] = "Замовлення #" + @Model.Id;
+}
 
-<p>@Model.TotalPrice</p>
-<p>@Model.OrderDate</p>
-<p>@Model.OrderStatus</p>
-<p>@Model.StatusChangedDate</p>
-<p>@Model.PaymentMethod</p>
-<p>@Model.Payment?.Id</p>
-<p>@Model.ShippingAddress</p>
-<p>@Model.ShippingMethod</p>
-<p>@Model.TrackingNumber</p>
-
-<ul>
-    @foreach (var orderedProduct in @Model.OrderedProducts)
+<div>
+    <h2 class="text-center">Замовлення #@Model.Id</h2>
+    <h4 class="p-3 pb-0">Інформація про замовлення</h4>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Дата замовлення: @Model.OrderDate</li>
+        <li class="list-group-item">Статус замовлення: @EnumHelper.GetOrderStatusName(Model.OrderStatus)</li>
+        <li class="list-group-item">Дата зміни статусу: @Model.StatusChangedDate</li>
+        <li class="list-group-item">Загальна вартість: @Model.TotalPrice.ToString("N2", CultureInfo.InvariantCulture) грн.</li>
+        <li class="list-group-item">Спосіб оплати: @EnumHelper.GetPaymentMethodName(Model.PaymentMethod)</li>
+        <li class="list-group-item">Спосіб доставки: @EnumHelper.GetShippingMethodName(Model.ShippingMethod)</li>
+        <li class="list-group-item">Адреса доставки: @Model.ShippingAddress</li>
+        <li class="list-group-item">Номер відправлення: @(string.IsNullOrWhiteSpace(Model.TrackingNumber) ? "відсутній" : Model.TrackingNumber)</li>
+        <li class="list-group-item"><strong>Загальна сума замовлення: @Model.TotalPrice.ToString("N2", CultureInfo.InvariantCulture) грн.</strong> </li>
+    </ul>
+    @if (Model.OrderStatus == OrderStatusViewModel.New)
     {
-    <li>@orderedProduct.Product?.Name</li>
-    <li>@orderedProduct.Quantity</li>
-    <li>@orderedProduct.ProductPrice</li>
+        <a asp-area="" asp-controller="Orders" asp-action="Cancel" asp-route-id="@Model.Id" class="btn btn-danger m-3">Скасувати замовлення</a>
     }
-</ul>
+    else
+    {
+        <br>
+    }
+    <h4 class="m-3">Замовлені товари</h4>
+    <ul class="list-group container m-3">
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-2">
+                    Зображення
+                </div>
+                <div class="col-4">
+                    Назва
+                </div>
+                <div class="col-2">
+                    Ціна
+                </div>
+                <div class="col-2">
+                    Кількість
+                </div>
+                <div class="col-2">
+                    Загальна вартість
+                </div>
+            </div>
+        </li>
+        @foreach (var orderedProduct in @Model.OrderedProducts)
+        {
+        <li class="list-group-item">
+            <div class="row align-items-center">
+                <div class="col-2">
+                    <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@orderedProduct.Product!.Id">
+                        <img src="@orderedProduct.Product!.ImagePath" alt="Фото @orderedProduct.Product!.Name" width="100%">
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a asp-area="" asp-controller="Products" asp-action="Details" asp-route-id="@orderedProduct.Product.Id" class="link-dark link-no-underline">
+                        @orderedProduct.Product.Name
+                    </a>
+                </div>
+                <div class="col-2">
+                    @orderedProduct.ProductPrice.ToString("N2", CultureInfo.InvariantCulture) грн.
+                </div>
+                <div class="col-2">
+                    @orderedProduct.Quantity
+                </div>
+                <div class="col-2">
+                    @orderedProduct.TotalPrice.ToString("N2", CultureInfo.InvariantCulture) грн.
+                </div>
+            </div>
+        </li>
+        }
+    </ul>
+</div>
+

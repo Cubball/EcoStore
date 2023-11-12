@@ -11,7 +11,7 @@ public static class OrderMappingExtensions
         {
             Id = orderDTO.Id,
             User = orderDTO.User.ToViewModel(),
-            OrderedProducts = orderDTO.OrderedProducts.Select(op => op.ToViewModel()),
+            OrderedProducts = orderDTO.OrderedProducts.Select(op => op.ToViewModel()).ToList(),
             OrderDate = orderDTO.OrderDate,
             OrderStatus = orderDTO.OrderStatus.ToViewModel(),
             StatusChangedDate = orderDTO.StatusChangedDate,
