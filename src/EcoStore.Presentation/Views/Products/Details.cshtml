@@ -31,8 +31,8 @@
             {
                 <p class="text-muted">Для того, щоб здійснити покупку, необхідно <a asp-area="" asp-controller="Account" asp-action="Login" class="text-muted">ввійти</a> або <a asp-area="" asp-controller="Account" asp-action="SignUp" class="text-muted">зареєструватися</a>.</p>
             }
-            <p>Виробник: <a asp-area="" asp-controller="Brands" asp-action="Details" asp-route-id="@Model.Brand.Id" class="link-no-underline link-dark">@Model.Brand.Name</a></p>
-            <p>Категорія: <a asp-area="" asp-controller="Categories" asp-action="Details" asp-route-id="@Model.Category.Id" class="link-no-underline link-dark">@Model.Category.Name</a></p>
+            <p>Виробник: <a asp-area="" asp-controller="Brands" asp-action="Details" asp-route-id="@Model.Brand!.Id" class="link-no-underline link-dark">@Model.Brand!.Name</a></p>
+            <p>Категорія: <a asp-area="" asp-controller="Categories" asp-action="Details" asp-route-id="@Model.Category!.Id" class="link-no-underline link-dark">@Model.Category!.Name</a></p>
             <p>@Model.Description</p>
         </div>
     </div>
