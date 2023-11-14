@@ -1,8 +1,26 @@
 @model UpdateBrandViewModel
+@{
+    ViewData["Title"] = "Змінити бренд";
+}
 
-<form asp-action="Update" method="post">
-    <input type="hidden" asp-for="Id">
-    <input asp-for="Name">
-    <input asp-for="Description">
-    <button type="submit"></button>
-</form>
+<div class="d-flex justify-content-center">
+    <div class="w-50">
+        <h2 class="text-center">Змінити інформацію про бренд @Model.Name</h2>
+        <form asp-action="Update" method="post">
+            <input type="hidden" asp-for="Id">
+            <div class="form-group">
+                <label asp-for="Name">Назва:</label>
+                <input asp-for="Name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label asp-for="Description">Опис:</label>
+                <textarea asp-for="Description" class="form-control">
+                </textarea>
+            </div>
+            <div class="form-group text-center">
+                <br>
+                <button type="submit" class="btn btn-primary w-50">Змінити</button>
+            </div>
+        </form>
+    </div>
+</div>

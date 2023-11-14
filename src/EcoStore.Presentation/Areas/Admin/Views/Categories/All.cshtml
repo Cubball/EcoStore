@@ -1,7 +1,78 @@
 @model CategoriesListViewModel
-
-<h1>Total: @Model.PageInfo.TotalCount</h1>
-@foreach (var category in @Model.Categories)
-{
-    <p>@category.Name</p>
+@{
+    ViewData["Title"] = "Всі категорії";
 }
+
+<div>
+    <div class="text-center">
+        <h2>Всі категорії</h2>
+        <p>Нижче наведено всі категорії, які є у магазині.</p>
+        <a asp-area="Admin" asp-controller="Categories" asp-action="Create" class="btn btn-primary mb-3">Додати категорію</a>
+    </div>
+    <ul class="list-group container w-75">
+        @foreach (var category in @Model.Categories)
+        {
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-7">
+                    <a asp-area="Admin" asp-controller="Categories" asp-action="Details" asp-route-id="@category.Id" class="link-dark link-no-underline">
+                        @category.Name
+                    </a>
+                </div>
+                <div class="col-5 d-flex justify-content-end">
+                    <a asp-area="Admin" asp-controller="Categories" asp-action="Update" asp-route-id="@category.Id" class="btn btn-primary">Змінити</a>
+                    <a asp-area="Admin" asp-controller="Categories" asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger ms-2">Видалити</a>
+                </div>
+            </div>
+        </li>
+        }
+    </ul>
+    <ul class="pagination d-flex justify-content-center pt-3">
+        @if (Model.PageInfo.PageNumber > 1)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Categories" asp-action="All" asp-route-page="1" class="page-link">1</a>
+        </li>
+        }
+        else
+        {
+        <li class="page-item active"><a class="page-link">1</a></li>
+        }
+        @if (Model.PageInfo.PageNumber > 3)
+        {
+        <li class="page-item"><a class="page-link">...</a></li>
+        }
+        @if (Model.PageInfo.PageNumber > 2)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Categories" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber - 1)" class="page-link">
+                @(Model.PageInfo.PageNumber - 1)
+            </a>
+        </li>
+        }
+        @if (Model.PageInfo.PageNumber > 1)
+        {
+        <li class="page-item active"><a class="page-link">@Model.PageInfo.PageNumber</a></li>
+        }
+        @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Categories" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber + 1)" class="page-link">
+                @(Model.PageInfo.PageNumber + 1)
+            </a>
+        </li>
+        }
+        @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 2)
+        {
+        <li class="page-item"><a class="page-link">...</a></li>
+        }
+        @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 1)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Categories" asp-action="All" asp-route-page="@Model.PageInfo.TotalPages" class="page-link">
+                @Model.PageInfo.TotalPages
+            </a>
+        </li>
+        }
+    </ul>
+</div>
