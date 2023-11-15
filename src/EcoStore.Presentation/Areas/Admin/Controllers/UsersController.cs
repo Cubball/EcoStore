@@ -44,7 +44,7 @@ public class UsersController : Controller
         var users = (await _userService.GetUsersAsync(page, pageSize, search))
             .Select(u => u.ToViewModel())
             .ToList();
-        var usersCount = await _userService.GetUsersCountAsync();
+        var usersCount = await _userService.GetUsersCountAsync(search);
         var usersListViewModel = new AppUsersListViewModel
         {
             PageInfo = new PageInfoViewModel

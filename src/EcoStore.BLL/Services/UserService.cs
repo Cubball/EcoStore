@@ -92,9 +92,17 @@ public class UserService : IUserService
         return userDTOs;
     }
 
-    public async Task<int> GetUsersCountAsync()
+    public async Task<int> GetUsersCountAsync(string? nameOrEmailSearchTerm = null)
     {
-        return await _userManager.Users.CountAsync();
+        var users = _userManager.Users.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(nameOrEmailSearchTerm))
+        {
+            users.Where(u => u.FirstName.Contains(nameOrEmailSearchTerm) ||
+                             u.LastName.Contains(nameOrEmailSearchTerm) ||
+                             u.Email!.Contains(nameOrEmailSearchTerm));
+        }
+
+        return await users.CountAsync();
     }
 
     public async Task<bool> RegisterAdminAsync(AdminRegisterDTO registerDTO)

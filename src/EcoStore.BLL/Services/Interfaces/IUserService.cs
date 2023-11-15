@@ -12,7 +12,7 @@ public interface IUserService
 
     Task<IEnumerable<AppUserDTO>> GetUsersAsync(int? pageNumber = null, int? pageSize = null, string? nameOrEmailSearchTerm = null);
 
-    Task<int> GetUsersCountAsync();
+    Task<int> GetUsersCountAsync(string? nameOrEmailSearchTerm = null);
 
     Task<AppUserDTO> GetUserByIdAsync(string id);
 
