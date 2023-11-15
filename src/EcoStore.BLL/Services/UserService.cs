@@ -12,8 +12,6 @@ namespace EcoStore.BLL.Services;
 
 public class UserService : IUserService
 {
-    private const int DefaultPageNumber = 1;
-    private const int DefaultPageSize = 25;
     private readonly UserManager<AppUser> _userManager;
     private readonly IValidator<UserRegisterDTO> _userRegisterValidator;
     private readonly IValidator<AdminRegisterDTO> _adminRegisterValidator;
@@ -56,18 +54,8 @@ public class UserService : IUserService
         return userDTO;
     }
 
-    public async Task<IEnumerable<AppUserDTO>> GetUsersAsync(int? pageNumber = null, int? pageSize = null, string? nameOrEmailSearchTerm = null)
+    public async Task<IEnumerable<AppUserDTO>> GetUsersAsync(int pageNumber, int pageSize, string? nameOrEmailSearchTerm = null)
     {
-        if (pageNumber is null or < 1)
-        {
-            pageNumber = DefaultPageNumber;
-        }
-
-        if (pageSize is null or < 1)
-        {
-            pageSize = DefaultPageSize;
-        }
-
         var users = _userManager.Users.AsQueryable();
         if (!string.IsNullOrWhiteSpace(nameOrEmailSearchTerm))
         {
@@ -78,8 +66,8 @@ public class UserService : IUserService
 
         var skip = (pageNumber - 1) * pageSize;
         var usersList = await users
-            .Skip(skip.Value)
-            .Take(pageSize.Value)
+            .Skip(skip)
+            .Take(pageSize)
             .ToListAsync();
         var userDTOs = new List<AppUserDTO>(usersList.Count);
         foreach (var user in usersList)
