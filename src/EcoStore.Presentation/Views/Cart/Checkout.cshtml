@@ -109,9 +109,13 @@
 
     const form = document.getElementById('payment-form')
     form.addEventListener('submit', async event => {
+        const paymentMethod = document.getElementById('PaymentMethod').value
+        if (paymentMethod === "Cash") {
+            return;
+        }
+
         event.preventDefault()
         const { token, error } = await stripe.createToken(card)
-
         if (error) {
             const cardErrorsElement = document.getElementById('card-errors');
             cardErrorsElement.textContent = "Введені Вами дані картки некоректні";
