@@ -89,7 +89,6 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    // catch!
     [HttpPost]
     public async Task<IActionResult> UpdateOrderStatus(int id, NewOrderStatusViewModel orderStatus)
     {
@@ -102,7 +101,6 @@ public class OrdersController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    // catch!
     [HttpPost]
     public async Task<IActionResult> UpdateTrackingNumber(int id, string trackingNumber)
     {
@@ -120,7 +118,6 @@ public class OrdersController : Controller
         return View(id);
     }
 
-    // TODO: catch
     public async Task<IActionResult> CancelConfirmed(int id)
     {
         await _orderService.CancelOrderByAdminAsync(new CancelOrderByAdminDTO { Id = id });
@@ -139,7 +136,6 @@ public class OrdersController : Controller
         return RedirectToAction(nameof(All));
     }
 
-    // TOD: DRY
     public new async Task<IActionResult> User(string id,
         [FromQuery] int page,
         [FromQuery] int pageSize,
@@ -170,7 +166,7 @@ public class OrdersController : Controller
                     endDate: endDate))
             .Select(o => o.ToViewModel())
             .ToList();
-        var ordersCount = await _orderService.GetOrderCountAsync(startDate: startDate, endDate: endDate);
+        var ordersCount = await _orderService.GetOrderCountAsync(userId: id, startDate: startDate, endDate: endDate);
         var ordersListViewModel = new AppUsersOrdersListViewModel
         {
             PageInfo = new PageInfoViewModel

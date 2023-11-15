@@ -43,7 +43,7 @@
         <li class="list-group-item">
             <form asp-action="UpdateTrackingNumber" method="post" asp-route-id="@Model.Id">
                 <div class="d-flex">
-                    <input name="trackingNumber" class="form-control w-25 me-2" placeholder="Новий номер відправлення">
+                    <input name="TrackingNumber" class="form-control w-25 me-2" placeholder="Новий номер відправлення" required>
                     <button type="submit" class="btn btn-primary">Оновити номер відправлення</button>
                 </div>
             </form>

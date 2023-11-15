@@ -50,7 +50,6 @@ public class OrderService : IOrderService
         _cancelOrderByUserValidator = cancelOrderByUserValidator;
     }
 
-    // TODO: double-check
     public async Task<int> CreateOrderAsync(CreateOrderDTO orderDTO)
     {
         await _createOrderValidator.ValidateAsync(orderDTO);

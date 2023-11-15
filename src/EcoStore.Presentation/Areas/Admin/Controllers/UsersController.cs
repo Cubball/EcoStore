@@ -1,8 +1,10 @@
 using System.Globalization;
 
 using EcoStore.BLL.Services.Interfaces;
+using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.Presentation.Areas.Admin.Mapping;
 using EcoStore.Presentation.Areas.Admin.ViewModels;
+using EcoStore.Presentation.Extensions;
 using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
@@ -74,8 +76,16 @@ public class UsersController : Controller
     public async Task<IActionResult> RegisterAdmin(RegisterAdminViewModel registerAdmin)
     {
         var registerDTO = registerAdmin.ToDTO();
-        await _userService.RegisterAdminAsync(registerDTO);
-        return RedirectToAction(nameof(All));
+        try
+        {
+            await _userService.RegisterAdminAsync(registerDTO);
+            return RedirectToAction(nameof(All));
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(registerAdmin);
+        }
     }
 
     public async Task<IActionResult> Delete(string id)

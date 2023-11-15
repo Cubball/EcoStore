@@ -1,5 +1,7 @@
 using EcoStore.BLL.Services.Interfaces;
+using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.DAL.Entities;
+using EcoStore.Presentation.Extensions;
 using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
@@ -66,18 +68,24 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    // TODO: catch
     public async Task<IActionResult> SignUp(SignUpViewModel signUpViewModel)
     {
-        var success = await _userService.RegisterUserAsync(signUpViewModel.ToDTO());
-        if (!success)
+        try
         {
-            // TODO: change this and the same code in Login
-            ModelState.AddModelError(string.Empty, "Введені дані некоректні");
+            var success = await _userService.RegisterUserAsync(signUpViewModel.ToDTO());
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Введені дані некоректні");
+                return View(signUpViewModel);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
             return View(signUpViewModel);
         }
-
-        return RedirectToAction("Index", "Home");
     }
 
     public async Task<IActionResult> Index()
@@ -98,11 +106,19 @@ public class AccountController : Controller
     {
         var changePasswordDTO = changePasswordViewModel.ToDTO();
         changePasswordDTO.Id = _userManager.GetUserId(User)!;
-        // note: doesnt throw, returns a bool
-        var success = await _userService.ChangePasswordAsync(changePasswordDTO);
-        if (!success)
+        try
         {
-            return View();
+            var success = await _userService.ChangePasswordAsync(changePasswordDTO);
+            if (!success)
+            {
+                ModelState.AddModelError(string.Empty, "Не вдалося змінити пароль");
+                return View(changePasswordViewModel);
+            }
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(changePasswordViewModel);
         }
         // TODO: redirect to success page??
         return RedirectToAction("Index");
@@ -115,13 +131,20 @@ public class AccountController : Controller
         return View(user.ToUpdateViewModel());
     }
 
-    // catch
     [HttpPost]
     public async Task<IActionResult> Update(UpdateAppUserViewModel updateAppUserViewModel)
     {
         var updateAppUserDTO = updateAppUserViewModel.ToDTO();
-        await _userService.UpdateUserAsync(updateAppUserDTO);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await _userService.UpdateUserAsync(updateAppUserDTO);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(updateAppUserViewModel);
+        }
     }
 
     public IActionResult AccessDenied()

@@ -2,8 +2,10 @@ using System.Globalization;
 
 using EcoStore.BLL.DTO;
 using EcoStore.BLL.Services.Interfaces;
+using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.Presentation.Areas.Admin.Mapping;
 using EcoStore.Presentation.Areas.Admin.ViewModels;
+using EcoStore.Presentation.Extensions;
 using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
@@ -94,15 +96,22 @@ public class ProductsController : Controller
         return View(viewModel);
     }
 
-    // TODO : catch
     [HttpPost]
     public async Task<IActionResult> Create(CreateProductViewModel createProduct)
     {
         var createProductDTO = createProduct.ToDTO();
         createProductDTO.ImageExtension = Path.GetExtension(createProduct.Image.FileName);
         createProductDTO.ImageStream = createProduct.Image.OpenReadStream();
-        var productId = await _productService.CreateProductAsync(createProductDTO);
-        return RedirectToAction(nameof(Details), new { id = productId });
+        try
+        {
+            var productId = await _productService.CreateProductAsync(createProductDTO);
+            return RedirectToAction(nameof(Details), new { id = productId });
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(createProduct);
+        }
     }
 
     public async Task<IActionResult> Update(int id)
@@ -117,7 +126,6 @@ public class ProductsController : Controller
         return View(product);
     }
 
-    // TODO : catch
     [HttpPost]
     public async Task<IActionResult> Update(UpdateProductViewModel updateProduct)
     {
@@ -128,8 +136,16 @@ public class ProductsController : Controller
             updateProductDTO.ImageStream = updateProduct.Image.OpenReadStream();
         }
 
-        await _productService.UpdateProductAsync(updateProductDTO);
-        return RedirectToAction(nameof(Details), new { id = updateProduct.Id });
+        try
+        {
+            await _productService.UpdateProductAsync(updateProductDTO);
+            return RedirectToAction(nameof(Details), new { id = updateProduct.Id });
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(updateProduct);
+        }
     }
 
     public async Task<IActionResult> Delete(int id)

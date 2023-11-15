@@ -1,5 +1,7 @@
 using EcoStore.BLL.Services.Interfaces;
+using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.DAL.Entities;
+using EcoStore.Presentation.Extensions;
 using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
@@ -43,7 +45,6 @@ public class CartController : Controller
         return View(new CreateOrderViewModel { Cart = await GetCart() });
     }
 
-    // TODO: try catch
     [HttpPost]
     public async Task<IActionResult> Checkout(CreateOrderViewModel createOrder)
     {
@@ -51,9 +52,17 @@ public class CartController : Controller
         var userId = _userManager.GetUserId(User);
         var createOrderDTO = createOrder.ToDTO();
         createOrderDTO.UserId = userId!;
-        var orderId = await _orderService.CreateOrderAsync(createOrderDTO);
-        ClearCartCookie();
-        return View("CheckoutSuccess", orderId);
+        try
+        {
+            var orderId = await _orderService.CreateOrderAsync(createOrderDTO);
+            ClearCartCookie();
+            return View("CheckoutSuccess", orderId);
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(createOrder);
+        }
     }
 
     public IActionResult CheckoutSuccess()

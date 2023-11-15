@@ -1,8 +1,10 @@
 using System.Globalization;
 
 using EcoStore.BLL.Services.Interfaces;
+using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.Presentation.Areas.Admin.Mapping;
 using EcoStore.Presentation.Areas.Admin.ViewModels;
+using EcoStore.Presentation.Extensions;
 using EcoStore.Presentation.Mapping;
 using EcoStore.Presentation.ViewModels;
 
@@ -67,13 +69,20 @@ public class CategoriesController : Controller
         return View();
     }
 
-    // catch
     [HttpPost]
     public async Task<IActionResult> Create(CreateCategoryViewModel createCategoryViewModel)
     {
         var createCategoryDTO = createCategoryViewModel.ToDTO();
-        var categoryId = await _categoryService.CreateCategoryAsync(createCategoryDTO);
-        return RedirectToAction(nameof(Details), new { id = categoryId });
+        try
+        {
+            var categoryId = await _categoryService.CreateCategoryAsync(createCategoryDTO);
+            return RedirectToAction(nameof(Details), new { id = categoryId });
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(createCategoryViewModel);
+        }
     }
 
     public async Task<IActionResult> Update(int id)
@@ -82,13 +91,20 @@ public class CategoriesController : Controller
         return View(category);
     }
 
-    // catch
     [HttpPost]
     public async Task<IActionResult> Update(UpdateCategoryViewModel updateCategoryViewModel)
     {
         var updateCategoryDTO = updateCategoryViewModel.ToDTO();
-        await _categoryService.UpdateCategoryAsync(updateCategoryDTO);
-        return RedirectToAction(nameof(Details), new { id = updateCategoryDTO.Id });
+        try
+        {
+            await _categoryService.UpdateCategoryAsync(updateCategoryDTO);
+            return RedirectToAction(nameof(Details), new { id = updateCategoryDTO.Id });
+        }
+        catch (ValidationException e)
+        {
+            e.AddErrorsToModelState(ModelState);
+            return View(updateCategoryViewModel);
+        }
     }
 
     public async Task<IActionResult> Delete(int id)
