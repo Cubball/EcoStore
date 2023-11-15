@@ -1,6 +1,110 @@
 @model AppUsersListViewModel
-
-@foreach (var user in @Model.Users)
-{
-<p>@user.Email - @user.Id - @user.Role</p>
+@using System.Globalization;
+@{
+    ViewData["Title"] = "Всі користувачі";
 }
+
+<div class="d-flex justify-content-center">
+    <div class="w-75">
+        <h2 class="text-center">Всі користувачі</h2>
+        <form asp-area="Admin" asp-controller="Users" asp-action="All" method="get">
+            <div class="d-flex justify-content-between m-2 flex-grow-1">
+                <input name="search" class="form-control" placeholder="Пошук" value="@Model.Search">
+                <button type="submit" class="btn btn-primary ms-2">Пошук</button>
+            </div>
+        </form>
+        <ul class="list-group container m-2">
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-3">
+                        Ім'я
+                    </div>
+                    <div class="col-3">
+                        Email
+                    </div>
+                    <div class="col-3">
+                        Роль
+                    </div>
+                    <div class="col-3">
+                        Дії
+                    </div>
+                </div>
+            </li>
+            @foreach (var user in @Model.Users)
+            {
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-3">
+                        <a asp-area="Admin" asp-controller="Users" asp-action="Details" asp-route-id="@user.Id" class="link-dark link-no-underline">
+                            @user.FirstName @user.LastName
+                        </a>
+                    </div>
+                    <div class="col-3">
+                        <a asp-area="Admin" asp-controller="Users" asp-action="Details" asp-route-id="@user.Id" class="link-dark link-no-underline">
+                            @user.Email
+                        </a>
+                    </div>
+                    <div class="col-3">
+                        @EnumHelper.GetRoleName(user.Role)
+                    </div>
+                    <div class="col-3 d-flex flex-wrap">
+                        <a asp-area="Admin" asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger">Видалити</a>
+                    </div>
+                </div>
+            </li>
+            }
+        </ul>
+        <ul class="pagination d-flex justify-content-center pt-3">
+            @if (Model.PageInfo.PageNumber > 1)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Users" asp-action="All" asp-route-page="1" 
+                   asp-route-search="@Model.Search" class="page-link">1</a>
+            </li>
+            }
+            else
+            {
+            <li class="page-item active"><a class="page-link">1</a></li>
+            }
+            @if (Model.PageInfo.PageNumber > 3)
+            {
+            <li class="page-item"><a class="page-link">...</a></li>
+            }
+            @if (Model.PageInfo.PageNumber > 2)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Users" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber - 1)" 
+                   asp-route-search="@Model.Search" class="page-link">
+                    @(Model.PageInfo.PageNumber - 1)
+                </a>
+            </li>
+            }
+            @if (Model.PageInfo.PageNumber > 1)
+            {
+            <li class="page-item active"><a class="page-link">@Model.PageInfo.PageNumber</a></li>
+            }
+            @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Users" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber + 1)" 
+                   asp-route-search="@Model.Search" class="page-link">
+                    @(Model.PageInfo.PageNumber + 1)
+                </a>
+            </li>
+            }
+            @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 2)
+            {
+            <li class="page-item"><a class="page-link">...</a></li>
+            }
+            @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 1)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Users" asp-action="All" asp-route-page="@Model.PageInfo.TotalPages"
+                   asp-route-search="@Model.Search" class="page-link">
+                    @Model.PageInfo.TotalPages
+                </a>
+            </li>
+            }
+        </ul>
+    </div>
+</div>
