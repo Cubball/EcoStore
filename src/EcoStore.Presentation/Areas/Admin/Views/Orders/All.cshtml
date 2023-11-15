@@ -1,6 +1,103 @@
+@using System.Globalization;
 @model OrdersListViewModel
-
-@foreach (var order in Model.Orders)
-{
-    <p>@order.User.Id - @order.TotalPrice - @order.Id - @order.OrderStatus</p>
+@{
+    ViewData["Title"] = "Всі замовлення";
 }
+
+<div class="d-flex justify-content-center">
+    <div class="w-75">
+        <h2 class="text-center">Всі замовлення</h2>
+        <form asp-area="Admin" asp-controller="Orders" asp-action="Details" method="get">
+            <div class="d-flex justify-content-between m-2 flex-grow-1">
+                <input type="number" name="Id" min="1" class="form-control" placeholder="Пошук за Id">
+                <button type="submit" class="btn btn-primary ms-2">Пошук</button>
+            </div>
+        </form>
+        <form asp-area="Admin" asp-controller="Orders" asp-action="All" method="get">
+            <div class="d-flex justify-content-between m-2 align-items-end">
+                <div class="d-flex justify-content-between flex-grow-1">
+                    <div class="form-group flex-grow-1 me-2">
+                        <label for="From">Початкова дата:</label>
+                        <input type="date" name="From" class="form-control me-2" id="From" value="@Model.From">
+                    </div>
+                    <div class="form-group flex-grow-1 me-2">
+                        <label for="To">Кінцева дата:</label>
+                        <input type="date" name="To" class="form-control me-2" id="To" value="@Model.To">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Пошук</button>
+            </div>
+        </form>
+        @foreach (var order in Model.Orders)
+        {
+        <div class="border rounded p-3 m-2 position-relative bg-light">
+            <h4><a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id" class="link-dark link-no-underline">Замовлення #@order.Id</a></h4>
+            <a asp-area="Admin" asp-controller="Users" asp-action="Details" asp-route-id="@order.User.Id" class="link-dark link-no-underline">Покупець: @order.User.FirstName @order.User.LastName</a><br>
+            Дата замовлення: @order.OrderDate<br>
+            @{
+            var spanClass = order.OrderStatus switch 
+            {
+            OrderStatusViewModel.New => "text-primary",
+            OrderStatusViewModel.CancelledByUser or OrderStatusViewModel.CancelledByAdmin => "text-danger",
+            OrderStatusViewModel.Completed => "text-success",
+            _ => "",
+            };
+            }
+            Статус замовлення: <span class="@spanClass">@EnumHelper.GetOrderStatusName(order.OrderStatus)</span><br>
+            Загальна вартість: @order.TotalPrice.ToString("N2", CultureInfo.InvariantCulture) грн.
+        </div> 
+        }
+        <ul class="pagination d-flex justify-content-center pt-3">
+            @if (Model.PageInfo.PageNumber > 1)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Orders" asp-action="All" asp-route-page="1" 
+                   asp-route-From="@Model.From" asp-route-To="@Model.To" class="page-link">1</a>
+            </li>
+            }
+            else
+            {
+            <li class="page-item active"><a class="page-link">1</a></li>
+            }
+            @if (Model.PageInfo.PageNumber > 3)
+            {
+            <li class="page-item"><a class="page-link">...</a></li>
+            }
+            @if (Model.PageInfo.PageNumber > 2)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Orders" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber - 1)" 
+                   asp-route-From="@Model.From" asp-route-To="@Model.To" class="page-link">
+                    @(Model.PageInfo.PageNumber - 1)
+                </a>
+            </li>
+            }
+            @if (Model.PageInfo.PageNumber > 1)
+            {
+            <li class="page-item active"><a class="page-link">@Model.PageInfo.PageNumber</a></li>
+            }
+            @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Orders" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber + 1)" 
+                   asp-route-From="@Model.From" asp-route-To="@Model.To" class="page-link">
+                    @(Model.PageInfo.PageNumber + 1)
+                </a>
+            </li>
+            }
+            @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 2)
+            {
+            <li class="page-item"><a class="page-link">...</a></li>
+            }
+            @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 1)
+            {
+            <li class="page-item">
+                <a asp-area="Admin" asp-controller="Orders" asp-action="All" asp-route-page="@Model.PageInfo.TotalPages"
+                   asp-route-From="@Model.From" asp-route-To="@Model.To" class="page-link">
+                    @Model.PageInfo.TotalPages
+                </a>
+            </li>
+            }
+        </ul>
+    </div>
+</div>

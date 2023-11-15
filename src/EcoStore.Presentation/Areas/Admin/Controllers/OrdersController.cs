@@ -73,6 +73,8 @@ public class OrdersController : Controller
                 TotalCount = ordersCount,
             },
             Orders = orders,
+            From = from?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            To = to?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
         };
         return View(ordersListViewModel);
     }
@@ -80,6 +82,10 @@ public class OrdersController : Controller
     public async Task<IActionResult> Details(int id)
     {
         var order = (await _orderService.GetOrderAsync(id)).ToViewModel();
+        foreach (var orderedProduct in order.OrderedProducts)
+        {
+            orderedProduct.Product!.ImagePath = Path.Combine(_imagePath, orderedProduct.Product.ImagePath);
+        }
         return View(order);
     }
 

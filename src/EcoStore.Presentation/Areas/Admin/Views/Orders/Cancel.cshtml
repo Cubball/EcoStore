@@ -1,4 +1,9 @@
 @model int
-<h2>Ви впевнені, що хочете скасувати замовлення?</h2>
-<a asp-action="CancelConfirmed" asp-route-id="@Model">так</a>
-<a asp-action="All">ні</a>
+@{
+    ViewData["Title"] = "Скасувати замовлення";
+}
+<div class="text-center">
+    <h2>Ви впевнені, що хочете скасувати замовлення #@Model?</h2>
+    <a asp-action="CancelConfirmed" asp-route-id="@Model" class="btn btn-danger">Так</a>
+    <a asp-action="Details" asp-route-id="@Model" class="btn btn-primary">Ні</a>
+</div>

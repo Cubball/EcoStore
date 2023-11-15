@@ -35,9 +35,7 @@ public class OrdersController : Controller
 
     public async Task<IActionResult> All(
         [FromQuery] int page,
-        [FromQuery] int pageSize,
-        [FromQuery] DateOnly? from = null,
-        [FromQuery] DateOnly? to = null)
+        [FromQuery] int pageSize)
     {
         var userId = _userManager.GetUserId(User);
         if (page < 1)
@@ -49,14 +47,7 @@ public class OrdersController : Controller
         {
             pageSize = _defaultPageSize;
         }
-
-        DateTime? startDate = from.HasValue
-            ? from.Value.ToDateTime(new TimeOnly(0, 0, 0), DateTimeKind.Local).ToUniversalTime()
-            : null;
-        DateTime? endDate = to.HasValue
-            ? to.Value.ToDateTime(new TimeOnly(23, 59, 59), DateTimeKind.Local).ToUniversalTime()
-            : null;
-        var orders = (await _orderService.GetOrdersAsync(page, pageSize, userId, startDate, endDate))
+        var orders = (await _orderService.GetOrdersAsync(page, pageSize, userId))
             .Select(o => o.ToViewModel())
             .ToList();
         foreach (var order in orders)
@@ -64,7 +55,7 @@ public class OrdersController : Controller
             UpdateOrdersTime(order);
         }
 
-        var ordersCount = await _orderService.GetOrderCountAsync(userId, startDate, endDate);
+        var ordersCount = await _orderService.GetOrderCountAsync(userId);
         var ordersListViewModel = new OrdersListViewModel
         {
             PageInfo = new PageInfoViewModel

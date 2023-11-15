@@ -1,7 +1,29 @@
+@using System.Globalization
 @model AppUsersOrdersListViewModel
-
-<h2>@Model.User.Email</h2>
-@foreach (var order in @Model.Orders)
-{
-<p>@order.Id - @order.TotalPrice</p>
+@{
+    ViewData["Title"] = "Всі замовлення користувача";
 }
+
+<div class="d-flex justify-content-center">
+    <div class="w-75">
+        <h2 class="text-center">Всі замовлення користувача <a asp-area="Admin" asp-controller="Users" asp-action="Details" asp-route-id="@Model.User.Id" class="link-dark link-no-underline">@Model.User.FirstName @Model.User.LastName</a></h2>
+        @foreach (var order in Model.Orders)
+        {
+        <div class="border rounded p-3 m-2 position-relative bg-light">
+            <h4><a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id" class="link-dark link-no-underline">Замовлення #@order.Id</a></h4>
+            Дата замовлення: @order.OrderDate<br>
+            @{
+            var spanClass = order.OrderStatus switch 
+            {
+            OrderStatusViewModel.New => "text-primary",
+            OrderStatusViewModel.CancelledByUser or OrderStatusViewModel.CancelledByAdmin => "text-danger",
+            OrderStatusViewModel.Completed => "text-success",
+            _ => "",
+            };
+            }
+            Статус замовлення: <span class="@spanClass">@EnumHelper.GetOrderStatusName(order.OrderStatus)</span><br>
+            Загальна вартість: @order.TotalPrice.ToString("N2", CultureInfo.InvariantCulture) грн.
+        </div> 
+        }
+    </div>
+</div>
