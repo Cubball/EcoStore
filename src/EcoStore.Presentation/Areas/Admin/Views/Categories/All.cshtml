@@ -7,7 +7,6 @@
     <div class="text-center">
         <h2>Всі категорії</h2>
         <p>Нижче наведено всі категорії, які є у магазині.</p>
-        <a asp-area="Admin" asp-controller="Categories" asp-action="Create" class="btn btn-primary mb-3">Додати категорію</a>
     </div>
     <ul class="list-group container w-75">
         @foreach (var category in @Model.Categories)

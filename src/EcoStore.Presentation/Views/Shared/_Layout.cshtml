@@ -33,6 +33,12 @@
                     <ul class="navbar-nav">
                         @if (User.Identity is not null && User.Identity.IsAuthenticated)
                         {
+                            @if (User.IsInRole("Admin"))
+                            {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Панель адміністратора</a>
+                            </li>
+                            }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">Кошик</a>
                         </li>

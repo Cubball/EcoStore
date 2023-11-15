@@ -1,4 +1,10 @@
 @model ProductViewModel
-<h2>U sure? @Model.Name</h2>
-<a asp-action="DeleteConfirmed" asp-route-id="@Model.Id">ye</a>
-<a asp-action="Details" asp-route-id="@Model.Id">no</a>
+@{
+    ViewData["Title"] = "Видалити товар";
+}
+
+<div class="text-center">
+    <h2>Ви впевнені, що хочете видалити товар "@Model.Name"?</h2>
+    <a asp-action="DeleteConfirmed" asp-route-id="@Model.Id" class="btn btn-danger">Так</a>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Ні</a>
+</div>

@@ -1,18 +1,48 @@
 <!--TODO: required-->
 @model CreateProductViewModel
+@{
+    ViewData["Title"] = "Додати товар";
+}
 
-<form asp-controller="Products" asp-action="Create" asp-area="Admin" method="post" enctype="multipart/form-data">
-    <label asp-for="Name">Name:</label>
-    <input asp-for="Name">
-    <label asp-for="Description">Description:</label>
-    <input asp-for="Description">
-    <label asp-for="Price">Price:</label>
-    <input asp-for="Price" type="number" min="0" step="0.01">
-    <input asp-for="Image" required>
-    <input asp-for="Stock" type="number" min="0" step="1">
-    <label asp-for="CategoryId">CategoryId:</label>
-    <input asp-for="CategoryId">
-    <label asp-for="BrandId">BrandId:</label>
-    <input asp-for="BrandId">
-    <button type="submit"></button>
-</form>
+<div class="d-flex justify-content-center">
+    <div class="w-50">
+        <h2 class="text-center">Додати товар</h2>
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Name">Назва:</label>
+                <input asp-for="Name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label asp-for="Description">Опис:</label>
+                <textarea asp-for="Description" class="form-control">
+                </textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price">Ціна:</label>
+                <input asp-for="Price" type="number" min="0" step="0.01" class="form-control" value="">
+            </div>
+            <div class="form-group">
+                <label asp-for="Image">Зображення:</label>
+                <input asp-for="Image" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stock">Кількість на складі:</label>
+                <input asp-for="Stock" type="number" min="0" step="1" class="form-control" value="">
+            </div>
+            <div class="form-group">
+                <label asp-for="BrandId">Бренд:</label>
+                <select asp-for="BrandId" asp-items="Model.Brands" class="form-control">
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId">Категорія:</label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control">
+                </select>
+            </div>
+            <div class="form-group text-center">
+                <br>
+                <button type="submit" class="btn btn-primary w-50">Додати</button>
+            </div>
+        </form>
+    </div>
+</div>

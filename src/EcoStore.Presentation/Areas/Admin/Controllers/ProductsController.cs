@@ -9,6 +9,7 @@ using EcoStore.Presentation.ViewModels;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EcoStore.Presentation.Areas.Admin.Controllers;
 
@@ -17,13 +18,21 @@ namespace EcoStore.Presentation.Areas.Admin.Controllers;
 public class ProductsController : Controller
 {
     private readonly IProductService _productService;
+    private readonly IBrandService _brandService;
+    private readonly ICategoryService _categoryService;
     private readonly int _defaultPageNumber;
     private readonly int _defaultPageSize;
     private readonly string _imagePath;
 
-    public ProductsController(IProductService productService, IConfiguration configuration)
+    public ProductsController(
+            IProductService productService,
+            IBrandService brandService,
+            ICategoryService categoryService,
+            IConfiguration configuration)
     {
         _productService = productService;
+        _brandService = brandService;
+        _categoryService = categoryService;
         _imagePath = configuration["Path:Images"]!;
         _defaultPageNumber = int.Parse(configuration["Defaults:PageNumber"]!, CultureInfo.InvariantCulture);
         _defaultPageSize = int.Parse(configuration["Defaults:PageSize"]!, CultureInfo.InvariantCulture);
@@ -32,8 +41,8 @@ public class ProductsController : Controller
     public async Task<IActionResult> All(
         [FromQuery] int page,
         [FromQuery] int pageSize,
-        [FromQuery] SortProductsByViewModel sortBy,
-        [FromQuery] string? search = null)
+        [FromQuery(Name = "Filter.SortBy")] SortProductsByViewModel sortBy,
+        [FromQuery(Name = "Filter.Search")] string? search = null)
     {
         var filter = GetProductsFilter(page, pageSize, search, sortBy);
         var products = (await _productService.GetProductsAsync(filter))
@@ -53,7 +62,12 @@ public class ProductsController : Controller
                 PageSize = filter.PageSize,
                 TotalCount = productsCount
             },
-            Products = products
+            Products = products,
+            Filter = new ProductFilterViewModel
+            {
+                Search = filter.SearchString,
+                SortBy = sortBy
+            }
         };
         return View(productsListViewModel);
     }
@@ -66,9 +80,18 @@ public class ProductsController : Controller
         return View(product);
     }
 
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        return View();
+        var viewModel = new CreateProductViewModel
+        {
+            Brands = (await _brandService.GetAllBrandsAsync())
+                .Select(b => new SelectListItem(b.Name, b.Id.ToString(CultureInfo.InvariantCulture)))
+                .ToList(),
+            Categories = (await _categoryService.GetAllCategoriesAsync())
+                .Select(c => new SelectListItem(c.Name, c.Id.ToString(CultureInfo.InvariantCulture)))
+                .ToList()
+        };
+        return View(viewModel);
     }
 
     // TODO : catch
@@ -85,6 +108,12 @@ public class ProductsController : Controller
     public async Task<IActionResult> Update(int id)
     {
         var product = (await _productService.GetProductByIdAsync(id)).ToUpdateViewModel();
+        product.Brands = (await _brandService.GetAllBrandsAsync())
+            .Select(b => new SelectListItem(b.Name, b.Id.ToString(CultureInfo.InvariantCulture)))
+            .ToList();
+        product.Categories = (await _categoryService.GetAllCategoriesAsync())
+            .Select(c => new SelectListItem(c.Name, c.Id.ToString(CultureInfo.InvariantCulture)))
+            .ToList();
         return View(product);
     }
 

@@ -1,23 +1,129 @@
+@using System.Globalization;
 @model ProductsListViewModel
+@{
+    ViewData["Title"] = "Всі товари";
+}
 
-<table>
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Desc</th>
-            <th>Price</th>
-            <th>Stock</th>
-        </tr>
-    </thead>
-    @foreach (var product in Model.Products)
-    {
-    <tr>
-        <td>@product.Id</td>
-        <td>@product.Name</td>
-        <td>@product.Description</td>
-        <td>@product.Price</td>
-        <td>@product.Stock</td>
-    </tr>
-    }
-</table>
+<div>
+    <div class="text-center">
+        <h2>Всі товари</h2>
+        <p>Нижче наведено всі товари, які є у магазині.</p>
+    </div>
+    <div class="container row">
+        <div class="col-2 d-flex justify-content-between">
+            <form asp-action="All" method="get">
+                <div class="form-group">
+                    <label asp-for="Filter.SortBy">Сортувати за:</label>
+                    <select asp-for="Filter.SortBy" asp-items="EnumHelper.SortByEnumSelectList" class="form-control">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Filter.Search">Пошук:</label>
+                    <input asp-for="Filter.Search" class="form-control">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary mt-3 mb-3 w-100">Пошук</button>
+                    <a asp-area="Admin" asp-controller="Products" asp-action="All" class="btn btn-danger w-100">Скинути фільтр</a>
+                </div>
+            </form>
+        </div>
+        <ul class="list-group col-10 container">
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-1">
+                        Id
+                    </div>
+                    <div class="col-4">
+                        Назва
+                    </div>
+                    <div class="col-2">
+                        Ціна
+                    </div>
+                    <div class="col-2">
+                        Кількість
+                    </div>
+                    <div class="col-3">
+                        Дії
+                    </div>
+                </div>
+            </li>
+            @foreach (var product in @Model.Products)
+            {
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-1">
+                        @product.Id
+                    </div>
+                    <div class="col-4">
+                        <a asp-area="Admin" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="link-dark link-no-underline">
+                            @product.Name
+                        </a>
+                    </div>
+                    <div class="col-2">
+                        @product.Price.ToString("N2", CultureInfo.InvariantCulture) грн.
+                    </div>
+                    <div class="col-2">
+                        @product.Stock
+                    </div>
+                    <div class="col-3 d-flex flex-wrap">
+                        <a asp-area="Admin" asp-controller="Products" asp-action="Update" asp-route-id="@product.Id" class="btn btn-primary me-2">Змінити</a>
+                        <a asp-area="Admin" asp-controller="Products" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger">Видалити</a>
+                    </div>
+                </div>
+            </li>
+            }
+        </ul>
+    </div>
+    <ul class="pagination d-flex justify-content-center pt-3">
+        @if (Model.PageInfo.PageNumber > 1)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Products" asp-action="All" asp-route-page="1" 
+               asp-route-Filter.SortBy="@Model.Filter.SortBy" asp-route-Filter.Search="@Model.Filter.Search" class="page-link">1</a>
+        </li>
+        }
+        else
+        {
+        <li class="page-item active"><a class="page-link">1</a></li>
+        }
+        @if (Model.PageInfo.PageNumber > 3)
+        {
+        <li class="page-item"><a class="page-link">...</a></li>
+        }
+        @if (Model.PageInfo.PageNumber > 2)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Products" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber - 1)"
+               asp-route-Filter.SortBy="@Model.Filter.SortBy" asp-route-Filter.Search="@Model.Filter.Search" class="page-link">
+                @(Model.PageInfo.PageNumber - 1)
+            </a>
+        </li>
+        }
+        @if (Model.PageInfo.PageNumber > 1)
+        {
+        <li class="page-item active"><a class="page-link">@Model.PageInfo.PageNumber</a></li>
+        }
+        @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Products" asp-action="All" asp-route-page="@(Model.PageInfo.PageNumber + 1)" 
+               asp-route-Filter.SortBy="@Model.Filter.SortBy" asp-route-Filter.Search="@Model.Filter.Search" class="page-link">
+                @(Model.PageInfo.PageNumber + 1)
+            </a>
+        </li>
+        }
+        @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 2)
+        {
+        <li class="page-item"><a class="page-link">...</a></li>
+        }
+        @if (Model.PageInfo.PageNumber < Model.PageInfo.TotalPages - 1)
+        {
+        <li class="page-item">
+            <a asp-area="Admin" asp-controller="Products" asp-action="All" asp-route-page="@Model.PageInfo.TotalPages" 
+               asp-route-Filter.SortBy="@Model.Filter.SortBy" asp-route-Filter.Search="@Model.Filter.Search" class="page-link">
+                @Model.PageInfo.TotalPages
+            </a>
+        </li>
+        }
+    </ul>
+</div>

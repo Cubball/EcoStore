@@ -1,9 +1,27 @@
-@* Remove this and add to cart without the user id ?*@
+@using System.Globalization
 @model ProductViewModel
 
-<h2>@Model.Name</h2>
-<p>@Model.Description</p>
-<p>@Model.Price</p>
-<img src="@Model.ImagePath">
-<p>@Model.Category!.Name - @Model.Category.Id</p>
-<p>@Model.Brand!.Name - @Model.Brand.Id</p>
+@{
+    ViewData["Title"] = @Model.Name;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <img src="@Model.ImagePath" class="rounded" width="80%" style="display: block; margin-left: auto;">
+        </div>
+        <div class="col-6">
+            <h2>@Model.Name (Id: @Model.Id)</h2>
+            <br>
+            <h5>Ціна: @Model.Price.ToString("N2", CultureInfo.InvariantCulture) грн.</h5>
+            <h5>Наявність на складі: @Model.Stock</h5>
+            <div class="mt-2 mb-2">
+                <a asp-area="Admin" asp-controller="Products" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary">Змінити</a>
+                <a asp-area="Admin" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Видалити</a>
+            </div>
+            <p>Виробник: <a asp-area="" asp-controller="Brands" asp-action="Details" asp-route-id="@Model.Brand!.Id" class="link-no-underline link-dark">@Model.Brand!.Name</a></p>
+            <p>Категорія: <a asp-area="" asp-controller="Categories" asp-action="Details" asp-route-id="@Model.Category!.Id" class="link-no-underline link-dark">@Model.Category!.Name</a></p>
+            <p>@Model.Description</p>
+        </div>
+    </div>
+</div>

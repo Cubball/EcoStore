@@ -7,7 +7,6 @@
     <div class="text-center">
         <h2>Всі бренди</h2>
         <p>Нижче наведено всі бренди, товари яких є у магазині.</p>
-        <a asp-area="Admin" asp-controller="Brands" asp-action="Create" class="btn btn-primary mb-3">Додати бренд</a>
     </div>
     <ul class="list-group container w-75">
         @foreach (var brand in @Model.Brands)

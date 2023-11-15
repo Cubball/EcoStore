@@ -1,1 +1,34 @@
-<h2>Admin</h2>
+@{
+    ViewData["Title"] = "Панель адміністратора";
+}
+
+<div>
+    <h2 class="text-center">Панель адміністратора</h2>
+    <div class="row">
+        <div class="col-6">
+            <div class="border p-3 rounded text-center h-100">
+                <h3>Керування товарами</h3>
+                <a asp-area="Admin" asp-controller="Products" asp-action="All" class="btn btn-secondary w-50 mt-2">Переглянути всі товари</a>
+                <br>
+                <a asp-area="Admin" asp-controller="Products" asp-action="Create" class="btn btn-primary w-50 mt-2">Додати товар</a>
+                <br>
+                <a asp-area="Admin" asp-controller="Brands" asp-action="All" class="btn btn-secondary w-50 mt-2">Переглянути всі бренди</a>
+                <br>
+                <a asp-area="Admin" asp-controller="Brands" asp-action="Create" class="btn btn-primary w-50 mt-2">Додати бренд</a>
+                <br>
+                <a asp-area="Admin" asp-controller="Categories" asp-action="All" class="btn btn-secondary w-50 mt-2">Переглянути всі категорії</a>
+                <br>
+                <a asp-area="Admin" asp-controller="Categories" asp-action="Create" class="btn btn-primary w-50 mt-2">Додати категорію</a>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="border p-3 rounded text-center h-100">
+                <h3>Керування замовленнями та аккаунтами</h3>
+                <a asp-area="Admin" asp-controller="Orders" asp-action="All" class="btn btn-secondary w-50 mt-2">Переглянути всі замовлення</a>
+                <a asp-area="Admin" asp-controller="Users" asp-action="All" class="btn btn-secondary w-50 mt-2">Переглянути всі аккаунти</a>
+                <a asp-area="Admin" asp-controller="Users" asp-action="RegisterAdmin" class="btn btn-primary w-50 mt-2">Зареєструвати нового адміністратора</a>
+                <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="btn btn-secondary w-50 mt-2">Перейти до звітності</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 namespace EcoStore.Presentation.Areas.Admin.ViewModels;
 
 public class UpdateProductViewModel
@@ -17,4 +19,8 @@ public class UpdateProductViewModel
     public int CategoryId { get; set; }
 
     public int BrandId { get; set; }
+
+    public List<SelectListItem> Categories { get; set; } = default!;
+
+    public List<SelectListItem> Brands { get; set; } = default!;
 }
