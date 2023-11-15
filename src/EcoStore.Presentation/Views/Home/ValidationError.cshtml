@@ -1,0 +1,21 @@
+@model IEnumerable<string>
+@{
+    ViewData["Title"] = "Некоректні дані";
+}
+
+<div class="d-flex justify-content-center">
+    <div class="w-75 text-center">
+        <h2>Помилка!</h2>
+        <h4>Схоже що введені Вами дані не є коректними</h4>
+        <p>
+            @foreach (var error in Model)
+            {
+                @error<br>
+            }
+            Перевірте правильність всіх даних та спробуйте знову
+        </p>
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-dark w-25">Перейти на головну</a>
+        <br>
+        <a asp-area="" asp-controller="Products" asp-action="All" class="btn btn-dark mt-2 w-25">Перейти до товарів</a>
+    </div>
+</div>

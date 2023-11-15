@@ -35,9 +35,9 @@ var app = builder.Build();
 
 await DbInitializer.Initialize(app.Services.CreateScope());
 
+app.UseExceptionHandler("/Home/Error");
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 

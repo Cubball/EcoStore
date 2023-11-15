@@ -1,9 +1,12 @@
 ﻿using System.Globalization;
 
 using EcoStore.BLL.DTO;
+using EcoStore.BLL.Services.Exceptions;
 using EcoStore.BLL.Services.Interfaces;
+using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.Presentation.Mapping;
 
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcoStore.Presentation.Controllers;
@@ -50,5 +53,17 @@ public class HomeController : Controller
     public IActionResult About()
     {
         return View();
+    }
+
+    public IActionResult Error()
+    {
+        var exceptionHandler = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+        return exceptionHandler?.Error switch
+        {
+            null => RedirectToAction("Index"),
+            ObjectNotFoundException => View("NotFound"),
+            ValidationException validationException => View("ValidationError", validationException.Errors.Select(e => e.Message)),
+            _ => View(),
+        };
     }
 }

@@ -28,7 +28,6 @@ public class CategoriesController : Controller
         _defaultPageSize = int.Parse(configuration["Defaults:PageSize"]!, CultureInfo.InvariantCulture);
     }
 
-    // TODO: catch?
     public async Task<IActionResult> Details(int id)
     {
         var category = (await _categoryService.GetCategoryAsync(id)).ToViewModel();

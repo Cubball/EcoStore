@@ -28,7 +28,6 @@ public class BrandsController : Controller
         _defaultPageSize = int.Parse(configuration["Defaults:PageSize"]!, CultureInfo.InvariantCulture);
     }
 
-    // TODO: catch?
     public async Task<IActionResult> Details(int id)
     {
         var brand = (await _brandService.GetBrandAsync(id)).ToViewModel();

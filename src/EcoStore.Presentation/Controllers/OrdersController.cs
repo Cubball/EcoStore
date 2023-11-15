@@ -69,7 +69,6 @@ public class OrdersController : Controller
         return View(ordersListViewModel);
     }
 
-    // TODO: catch?
     public async Task<IActionResult> Details(int id)
     {
         var userId = _userManager.GetUserId(User);
@@ -85,7 +84,6 @@ public class OrdersController : Controller
         return View(orderViewModel);
     }
 
-    // TODO: catch
     public async Task<IActionResult> Cancel(int id)
     {
         var userId = _userManager.GetUserId(User);
@@ -93,7 +91,6 @@ public class OrdersController : Controller
         return userId == order.User.Id ? View(id) : RedirectToAction("All");
     }
 
-    // TODO: catch
     public async Task<IActionResult> CancelConfirmed(int id)
     {
         var userId = _userManager.GetUserId(User);

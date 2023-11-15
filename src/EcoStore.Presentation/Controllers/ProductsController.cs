@@ -64,7 +64,6 @@ public class ProductsController : Controller
         return View(productsListViewModel);
     }
 
-    // TODO: catch?
     public async Task<IActionResult> Details(int id)
     {
         var product = (await _productService.GetProductByIdAsync(id)).ToViewModel();
