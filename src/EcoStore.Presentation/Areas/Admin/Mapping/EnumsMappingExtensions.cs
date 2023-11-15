@@ -17,26 +17,34 @@ public static class EnumsMappingExtensions
         };
     }
 
-    public static SortSalesByDTO ToDTO(this SortSalesByViewModel sortSalesByViewModel)
+    public static (SortSalesByDTO SortBy, bool Descending) ToDTO(this SortSalesByViewModel sortSalesByViewModel)
     {
         return sortSalesByViewModel switch
         {
-            SortSalesByViewModel.Name => SortSalesByDTO.Name,
-            SortSalesByViewModel.Revenue => SortSalesByDTO.Revenue,
-            SortSalesByViewModel.NumberSold => SortSalesByDTO.NumberSold,
-            SortSalesByViewModel.DateCreated => SortSalesByDTO.DateCreated,
+            SortSalesByViewModel.Name => (SortSalesByDTO.Name, false),
+            SortSalesByViewModel.NameDesc => (SortSalesByDTO.Name, true),
+            SortSalesByViewModel.Revenue => (SortSalesByDTO.Revenue, false),
+            SortSalesByViewModel.RevenueDesc => (SortSalesByDTO.Revenue, true),
+            SortSalesByViewModel.NumberSold => (SortSalesByDTO.NumberSold, false),
+            SortSalesByViewModel.NumberSoldDesc => (SortSalesByDTO.NumberSold, true),
+            SortSalesByViewModel.DateCreated => (SortSalesByDTO.DateCreated, false),
+            SortSalesByViewModel.DateCreatedDesc => (SortSalesByDTO.DateCreated, true),
             _ => throw new ArgumentOutOfRangeException(nameof(sortSalesByViewModel), sortSalesByViewModel, null)
         };
     }
 
-    public static SortProductsInReportByDTO ToDTO(this SortProductsInReportByViewModel sortProductsViewModel)
+    public static (SortProductsInReportByDTO SortBy, bool Descending) ToDTO(this SortProductsInReportByViewModel sortProductsViewModel)
     {
         return sortProductsViewModel switch
         {
-            SortProductsInReportByViewModel.Name => SortProductsInReportByDTO.Name,
-            SortProductsInReportByViewModel.Stock => SortProductsInReportByDTO.Stock,
-            SortProductsInReportByViewModel.Price => SortProductsInReportByDTO.Price,
-            SortProductsInReportByViewModel.DateCreated => SortProductsInReportByDTO.DateCreated,
+            SortProductsInReportByViewModel.Name => (SortProductsInReportByDTO.Name, false),
+            SortProductsInReportByViewModel.NameDesc => (SortProductsInReportByDTO.Name, true),
+            SortProductsInReportByViewModel.Stock => (SortProductsInReportByDTO.Stock, false),
+            SortProductsInReportByViewModel.StockDesc => (SortProductsInReportByDTO.Stock, true),
+            SortProductsInReportByViewModel.Price => (SortProductsInReportByDTO.Price, false),
+            SortProductsInReportByViewModel.PriceDesc => (SortProductsInReportByDTO.Price, true),
+            SortProductsInReportByViewModel.DateCreated => (SortProductsInReportByDTO.DateCreated, false),
+            SortProductsInReportByViewModel.DateCreatedDesc => (SortProductsInReportByDTO.DateCreated, true),
             _ => throw new ArgumentOutOfRangeException(nameof(sortProductsViewModel), sortProductsViewModel, null)
         };
     }

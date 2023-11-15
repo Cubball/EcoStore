@@ -17,6 +17,30 @@ public static class EnumHelper
         new SelectListItem("Спочатку новіші", SortProductsByViewModel.DateCreatedDesc.ToString()),
     };
 
+    public static IEnumerable<SelectListItem> SortProductsInReportBySelectList { get; } = new[]
+    {
+        new SelectListItem("Назва: від А до Я", SortProductsInReportByViewModel.Name.ToString()),
+        new SelectListItem("Назва: від Я до А", SortProductsInReportByViewModel.NameDesc.ToString()),
+        new SelectListItem("Наявіність: спочатку ті, яких менше", SortProductsInReportByViewModel.Stock.ToString()),
+        new SelectListItem("Наявіність: спочатку ті, яких більше", SortProductsInReportByViewModel.StockDesc.ToString()),
+        new SelectListItem("Ціна: спочатку найдешевші", SortProductsInReportByViewModel.Price.ToString()),
+        new SelectListItem("Ціна: спочатку найдорожчі", SortProductsInReportByViewModel.PriceDesc.ToString()),
+        new SelectListItem("Спочатку старіші", SortProductsInReportByViewModel.DateCreated.ToString()),
+        new SelectListItem("Спочатку новіші", SortProductsInReportByViewModel.DateCreatedDesc.ToString()),
+    };
+
+    public static IEnumerable<SelectListItem> SortSalesBySelectList { get; } = new[]
+    {
+        new SelectListItem("Назва: від А до Я", SortSalesByViewModel.Name.ToString()),
+        new SelectListItem("Назва: від Я до А", SortSalesByViewModel.NameDesc.ToString()),
+        new SelectListItem("Кількість продано: спочатку ті, яких менше", SortSalesByViewModel.NumberSold.ToString()),
+        new SelectListItem("Кількість продано: спочатку ті, яких більше", SortSalesByViewModel.NumberSoldDesc.ToString()),
+        new SelectListItem("Сума продажів: спочатку ті, яких менше", SortSalesByViewModel.Revenue.ToString()),
+        new SelectListItem("Сума продажів: спочатку ті, яких більше", SortSalesByViewModel.RevenueDesc.ToString()),
+        new SelectListItem("Спочатку старіші", SortSalesByViewModel.DateCreated.ToString()),
+        new SelectListItem("Спочатку новіші", SortSalesByViewModel.DateCreatedDesc.ToString()),
+    };
+
     public static IEnumerable<SelectListItem> PaymentMethodSelectList { get; } = new[]
     {
         new SelectListItem("При отриманні", PaymentMethodViewModel.Cash.ToString()),

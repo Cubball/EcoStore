@@ -1,10 +1,38 @@
 @model ProductsReportOptionsViewModel
+@{
+    ViewData["Title"] = "Звітність по товарах";
+}
 
-<form asp-action="Products" method="post">
-    <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<SortProductsInReportByViewModel>()">
-    </select>
-    <input asp-for="Descending">
-    <input asp-for="HighlightLowStockProducts">
-    <input asp-for="LowStockThreshold">
-    <button type="submit"></button>
-</form>
+<h2 class="text-center">Звітність по товарах</h2>
+<div class="d-flex justify-content-center">
+    <div class="w-50">
+        <form asp-action="Products" method="post">
+            <div class="form-group">
+                <label asp-for="SortBy">Сортування товарів:</label>
+                <select asp-for="SortBy" asp-items="EnumHelper.SortProductsInReportBySelectList" class="form-control">
+                </select>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="HighlightLowStockProducts">Виділити товари, які закінчуються:</label>
+                <input asp-for="HighlightLowStockProducts" onchange="onHighlightLowStockProductsChanged()">
+            </div>
+            <div class="mt-2">
+                <label asp-for="LowStockThreshold">Найбільша наявність товару, за якої він буде виділений:</label>
+                <input asp-for="LowStockThreshold" class="form-control" type="number" min="0" step="1" disabled>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-3">Згенерувати звіт</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const onHighlightLowStockProductsChanged = () => {
+        const lowStockThresholdInput = document.getElementById('LowStockThreshold');
+        const highlightLowStockProductsCheckbox = document.getElementById('HighlightLowStockProducts');
+        if (highlightLowStockProductsCheckbox.checked) {
+            lowStockThresholdInput.disabled = false;
+        } else {
+            lowStockThresholdInput.disabled = true;
+        }
+    }
+</script>

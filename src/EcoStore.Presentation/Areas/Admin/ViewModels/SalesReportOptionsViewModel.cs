@@ -4,8 +4,6 @@ public class SalesReportOptionsViewModel
 {
     public SortSalesByViewModel SortBy { get; set; }
 
-    public bool Descending { get; set; }
-
     public DateOnly? From { get; set; }
 
     public DateOnly? To { get; set; }

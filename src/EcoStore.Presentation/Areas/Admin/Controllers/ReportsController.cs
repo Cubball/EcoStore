@@ -35,11 +35,12 @@ public class ReportsController : Controller
             ? salesReportOptions.From.Value.ToDateTime(new TimeOnly(0, 0, 0), DateTimeKind.Local).ToUniversalTime()
             : null;
         DateTime? endDate = salesReportOptions.To.HasValue
-            ? salesReportOptions.To.Value.ToDateTime(new TimeOnly(0, 0, 0), DateTimeKind.Local).ToUniversalTime()
+            ? salesReportOptions.To.Value.ToDateTime(new TimeOnly(23, 59, 59), DateTimeKind.Local).ToUniversalTime()
             : null;
+        var (sortBy, descending) = salesReportOptions.SortBy.ToDTO();
         var (content, fileName) = await _reportService.GetSalesReportAsync(
-                salesReportOptions.SortBy.ToDTO(),
-                salesReportOptions.Descending,
+                sortBy,
+                descending,
                 startDate,
                 endDate);
         return File(content, "text/html", fileName);
@@ -53,9 +54,10 @@ public class ReportsController : Controller
     [HttpPost]
     public async Task<IActionResult> Products(ProductsReportOptionsViewModel productsReportOptions)
     {
+        var (sortBy, descending) = productsReportOptions.SortBy.ToDTO();
         var (content, fileName) = await _reportService.GetProductsReportAsync(
-                productsReportOptions.SortBy.ToDTO(),
-                productsReportOptions.Descending,
+                sortBy,
+                descending,
                 productsReportOptions.HighlightLowStockProducts ? productsReportOptions.LowStockThreshold : null);
         return File(content, "text/html", fileName);
     }
