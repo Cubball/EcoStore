@@ -28,7 +28,8 @@ public class UsersController : Controller
 
     public async Task<IActionResult> All(
         [FromQuery] int page,
-        [FromQuery] int pageSize)
+        [FromQuery] int pageSize,
+        [FromQuery] string? search)
     {
         if (page < 1)
         {
@@ -40,7 +41,7 @@ public class UsersController : Controller
             pageSize = _defaultPageSize;
         }
 
-        var users = (await _userService.GetUsersAsync(page, pageSize))
+        var users = (await _userService.GetUsersAsync(page, pageSize, search))
             .Select(u => u.ToViewModel())
             .ToList();
         var usersCount = await _userService.GetUsersCountAsync();
@@ -53,6 +54,7 @@ public class UsersController : Controller
                 TotalCount = usersCount,
             },
             Users = users,
+            Search = search,
         };
         return View(usersListViewModel);
     }
