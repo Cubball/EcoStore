@@ -263,7 +263,7 @@ public class OrderService : IOrderService
         }
         catch (EntityNotFoundException e)
         {
-            throw new ObjectDisposedException(e.Message, e);
+            throw new ObjectNotFoundException(e.Message, e);
         }
     }
 
