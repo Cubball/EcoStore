@@ -56,7 +56,7 @@ public class UserService : IUserService
         return userDTO;
     }
 
-    public async Task<IEnumerable<AppUserDTO>> GetUsersAsync(int? pageNumber = null, int? pageSize = null)
+    public async Task<IEnumerable<AppUserDTO>> GetUsersAsync(int? pageNumber = null, int? pageSize = null, string? nameOrEmailSearchTerm = null)
     {
         if (pageNumber is null or < 1)
         {
@@ -68,13 +68,21 @@ public class UserService : IUserService
             pageSize = DefaultPageSize;
         }
 
+        var users = _userManager.Users.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(nameOrEmailSearchTerm))
+        {
+            users.Where(u => u.FirstName.Contains(nameOrEmailSearchTerm) ||
+                             u.LastName.Contains(nameOrEmailSearchTerm) ||
+                             u.Email!.Contains(nameOrEmailSearchTerm));
+        }
+
         var skip = (pageNumber - 1) * pageSize;
-        var users = await _userManager.Users
+        var usersList = await users
             .Skip(skip.Value)
             .Take(pageSize.Value)
             .ToListAsync();
-        var userDTOs = new List<AppUserDTO>(users.Count);
-        foreach (var user in users)
+        var userDTOs = new List<AppUserDTO>(usersList.Count);
+        foreach (var user in usersList)
         {
             var userDTO = user.ToDTO();
             userDTO.Role = await _userManager.IsInRoleAsync(user, _adminRoleName) ? RoleDTO.Admin : RoleDTO.User;
