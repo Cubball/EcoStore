@@ -3,14 +3,17 @@
     ViewData["Title"] = @Model.Name;
 }
 
-<div class="d-flex justify-content-center">
-    <div class="w-75">
-        <h2 class="text-center">@Model.Name</h2>
-        <p>Id: @Model.Id</p>
-        <p>@Model.Description</p>
-        <div class="d-flex justify-content-center">
-            <a asp-area="Admin" asp-controller="Brands" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary me-2">Змінити</a>
-            <a asp-area="Admin" asp-controller="Brands" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger ms-2">Видалити</a>
+<h2 class="text-center">@Model.Name</h2>
+<div class="w-75 container p-3 border rounded">
+    <div class="row">
+        <div class="col-6 h-100">
+            Id: @Model.Id<br>
+            @Model.Description
+        </div>
+        <div class="col-6 h-100 text-center">
+            <a asp-area="Admin" asp-controller="Brands" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary w-50">Змінити</a>
+            <br>
+            <a asp-area="Admin" asp-controller="Brands" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mt-3 w-50">Видалити</a>
         </div>
     </div>
 </div>
