@@ -123,4 +123,9 @@ public class AccountController : Controller
         await _userService.UpdateUserAsync(updateAppUserDTO);
         return RedirectToAction(nameof(Index));
     }
+
+    public IActionResult AccessDenied()
+    {
+        return RedirectToAction("Index", "Home");
+    }
 }
