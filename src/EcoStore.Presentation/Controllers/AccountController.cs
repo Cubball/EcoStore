@@ -120,8 +120,8 @@ public class AccountController : Controller
             e.AddErrorsToModelState(ModelState);
             return View(changePasswordViewModel);
         }
-        // TODO: redirect to success page??
-        return RedirectToAction("Index");
+
+        return View("PasswordChanged");
     }
 
     public async Task<IActionResult> Update()

@@ -60,8 +60,8 @@ public class UserService : IUserService
         if (!string.IsNullOrWhiteSpace(nameOrEmailSearchTerm))
         {
             users = users.Where(u => u.FirstName.Contains(nameOrEmailSearchTerm) ||
-                             u.LastName.Contains(nameOrEmailSearchTerm) ||
-                             u.Email!.Contains(nameOrEmailSearchTerm));
+                                     u.LastName.Contains(nameOrEmailSearchTerm) ||
+                                     u.Email!.Contains(nameOrEmailSearchTerm));
         }
 
         var skip = (pageNumber - 1) * pageSize;
@@ -85,9 +85,9 @@ public class UserService : IUserService
         var users = _userManager.Users.AsQueryable();
         if (!string.IsNullOrWhiteSpace(nameOrEmailSearchTerm))
         {
-            users.Where(u => u.FirstName.Contains(nameOrEmailSearchTerm) ||
-                             u.LastName.Contains(nameOrEmailSearchTerm) ||
-                             u.Email!.Contains(nameOrEmailSearchTerm));
+            users = users.Where(u => u.FirstName.Contains(nameOrEmailSearchTerm) ||
+                                     u.LastName.Contains(nameOrEmailSearchTerm) ||
+                                     u.Email!.Contains(nameOrEmailSearchTerm));
         }
 
         return await users.CountAsync();
