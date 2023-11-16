@@ -1,3 +1,4 @@
+using EcoStore.BLL.Services.Exceptions;
 using EcoStore.BLL.Services.Interfaces;
 using EcoStore.BLL.Validation.Exceptions;
 using EcoStore.DAL.Entities;
@@ -61,6 +62,11 @@ public class CartController : Controller
         catch (ValidationException e)
         {
             e.AddErrorsToModelState(ModelState);
+            return View(createOrder);
+        }
+        catch (ServiceException e) when (e.InnerException is PaymentFailedException)
+        {
+            ModelState.AddModelError("Payment", e.Message);
             return View(createOrder);
         }
     }

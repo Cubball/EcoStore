@@ -53,7 +53,7 @@
     </ul>
     @if (Model.OrderStatus is OrderStatusViewModel.New or OrderStatusViewModel.Processing)
     {
-        <a asp-area="" asp-controller="Orders" asp-action="Cancel" asp-route-id="@Model.Id" class="btn btn-danger m-3">Скасувати замовлення</a><br>
+        <a asp-area="Admin" asp-controller="Orders" asp-action="Cancel" asp-route-id="@Model.Id" class="btn btn-danger m-3">Скасувати замовлення</a><br>
     }
     else
     {

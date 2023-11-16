@@ -86,8 +86,13 @@
                     <div class="form-group" id="card-group" hidden>
                         <label for="card-element">Дані картки:</label>
                         <div id="card-element" class="form-control"></div>
-                        <span id="card-errors" class="text-danger"></span>
+                        <span id="card-errors" class="text-danger">
+                        </span>
                     </div>
+                    @if (ViewData.ModelState.ContainsKey("Payment"))
+                    {
+                    <span class="text-danger">@ViewData.ModelState["Payment"]!.Errors.FirstOrDefault()?.ErrorMessage</span>
+                    }
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary mt-2">Оформити замовлення</button>
                     </div>

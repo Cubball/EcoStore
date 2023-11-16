@@ -1,4 +1,6 @@
 using EcoStore.BLL.Infrastructure;
+using EcoStore.BLL.Services.Exceptions;
+using EcoStore.BLL.Services.Interfaces;
 using EcoStore.DAL.EF;
 using EcoStore.DAL.Entities;
 using EcoStore.DAL.Infrastructure;
@@ -33,7 +35,17 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 var app = builder.Build();
 
-await DbInitializer.Initialize(app.Services.CreateScope());
+try
+{
+    var scope = app.Services.CreateScope();
+    var adminInitializer = scope.ServiceProvider.GetRequiredService<IAdminInitializerService>();
+    await adminInitializer.InitializeAsync(app.Configuration["Admin:Email"]!, app.Configuration["Admin:Password"]!);
+}
+catch (AdminCreationFailedException e)
+{
+    Console.WriteLine(e.Message);
+    return;
+}
 
 app.UseExceptionHandler("/Home/Error");
 if (!app.Environment.IsDevelopment())

@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IValidator<UpdateProductDTO>, UpdateProductValidator>();
         services.AddScoped<IValidator<UserChangePasswordDTO>, UserChangePasswordValidator>();
         services.AddScoped<IValidator<UserRegisterDTO>, UserRegisterValidator>();
+        services.AddScoped<IAdminInitializerService, AdminInitializerService>();
         services.AddScoped<IBrandService, BrandService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IOrderService, OrderService>();

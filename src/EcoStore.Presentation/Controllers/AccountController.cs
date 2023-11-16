@@ -79,7 +79,7 @@ public class AccountController : Controller
                 return View(signUpViewModel);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(Login));
         }
         catch (ValidationException e)
         {
