@@ -17,7 +17,7 @@ namespace EcoStore.Presentation.Controllers;
 [Authorize]
 public class CartController : Controller
 {
-    private const string CarCookieKeyPrefix = "cart_for_";
+    private const string CartCookieKeyPrefix = "cart_for_";
 
     private readonly IProductService _productService;
     private readonly IOrderService _orderService;
@@ -111,7 +111,7 @@ public class CartController : Controller
     private string GetCartCookieKey()
     {
         var userId = _userManager.GetUserId(User);
-        return CarCookieKeyPrefix + userId;
+        return CartCookieKeyPrefix + userId;
     }
 
     private void ClearCartCookie()
