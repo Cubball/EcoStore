@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Identity
 @using System.Globalization;
 @inject UserManager<EcoStore.DAL.Entities.AppUser> userManager
+@inject IConfiguration configuration
 @model CreateOrderViewModel
 @{
     ViewData["Title"] = "Оформити замовлення";
@@ -108,7 +109,7 @@
 </div>
 
 <script>
-    const stripe = Stripe('pk_test_51NuCruKg8vt03mmR4gRXfKYofFNh5UhsZSiqTX36OFlHS8VkjKGX31kIV6KWPnOualCFXr5R2SNEX6w6vCarcwwj00n1605wNb')
+    const stripe = Stripe('@configuration["Stripe:PublishableKey"]')
     const card = stripe.elements().create('card')
     card.mount('#card-element')
 
